@@ -37,10 +37,26 @@
 .col{
   color: aliceblue;
 }
+
+.card-title{
+  text-align: left;
+}
+.card-text{
+  text-align: left;
+  color: #9d9c9c;
+}
 .exp{
-  height: 70vh;
+  height: 30vh;
+}
+.space{
+  padding: 7%;
 }
 
+.us{
+  font-size: 3rem;
+  text-align: left;
+  font-weight: 500;
+}
 @media (max-width:1400px){
   .hero h1{
   font-size: 4.5em;
