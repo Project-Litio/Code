@@ -2,14 +2,17 @@ import { useState } from 'react'
 import './App.css'
 import Navbar from './components/Navbar'
 import Hero from './components/hero'
+import Services from './components/services'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <div>
-      <Navbar/>
+      
       <Hero/>
+      
+      <Services/>
     </div>
   )
 }
