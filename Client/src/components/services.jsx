@@ -6,32 +6,32 @@ const cards = [
   {
     id:1,
     title: 'Seguro',
-    test: 'example'
+    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
   },
   {
     id:2,
     title: 'Amplia Selección',
-    test: 'example'
+    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
   },
   {
     id:3,
     title: 'Precios Justos',
-    test: 'example'
+    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
   },
   {
     id:4,
     title: 'Financiamiento Flexible',
-    test: 'example'
+    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
   },
   {
     id:5,
     title: 'En Manos De Expertos',
-    test: 'example'
+    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
   },
   {
     id:6,
     title: 'Buen Servicio Postventa',
-    test: 'example'
+    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
   }
 ]
 

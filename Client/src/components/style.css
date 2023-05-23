@@ -7,7 +7,7 @@
 }
 
 .serv{
-  height: 100vh;
+  height:70vh;
   background-size: cover;
 }
 .back1{
@@ -16,6 +16,7 @@
 
 .back2{
   background-image: url(../assets/background1.jpg);
+  box-shadow: inset 0px 0px 600px rgba(0,0,0,0.9); 
 }
 
 
@@ -70,19 +71,44 @@
   .us{
     font-size: 2.5rem;
   }
+  .serv{
+    background-size: cover;
+    height: 110vh;
+  }
+  .hero h1{
+    font-size: 4.5em;
+    margin-left: 0%;
+    margin-top: -20%;
+    padding-right: 0rem;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 0%;
+  }
+  
+    .hero h2{
+      align-items: center;
+      margin-left: 0%;
+      justify-content: center;
+    }
+    .hero{
+      align-items: center;
+      justify-content: center;
+    }
+  
 }
 
 @media (max-width:450px) {
   .us{
     font-size: 2.2rem;
   }
+  
 }
 
 #card{
   margin-left: 12%;
 }
 
-@media (max-width:1400px){
+@media (max-width:1400px) and (min-width:600px){
   .hero h1{
   font-size: 4.5em;
   margin-left: 0%;
@@ -101,5 +127,9 @@
   .hero{
     align-items: center;
     justify-content: center;
+  }
+
+  .serv{
+    height: 85vh;
   }
 }
