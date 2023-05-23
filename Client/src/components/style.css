@@ -192,3 +192,45 @@ input:focus, textarea:focus, select:focus{
   margin-left: -10%;
   position: fixed;
 }
+
+.btnClient, .btnGerente, .btnJefe, .btnVendedor{
+  color: white;  
+  width: 80%;
+  margin-left: 10%;
+  height: 8%;
+  border-radius: 5px;
+  margin-bottom: 7%;
+  border: none;
+}
+
+.btnClient{
+  background-color: #C6B307;
+}
+
+.btnClient:hover{
+  background-color:  #ac9b07;
+}
+
+.btnJefe{
+  background-color: #277B7B;
+}
+
+.btnJefe:hover{
+  background-color:  #194d4d;
+}
+
+.btnGerente{
+  background-color: #DE6767;
+}
+
+.btnGerente:hover{
+  background-color:  #b85454;
+}
+
+.btnVendedor{
+  background-color: #20A04F;
+}
+
+.btnVendedor:hover{
+  background-color:  #177539;
+}
