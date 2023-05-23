@@ -2,7 +2,7 @@
   height: auto;
   background-size: cover;
   position: relative;
-  min-height: 100vh;
+  min-height: 92vh;
   box-shadow: inset 0px 0px 600px rgba(0,0,0,0.9);
 }
 
@@ -36,6 +36,7 @@
   padding-right: 1rem;
   align-items: center;
   color: white;
+  text-align: center;
 }
 
 .col{
@@ -50,7 +51,7 @@
   color: #9d9c9c;
 }
 .exp{
-  height: 30vh;
+  height: 20vh;
 }
 .space{
   padding: 7%;
@@ -60,14 +61,32 @@
 
 .us{
   font-size: 3rem;
-  text-align: left;
+  text-align: center;
   font-weight: 500;
+  color: aliceblue;
 }
+
+@media (max-width:600px) {
+  .us{
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width:450px) {
+  .us{
+    font-size: 2.2rem;
+  }
+}
+
+#card{
+  margin-left: 12%;
+}
+
 @media (max-width:1400px){
   .hero h1{
   font-size: 4.5em;
   margin-left: 0%;
-  padding-top: 4em;
+  margin-top: -20%;
   padding-right: 0rem;
   justify-content: center;
   text-align: center;
