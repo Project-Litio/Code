@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import Hero from './components/hero'
 import Services from './components/services'
+import Footer from './components/Footer'
 
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <div>
       <Hero/>
       <Services/>
+      <Footer/>
     </div>
   )
 }
