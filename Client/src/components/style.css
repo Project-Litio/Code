@@ -108,7 +108,7 @@
   margin-left: 12%;
 }
 
-@media (max-width:1400px) and (min-width:600px){
+@media (max-width:1000px) and (min-width:600px){
   .hero h1{
   font-size: 4.5em;
   margin-left: 0%;
