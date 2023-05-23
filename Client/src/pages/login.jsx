@@ -1,7 +1,12 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import LoginForm from '../components/LoginForm.jsx'
+import Login from '../components/LoginForm'
+const login = () => {
+  return (
+    <div>
+        <Login></Login>
+    </div>
+    
+  )
+}
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-    <LoginForm />
-)
+export default login

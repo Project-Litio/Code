@@ -2,6 +2,7 @@ import React from 'react'
 import logo from '../assets/LogoFFFFFF.png'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css'
+import { Link } from 'react-router-dom'
 
 function LoginForm() {
   return (
@@ -9,7 +10,9 @@ function LoginForm() {
     <div className='wrapper'>
       <div className='triangle'></div>
       <div className='login rounded'>
-        <button type='button' className='return'><i class="fa fa-chevron-left"></i></button>
+      <Link className="nav-link" to='/'>  
+          <button type='button' className='return'> <i className="fa fa-chevron-left"></i> </button>
+        </Link>  
         <div className='logoContainer'>
           <img src={logo} className='logoImage'/>
         </div>
