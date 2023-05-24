@@ -26,6 +26,9 @@ function LoginForm() {
             <label htmlFor='password' className='form-label'>Ingresa tu Contraseña </label>
             <input type="password" className='form-control'></input>
           </div>
+          <Link className="nav-link" to='/Dashboard'>  
+          Sucursales
+        </Link> 
           <button type='submit' className='btn btn-success mt-5'>Entrar</button>
         </form>
       </div>
