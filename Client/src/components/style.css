@@ -266,6 +266,17 @@ font-size: 2em;
   position: sticky;                                        
 }
 
+.registro {
+  width: 400px;
+  height: 91vh;
+  padding: 20px;
+  border-radius: 5px;
+  color: black;
+  background-color: #253343;
+  font-family: 'ABeeZee';      
+  position:relative;                                        
+}
+
 .form-label{
   color: #00B86B;
   font-style: italic;
