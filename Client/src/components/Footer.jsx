@@ -30,7 +30,7 @@ const Footer = () => {
                 <li><a href="#">Instagram</a></li>
               </ul>
             </div>
-            <div className="col-lg-2 col-sm-2 col-3">
+            <div className="col-lg-2 col-sm-2  col-3">
               <h4>Socios</h4>
               <ul className="list-unstyled">
                 <li><a href="#">Facebook</a></li>

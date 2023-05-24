@@ -2,15 +2,17 @@
 
 
 .hero{
-  height: auto;
+
   background-size: cover;
   position: relative;
-  height: 92vh;
+  height: 50em;
+  padding-top: 10%;
+  padding-bottom: 10%;
   box-shadow: inset 0px 0px 600px rgba(0,0,0,0.9);
 }
 
 .serv{
-  height:80vh;
+  height:fit-content;
   background-size: cover;
 }
 .back1{
@@ -22,27 +24,24 @@
   box-shadow: inset 0px 0px 600px rgba(0,0,0,0.9); 
 }
 
+.cont{
+  margin-left: 10%;
+  margin-right: 10%;
+}
 
 .hero h1 {
-  display: flex;
-  height: 65vh;
-  margin-left: 50%;
-  padding-right: 1vh;
+
+  
   align-items: center;
   color: white;
-  font-size: 3.5vw;
-  margin-bottom: -20vh;
+  font-size: 7em;
+
 }
 
 .hero h2{
-  display: flex;  
-  margin-top: -10vh;
-  margin-left: 50%;
-  padding-right: 1vw;
   align-items: center;
   color: white;
-  
-  font-size: 2vw;
+  font-size: 4em;
 }
 
 .active{
@@ -76,14 +75,7 @@
   color: aliceblue;
 }
 
-@media (max-width:1500px) and (min-width:1300px){
-  .hero h1{
-    font-size: 4vw;
-}
-.hero h2{
-  margin-top: 2%;
-}
-}
+
 
 
 .footer{
@@ -96,7 +88,21 @@
   color: aliceblue;
 }
 
+@media (max-width:1600px) and (min-width:1300px){
 
+  .hero h1 {
+    align-items: center;
+    color: white;
+    font-size: 6em;
+  
+  }
+  
+  .hero h2{
+    align-items: center;
+    color: white;
+    font-size: 2em;
+  }
+}
 
 
 
@@ -107,7 +113,6 @@
 
 @media (max-width:1300px) and (min-width:1000px){
   .hero h1{
-    height: 50vh;
   font-size: 4.5em;
   margin-left: 0%;
   padding-right: 0rem;
@@ -127,11 +132,11 @@
   .hero{
     align-items: center;
     justify-content: center;
-    height: 70vh;
+    height: 75vh;
   }
 
   .serv{
-    height: 80vh;
+    height: fit-content;
   }
 
 
@@ -144,13 +149,13 @@
     font-size: 6.5vw;
     margin-left: 0;
     text-align: center;
-    height: 30vh;
+
   }
   .hero h2{
-    margin-top: 25%;
-    align-items: center;
+
+
     margin-left: 0%;
-    justify-content: center;
+
     font-size: 3.5vw;
     text-align: center;
   }
@@ -168,31 +173,29 @@
 }
 
 
-@media (max-width:600px) and (min-width:300px) {
+@media (max-width:600px)  {
 
   .hero{
-    height: 60vh;
+    height: 55vh;
+
   }
 
 
   
 
   .hero h1{
-    font-size: 2.8em;
-    height: 45vh;
-    margin-left: 0%;
-    margin-bottom: -15%;
-    justify-content: center;
+    font-size: 2.7em;
+    margin-left: 0;
     text-align: center;
   }
 
   .hero h2{
     align-items: center;
-    margin-top: 0%;
+
+    margin-left: 0%;
+    justify-content: center;
     font-size: 1.5em;
     text-align: center;
-    justify-content: center;
-    margin-left: 0;
   }
 
   .serv{
@@ -209,6 +212,12 @@
   
 }
 
+@media(max-width:350px){
+
+  .hero h1{
+font-size: 2em;
+  }
+}
 .return{
   background-color: #1C2631;
   height: 30px;
