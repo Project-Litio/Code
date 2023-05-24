@@ -11,7 +11,7 @@ import {
 const Navbar = () => {
   return (
 
-      <nav className="navbar navbar-expand-lg bg-transparent" data-bs-theme="dark">
+      <nav className="navbar navbar-expand-lg bg-dark pb-3" data-bs-theme="dark">
         <div className="container pt-3">
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={180} />  </Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

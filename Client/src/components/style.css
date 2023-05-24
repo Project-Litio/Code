@@ -5,12 +5,12 @@
   height: auto;
   background-size: cover;
   position: relative;
-  min-height: 92vh;
+  height: 92vh;
   box-shadow: inset 0px 0px 600px rgba(0,0,0,0.9);
 }
 
 .serv{
-  height:70vh;
+  height:80vh;
   background-size: cover;
 }
 .back1{
@@ -26,22 +26,23 @@
 .hero h1 {
   display: flex;
   height: 65vh;
-  margin-left: 45vw;
+  margin-left: 50%;
   padding-right: 1vh;
-  margin-top: -5vh;
   align-items: center;
   color: white;
-  font-size: 5vw;
-  margin-bottom: -10vh;
+  font-size: 3.5vw;
+  margin-bottom: -20vh;
 }
 
 .hero h2{
   display: flex;  
+  margin-top: -10vh;
   margin-left: 50%;
   padding-right: 1vw;
   align-items: center;
   color: white;
-  text-align: center;
+  
+  font-size: 2vw;
 }
 
 .active{
@@ -69,40 +70,21 @@
 }
 
 .us{
-  font-size: 3rem;
+  font-size: 3em;
   text-align: center;
   font-weight: 500;
   color: aliceblue;
 }
 
-@media (max-width:600px) {
-  .us{
-    font-size: 2.5rem;
-  }
-  .serv{
-    background-size: cover;
-    height: 110vh;
-  }
+@media (max-width:1500px) and (min-width:1300px){
   .hero h1{
-    font-size: 10vw;
-    margin-left: 0%;
-    padding-right: 0rem;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 0%;
-  }
-  
-    .hero h2{
-      align-items: center;
-      margin-left: 0%;
-      justify-content: center;
-    }
-    .hero{
-      align-items: center;
-      justify-content: center;
-    }
-  
+    font-size: 4vw;
 }
+.hero h2{
+  margin-top: 2%;
+}
+}
+
 
 .footer{
   background-color: #2A2B2E ;
@@ -117,46 +99,115 @@
 
 
 
-@media (max-width:450px) {
-  .us{
-    font-size: 2.2rem;
-  }
 
-  .hero h1{
-    margin-top: 50vh;
-  }
-  
-}
 
 #card{
   margin-left: 12%;
 }
 
-@media (max-width:1000px) and (min-width:600px){
+@media (max-width:1300px) and (min-width:1000px){
   .hero h1{
+    height: 50vh;
   font-size: 4.5em;
   margin-left: 0%;
   padding-right: 0rem;
   justify-content: center;
   text-align: center;
-  margin-bottom: 0%;
+
 }
 
   .hero h2{
+    margin-top: 7vw;
     align-items: center;
     margin-left: 0%;
     justify-content: center;
+    font-size: 2em;
+    text-align: center;
   }
   .hero{
     align-items: center;
     justify-content: center;
+    height: 70vh;
   }
 
   .serv{
-    height: 85vh;
+    height: 80vh;
+  }
+
+
+}
+
+@media (max-width:1000px) and (min-width:600px) {
+
+
+  .hero h1{
+    font-size: 6.5vw;
+    margin-left: 0;
+    text-align: center;
+    height: 30vh;
+  }
+  .hero h2{
+    margin-top: 25%;
+    align-items: center;
+    margin-left: 0%;
+    justify-content: center;
+    font-size: 3.5vw;
+    text-align: center;
+  }
+  .hero{
+    height: 60vw;
+  }
+  .serv{
+    background-size: cover;
+    height: fit-content;
+  }
+  
+  .us{
+    height: fit-content;
   }
 }
 
+
+@media (max-width:600px) and (min-width:300px) {
+
+  .hero{
+    height: 60vh;
+  }
+
+
+  
+
+  .hero h1{
+    font-size: 2.8em;
+    height: 45vh;
+    margin-left: 0%;
+    margin-bottom: -15%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero h2{
+    align-items: center;
+    margin-top: 0%;
+    font-size: 1.5em;
+    text-align: center;
+    justify-content: center;
+    margin-left: 0;
+  }
+
+  .serv{
+    height: fit-content;
+  }
+
+
+  .us{
+    font-size: 1.6rem;
+    height: fit-content;
+  }
+
+
+  
+}
 
 .return{
   background-color: #1C2631;

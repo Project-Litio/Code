@@ -39,9 +39,9 @@ const Services = () => {
   return (
     <div className='serv back2 align-items-center ' >        
         
-        <div className="row exp  align-items-center w-100 px-5 ">
-          <div className="us col-12  ">
-            <div className='mx-5'>
+        <div className="row exp  align-items-center w-100 px-0 us pt-4">
+          <div className=" col-12  ">
+            <div className='mx-5 '>
               Experimienta los beneficios de adquirir tu vehículo con <font color="Red"> nosotros</font>.
             </div>
             
@@ -49,7 +49,7 @@ const Services = () => {
           
         </div>
 
-        <div className="row justify-content-between   align-items-center w-100 px-5 py-5">
+        <div className="row justify-content-between   align-items-center w-100 px-4 py-5">
           <div className="col-12 col-sm-6 col-md-4 py-2">
             <Card title={cards[0].title} text={cards[0].test} />
             </div>
