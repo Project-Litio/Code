@@ -5,39 +5,26 @@ import './style.css'
 const Footer = () => {
   return (
     <div>
-      <footer className="footer ft py-5 ">
+      <footer className="footer ft pt-4 ">
         <div className="container">
-          <div className="row justify-content-between">
-            <div className="col-md-4 col-sm-3 text-center ">
-              <img src={img} alt="Litio" className="img-fluid  mb-3" width={180} />
-              <p className="text-center ft">Copyright &copy; 2023 Company Name</p>
+          <div className="row justify-content-between text-center">
+            <div className="col-md-2 col-sm-2 col-3">
+              <h5>LITIO</h5>
+
             </div>
             <div className="col-lg-2 col-sm-2 col-3">
-              <h4>Navegación</h4>
-              <ul className="list-unstyled">
-                <li><a href="#">Inicio</a></li>
-                <li><a href="#">Colección</a></li>
-                <li><a href="#">Reparaciones</a></li>
-                <li><a href="#">Nosotros</a></li>
-              </ul>
+              <h5>Copyright&copy;  </h5>
             </div>
             <div className="col-lg-2 col-sm-2 col-3">
-              <h4>Soporte</h4>
-              <ul className="list-unstyled">
-                <li><a href="#">Facebook</a></li>
-                <li><a href="#">Twitter</a></li>
-                <li><a href="#">LinkedIn</a></li>
-                <li><a href="#">Instagram</a></li>
-              </ul>
+              <h5>Incio</h5>
+
             </div>
-            <div className="col-lg-2 col-sm-2  col-3">
-              <h4>Socios</h4>
-              <ul className="list-unstyled">
-                <li><a href="#">Facebook</a></li>
-                <li><a href="#">Twitter</a></li>
-                <li><a href="#">LinkedIn</a></li>
-                <li><a href="#">Instagram</a></li>
-              </ul>
+            <div className="col-lg-2 col-sm-2 col-3">
+              <h5>Coleccion</h5>
+            </div>
+            <div className="col-lg-2 col-sm-2  col-0">
+              <h5>Idenfificate</h5>
+
             </div>
           </div>
         </div>
