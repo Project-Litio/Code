@@ -3,12 +3,14 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Carousel from '../components/carousel'
 import Add from '../components/Add'
+import ModelAvailable from '../components/ModelAvailable'
 const Collection = () => {
   return (
     <div className='bg-white'>
     <Navbar  />
     <Carousel></Carousel>
     <Add></Add>
+    <ModelAvailable></ModelAvailable>
     <Footer/>
     </div>
 

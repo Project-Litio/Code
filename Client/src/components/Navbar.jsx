@@ -31,7 +31,7 @@ const Navbar = () => {
                 <Link className="nav-link" to='/about'> <font color='White'> Sobre Nosotros</font></Link>
               </li>
               <li className="nav-item mx-3">
-                <Link className="nav-link active"  to='/prelogin'> <font color='White'>Identificate</font></Link>
+                <Link className="nav-link active"  to='/prelogin'> <font color='White'>Log In</font></Link>
               </li> 
             </ul>
           </div>
