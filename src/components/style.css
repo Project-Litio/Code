@@ -1,0 +1,366 @@
+@import url('https://fonts.cdnfonts.com/css/abeezee');             
+
+
+
+
+.hero{
+
+  background-size: cover;
+  position: relative;
+  height: 50em;
+  padding-top: 10%;
+  padding-bottom: 10%;
+  box-shadow: inset 0px 0px 600px rgba(0,0,0,0.9);
+}
+
+.serv{
+  height:fit-content;
+  background-size: cover;
+}
+.back1{
+  background-image: url(../assets/t_Model_3.jpg);
+}
+
+.back2{
+  background-image: url(../assets/background1.jpg);
+  box-shadow: inset 0px 0px 600px rgba(0,0,0,0.9); 
+}
+
+.cont{
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.hero h1 {
+
+  
+  align-items: center;
+  color: white;
+  font-size: 7em;
+
+}
+
+.hero h2{
+  align-items: center;
+  color: white;
+  font-size: 4em;
+}
+
+.active{
+  color: white;
+}
+
+.col{
+  color: aliceblue;
+}
+
+.card-title{
+  text-align: left;
+}
+.card-text{
+  text-align: left;
+  color: #9d9c9c;
+}
+.exp{
+  height: 20vh;
+}
+.space{
+  padding: 7%;
+  padding-top: 10%;
+  align-items: center;
+}
+
+.us{
+  font-size: 3em;
+  text-align: center;
+  font-weight: 500;
+  color: aliceblue;
+}
+
+
+
+
+.footer{
+  background-color: #2A2B2E ;
+}
+
+.ft{
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: aliceblue;
+}
+
+@media (max-width:1600px) and (min-width:1300px){
+
+  .hero h1 {
+    align-items: center;
+    color: white;
+    font-size: 6em;
+  
+  }
+  
+  .hero h2{
+    align-items: center;
+    color: white;
+    font-size: 2em;
+  }
+}
+
+
+.white{
+  color: white;
+
+}
+
+
+#card{
+  margin-left: 12%;
+}
+
+@media (max-width:1300px) and (min-width:1000px){
+  .hero h1{
+  font-size: 4.5em;
+  margin-left: 0%;
+  padding-right: 0rem;
+  justify-content: center;
+  text-align: center;
+
+}
+
+  .hero h2{
+    margin-top: 7vw;
+    align-items: center;
+    margin-left: 0%;
+    justify-content: center;
+    font-size: 2em;
+    text-align: center;
+  }
+  .hero{
+    align-items: center;
+    justify-content: center;
+    height: 75vh;
+  }
+
+  .serv{
+    height: fit-content;
+  }
+
+
+}
+
+@media (max-width:1000px) and (min-width:600px) {
+
+
+  .hero h1{
+    font-size: 6.5vw;
+    margin-left: 0;
+    text-align: center;
+
+  }
+  .hero h2{
+
+
+    margin-left: 0%;
+
+    font-size: 3.5vw;
+    text-align: center;
+  }
+  .hero{
+    height: 60vw;
+  }
+  .serv{
+    background-size: cover;
+    height: fit-content;
+  }
+  
+  .us{
+    height: fit-content;
+  }
+}
+
+
+@media (max-width:600px)  {
+
+  .hero{
+    height: 55vh;
+
+  }
+
+
+  
+
+  .hero h1{
+    font-size: 2.7em;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .hero h2{
+    align-items: center;
+
+    margin-left: 0%;
+    justify-content: center;
+    font-size: 1.5em;
+    text-align: center;
+  }
+
+  .serv{
+    height: fit-content;
+  }
+
+
+  .us{
+    font-size: 1.6rem;
+    height: fit-content;
+  }
+
+
+  
+}
+
+@media(max-width:350px){
+
+  .hero h1{
+font-size: 2em;
+  }
+}
+.return{
+  background-color: #1C2631;
+  height: 30px;
+  width: 30px;
+  border-radius: 5px;
+  border: none;
+  color: white;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.logoContainer{
+  margin-left: 34%;
+  margin-top: 6%;
+}
+
+.logoImage{
+  width: 50%;
+}
+
+.wrapper{
+  background-image: url("../assets/fondo.jpg");
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  padding-left: 4vh;
+}
+
+.login {
+  width: 400px;
+  height: 91vh;
+  padding: 20px;
+  border-radius: 5px;
+  color: black;
+  background-color: #253343;
+  font-family: 'ABeeZee';      
+  position: sticky;                                        
+}
+
+.registro {
+  width: 400px;
+  height: 91vh;
+  padding: 20px;
+  border-radius: 5px;
+  color: black;
+  background-color: #253343;
+  font-family: 'ABeeZee';      
+  position:relative;                                        
+}
+
+.form-label{
+  color: #00B86B;
+  font-style: italic;
+}
+
+input:focus, textarea:focus, select:focus{
+  outline: none;
+}
+
+.form-control{
+  border: 1px solid #6783A0;
+  background-color: #30445B;
+  color:white;
+}
+
+.form-control:focus {
+  background-color: #233242;
+  color:white;
+}
+
+.title{
+  color:white;
+  padding-top: 15%;
+  padding-bottom: 10%;
+  font-size: 30px;
+  text-align: center;
+  font-style: italic;
+}
+
+.btn{
+  margin-left: 36%;
+  position: absolute;
+}
+
+.triangle {
+  width: 0;
+  height: 100%;
+  border-left: 0;
+  border-right: 700px solid transparent;
+  border-top: 0;
+  border-bottom: 700px solid #1C2631;
+  bottom: 0;
+  margin-left: -10%;
+  position: fixed;
+}
+
+.btnClient, .btnGerente, .btnJefe, .btnVendedor{
+  color: white;  
+  width: 80%;
+  margin-left: 10%;
+  height: 8%;
+  border-radius: 5px;
+  margin-bottom: 7%;
+  border: none;
+}
+
+.btnClient{
+  background-color: #C6B307;
+}
+
+.btnClient:hover{
+  background-color:  #ac9b07;
+}
+
+.btnJefe{
+  background-color: #277B7B;
+}
+
+.btnJefe:hover{
+  background-color:  #194d4d;
+}
+
+.btnGerente{
+  background-color: #DE6767;
+}
+
+.btnGerente:hover{
+  background-color:  #b85454;
+}
+
+.btnVendedor{
+  background-color: #20A04F;
+}
+
+.btnVendedor:hover{
+  background-color:  #177539;
+}
