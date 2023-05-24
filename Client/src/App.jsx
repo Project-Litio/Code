@@ -5,6 +5,8 @@ import Home from './pages/home'
 import Collection from './pages/collection'
 import PreLogin from './pages/prelogin'
 import login from './pages/login'
+import DashboardPage from './pages/dashboard'
+import ManejoUsuarios from './pages/manejousuarios'
 
 import {
   BrowserRouter as Router,
@@ -24,6 +26,8 @@ function App() {
           <Route path='/about' Component={Navbar}></Route>
           <Route path='/prelogin' Component={PreLogin}></Route>
           <Route path='/login' Component={login}></Route>
+          <Route path='/Dashboard' Component={DashboardPage}></Route>
+          <Route path='/ManejoUsers' Component={ManejoUsuarios}></Route>
         </Routes>
       </Router>
     </div>
