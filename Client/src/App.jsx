@@ -14,9 +14,9 @@ function App() {
   return (
     <div className='bg-dark'>
       
-      <Router >
-      <Navbar/>
-        <Routes>
+      <Router className='white'>
+      <Navbar />
+        <Routes >
           <Route path='/' exact Component={Home}></Route>
           <Route path='/collection' Component={Navbar}></Route>
           <Route path='/repair' Component={Navbar}></Route>
