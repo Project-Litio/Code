@@ -22,7 +22,7 @@ const Navbar = () => {
                 <Link className=" nav-link  active " to='/' ><font color='white'>Inicio</font></Link>
               </li>
               <li className="nav-item mx-3">
-                <Link className="nav-link " to='/collection'> <font color='White'>Colección</font> </Link>
+                <Link className="nav-link " to='/collection'> <font color='White '>Colección</font> </Link>
               </li>
               <li className="nav-item mx-3">
                 <Link className="nav-link" to='/repair'> <font color='White'>Reparación</font>  </Link>

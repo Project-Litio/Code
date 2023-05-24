@@ -1,7 +1,19 @@
 @import url('https://fonts.cdnfonts.com/css/abeezee');             
 
 
+.button1 {
+  background-color: white;
+  color: black;
+  border: 2px solid #4CAF50; 
+  transition-duration: 0.4s;
+  border-radius: 8px;
+  font-size: 1.2em;
+}
 
+.button1:hover {
+  background-color: #4CAF50;
+  color: white;
+}
 
 .hero{
 

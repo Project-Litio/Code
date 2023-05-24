@@ -28,19 +28,19 @@ const cars =[
     "image":img1
   },
   {
-    "id":2,
+    "id":5,
     "title": "Molel 3",
     "test": "Sedan",
     "image":img1
   },
   {
-    "id":3,
+    "id":6,
     "title": "Molel X",
     "test": "Sedan",
     "image":img1
   },
   {
-    "id":4,
+    "id":7,
     "title": "Molel Y",
     "test": "SUV",
     "image":img1
@@ -51,11 +51,11 @@ const cars =[
 
 const ModelAvailable = () => {
   return (
-    <div className="row justify-content-around   align-items-center w-100 px-4 py-5">
+    <div className="row justify-content-around   align-items-center w-100 px-4 pb-4">
       {
         cars.map(car => 
           (
-          <div className="col-6 col-sm-4 col-md-3 col-lg-3 " key={car.id}>
+          <div className="col-6 col-sm-6 col-md-4 col-lg-3 " key={car.id}>
             <CardI title={car.title} text={car.test} imageSource={car.image}></CardI>
           </div>
 

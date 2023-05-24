@@ -5,7 +5,7 @@ import './style.css'
 const Footer = () => {
   return (
     <div>
-      <footer className="footer ft pt-4 ">
+      <footer className="footer ft pt-3 pb-2 ">
         <div className="container">
           <div className="row justify-content-between text-center">
             <div className="col-md-2 col-sm-2 col-3">
