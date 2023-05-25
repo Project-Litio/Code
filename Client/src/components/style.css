@@ -1,6 +1,15 @@
 @import url('https://fonts.cdnfonts.com/css/abeezee');             
 
 
+.cardI{
+  transition: all 0.3s;
+}
+
+.cardI:hover{
+  transform: scale(1.15);
+  
+}
+
 .button1 {
   background-color: white;
   color: black;

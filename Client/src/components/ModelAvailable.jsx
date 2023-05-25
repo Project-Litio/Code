@@ -1,7 +1,7 @@
 import React from 'react'
 import img1 from '../assets/cars/t-m-3.png'
 
-import CardI from './CardI'
+import CardI from './small-component/CardI'
 const cars =[
   {
     "id":1,
@@ -51,11 +51,13 @@ const cars =[
 
 const ModelAvailable = () => {
   return (
-    <div className="row justify-content-around   align-items-center w-100 px-4 pb-4">
+    <div className='container'>
+      <h2 className='px-3'>NUESTROS VEHÍCULOS</h2>
+    <div className="row justify-content-around  pb-4 ">
       {
         cars.map(car => 
           (
-          <div className="col-6 col-sm-6 col-md-4 col-lg-3 " key={car.id}>
+          <div className="col-6 col-sm-6 col-md-4 col-lg-4 " key={car.id}>
             <CardI title={car.title} text={car.test} imageSource={car.image}></CardI>
           </div>
 
@@ -63,6 +65,7 @@ const ModelAvailable = () => {
           )
       
       }
+    </div>
     </div>
   )
 }

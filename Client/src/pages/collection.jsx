@@ -2,7 +2,7 @@ import React from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Carousel from '../components/carousel'
-import Add from '../components/Add'
+import Add from '../components/small-component/Add'
 import ModelAvailable from '../components/ModelAvailable'
 import Findus from '../components/Findus'
 const Collection = () => {
