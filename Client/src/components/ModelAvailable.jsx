@@ -1,7 +1,11 @@
 import React from 'react'
 import img1 from '../assets/cars/t-m-3.png'
-
+import {
+  Link
+} from "react-router-dom";
 import CardI from './small-component/CardI'
+
+
 const cars =[
   {
     "id":1,
@@ -29,24 +33,25 @@ const cars =[
   },
   {
     "id":5,
-    "title": "Molel 3",
-    "test": "Sedan",
+    "title": "Renault Zoe ",
+    "test": "SUV",
     "image":img1
   },
   {
     "id":6,
-    "title": "Molel X",
+    "title": "kia Soul EV",
     "test": "Sedan",
     "image":img1
   },
   {
     "id":7,
-    "title": "Molel Y",
+    "title": "Bmw IX Xdrive",
     "test": "SUV",
     "image":img1
   }
 ]
 
+export {cars}
 
 
 const ModelAvailable = () => {
@@ -58,11 +63,12 @@ const ModelAvailable = () => {
         cars.map(car => 
           (
           <div className="col-6 col-sm-6 col-md-4 col-lg-4 " key={car.id}>
-            <CardI title={car.title} text={car.test} imageSource={car.image}></CardI>
+            <Link to={`/collection/${car.title}`} > <CardI title={car.title} text={car.test} imageSource={car.image}></CardI> </Link>
           </div>
 
           )
           )
+          
       
       }
     </div>

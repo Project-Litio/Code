@@ -7,12 +7,19 @@ import PreLogin from './pages/prelogin'
 import login from './pages/login'
 import DashboardPage from './pages/dashboard'
 import ManejoUsuarios from './pages/manejousuarios'
+import carDetail from './pages/carDetail'
+
+
+import { cars } from './components/ModelAvailable'
+
 
 import {
   BrowserRouter as Router,
   Routes,
   Route} from "react-router-dom";
 
+
+  
 function App() {
   return (
     <div className='bg-dark'>
@@ -21,6 +28,9 @@ function App() {
 
         <Routes >
           <Route path='/' exact Component={Home}></Route>
+          <Route path='/collection/:id' Component={carDetail}></Route>
+
+
           <Route path='/collection' Component={Collection}></Route>
           <Route path='/repair' Component={Navbar}></Route>
           <Route path='/about' Component={Navbar}></Route>

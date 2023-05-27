@@ -3,24 +3,44 @@
     {
       "id":1,
       "title": "Molel S",
-      "test": "Sedan"
+      "test": "Sedan",
+      "image": "../assets/cars/t-m-3.png"
     },
     {
       "id":2,
       "title": "Molel 3",
-      "test": "Sedan"
+      "test": "Sedan",
+      "image":"../assets/cars/t-m-3.png"
     },
     {
       "id":3,
       "title": "Molel X",
-      "test": "Sedan"
+      "test": "Sedan",
+      "image":"../assets/cars/t-m-3.png"
     },
     {
       "id":4,
       "title": "Molel Y",
-      "test": "SUV"
+      "test": "SUV",
+      "image":"../assets/cars/t-m-3.png"
+    },
+    {
+      "id":5,
+      "title": "Renault Zoe ",
+      "test": "SUV",
+      "image":"../assets/cars/t-m-3.png"
+    },
+    {
+      "id":6,
+      "title": "kia Soul EV",
+      "test": "Sedan",
+      "image":"../assets/cars/t-m-3.png"
+    },
+    {
+      "id":7,
+      "title": "Bmw IX Xdrive",
+      "test": "SUV",
+      "image":"../assets/cars/t-m-3.png"
     }
-    
-
   ]
 }
