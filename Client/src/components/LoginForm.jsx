@@ -3,8 +3,13 @@ import logo from '../assets/LogoFFFFFF.png'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css'
 import { Link } from 'react-router-dom'
+import {useForm} from 'react-hook-form'
 
 function LoginForm() {
+  const {register, handleSubmit} = useForm();
+  
+  const onSubmit = handleSubmit(async data => {await console.log(data)})
+
   return (
     <><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
     <div className='wrapper'>
@@ -16,20 +21,20 @@ function LoginForm() {
         <div className='logoContainer'>
           <img src={logo} className='logoImage'/>
         </div>
-        <form>
+        <form onSubmit={onSubmit}>
           <h2 className='title'>Inicio de sesión</h2>
           <div className='form-group mb-2'>
-            <label htmlFor='email' className='form-label'>Ingresa tu correo electrónico</label>
-            <input type="email" className='form-control'></input>
+            <label htmlFor='ID' className='form-label'>Ingresa tu número de identificación</label>
+            <input type="text" className='form-control' {...register("id", {required: true})}></input>
           </div>
           <div className='form-group mb-2'>
             <label htmlFor='password' className='form-label'>Ingresa tu Contraseña </label>
-            <input type="password" className='form-control'></input>
+            <input type="password" className='form-control' {...register("password", {required: true})}></input>
           </div>
           <Link className="nav-link" to='/Dashboard'>  
           Sucursales
         </Link> 
-          <button type='submit' className='btn btn-success mt-5'>Entrar</button>
+          <button type='buttom' className='btn btn-success mt-5'>Entrar</button>
         </form>
       </div>
     </div></>

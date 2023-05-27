@@ -6,10 +6,11 @@ class Branch(models.Model):
     city=models.CharField(max_length=20)
 
 class Employee(models.Model):
+    id=models.CharField(primary_key=True,max_length=20)
     name=models.CharField(max_length=30)
     last_name=models.CharField(max_length=30)
     email=models.EmailField()
-    password=models.CharField(max_length=120)
+    password=models.CharField(max_length=256)
     address=models.CharField(max_length=30)
     phone=models.CharField(max_length=12)
     id_branch=models.ForeignKey(Branch,on_delete=models.SET_NULL,null=True)
@@ -29,10 +30,10 @@ class Customer(models.Model):
         ("J","Juridico")
     ]
     
-    id=models.IntegerField(primary_key=True)
+    id=models.CharField(primary_key=True,max_length=20)
     name=models.CharField(max_length=30)
     last_name=models.CharField(max_length=30,null=True)
-    password=models.CharField(max_length=120)
+    password=models.CharField(max_length=256)
     address=models.CharField(max_length=30)
     phone=models.CharField(max_length=12)
     email=models.EmailField()
