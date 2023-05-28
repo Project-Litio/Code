@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Branch(models.Model):
@@ -7,12 +8,9 @@ class Branch(models.Model):
 
 class Employee(models.Model):
     id=models.CharField(primary_key=True,max_length=20)
-    name=models.CharField(max_length=30)
-    last_name=models.CharField(max_length=30)
-    email=models.EmailField()
-    password=models.CharField(max_length=256)
     address=models.CharField(max_length=30)
     phone=models.CharField(max_length=12)
+    id_user=models.OneToOneField(User,on_delete=models.CASCADE)
     id_branch=models.ForeignKey(Branch,on_delete=models.SET_NULL,null=True)
 
 class Manager(models.Model):
@@ -31,10 +29,7 @@ class Customer(models.Model):
     ]
     
     id=models.CharField(primary_key=True,max_length=20)
-    name=models.CharField(max_length=30)
-    last_name=models.CharField(max_length=30,null=True)
-    password=models.CharField(max_length=256)
     address=models.CharField(max_length=30)
     phone=models.CharField(max_length=12)
-    email=models.EmailField()
     type=models.CharField(max_length=1,choices=CUSTOMER_TYPES)
+    id_user=models.OneToOneField(User,on_delete=models.CASCADE)
