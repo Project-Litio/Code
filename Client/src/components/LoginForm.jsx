@@ -4,12 +4,12 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css'
 import { Link } from 'react-router-dom'
 import {useForm} from 'react-hook-form'
-import {getCustomers} from '../api/login.api'
+import {getCustomers,login} from '../api/login.api'
 
 function LoginForm() {
   const {register, handleSubmit} = useForm();
   
-  const onSubmit = handleSubmit(async data => {await console.log(getCustomers())})
+  const onSubmit = handleSubmit(async data => {await console.log(login(data))})
 
   return (
     <><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>

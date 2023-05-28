@@ -59,6 +59,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173'
 ]
 
+AUTHENTICATION_BACKENDS = ['login.views.EmailBackend']
+
 ROOT_URLCONF = 'lithium.urls'
 
 TEMPLATES = [

@@ -1,5 +1,13 @@
-import axios from 'axios'
+import axios from 'axios';
+
+const loginApi = axios.create({
+    baseURL: 'http://127.0.0.1:8000/login/'
+});
 
 export const getCustomers = () => {
-    return axios.get('http://127.0.0.1:8000/login/customer')
-}
+    return loginApi.get('/customer')
+};
+
+export const login = (data) => {
+    return loginApi.post('/customer/login',data)
+};
