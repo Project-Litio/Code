@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'cloudinary',  #Para almacenar las imagenes
     'rest_framework', #Provee funcionalidades para facilitar la construcción de APIs
     'corsheaders',  #Para configurar que dominios pueden hacer peticiones a la app
-    'login', 
+    'login',
+    'inventory',
 ]
 
 MIDDLEWARE = [
