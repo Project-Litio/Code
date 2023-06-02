@@ -1,5 +1,9 @@
-FROM node:15.13-alpine
-WORKDIR /Client
+FROM node:alpine
+
+WORKDIR /app
 COPY . .
-RUN npm i
-RUN npm run build
+
+RUN npm config set legacy-peer-deps true
+RUN npm install
+
+CMD ["npm", "run", "build"]
