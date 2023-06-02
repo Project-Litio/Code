@@ -1,6 +1,6 @@
 
 import React from 'react'
-import PreLogin from '../components/PreLogin'
+import PreLogin from '../components/preLogin'
 const Prelogin = () => {
     return (
     <div>
