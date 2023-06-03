@@ -12,7 +12,7 @@ services:
     build:
       context: ./Client
     volumes:
-      - frontend:/app/build
+      - frontend:/app/dist
   nginx:
     build:
       context: ./nginx
