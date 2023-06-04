@@ -17,9 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from login.views import *
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', include('login.urls')),
     path('inventory/',include('inventory.urls'))
 ]
+
+urlpatterns += staticfiles_urlpatterns()
