@@ -1,15 +1,28 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import logo from '../assets/LogoFFFFFF.png'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css'
 import { Link } from 'react-router-dom'
 import {useForm} from 'react-hook-form'
+import ReCAPTCHA from "react-google-recaptcha"
 import {getCustomers,login} from '../api/login.api'
 
 function LoginForm() {
   const {register, handleSubmit} = useForm();
-  
   const onSubmit = handleSubmit(async data => {await console.log(login(data))})
+
+  const [captchaValido, cambiarCaptchaValido] = useState(null);
+  const captcha = useRef(null);
+  const onChange = () => {
+    if(captcha.current.getValue()){
+      cambiarCaptchaValido(true);
+    }
+  }
+
+  const [passwordShown, setPasswordShown] = useState(false);
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
 
   return (
     <><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
@@ -30,12 +43,24 @@ function LoginForm() {
           </div>
           <div className='form-group mb-2'>
             <label htmlFor='password' className='form-label'>Ingresa tu Contraseña </label>
-            <input type="password" className='form-control' {...register("password", {required: true})}></input>
+            <div className='passcode'> 
+              <input type={passwordShown ? "text" : "password"} className='form-control' id='customform' {...register("password", {required: true})}></input>
+              <button onClick={togglePassword}>
+                {!passwordShown && <i class="fa fa-eye"></i>}
+                {passwordShown && <i class="fa fa-eye-slash"></i>}
+              </button>
+            </div>
           </div>
-          <Link className="nav-link" to='/Dashboard'>  
-          Sucursales
-        </Link> 
-          <button type='buttom' className='btn btn-success mt-5'>Entrar</button>
+        <div className="captcha">
+          <ReCAPTCHA
+              sitekey="6LfbAWYmAAAAAIcvGyc_u-_dV9WKtiTnUE4dfAzU"
+              ref={captcha}
+              onChange={onChange}
+            />
+         </div>
+         {captchaValido &&
+          <button type='button' className='btn btn-success mt-5'>Entrar</button>
+         }
         </form>
       </div>
     </div></>
