@@ -19,6 +19,10 @@ function LoginForm() {
     }
   }
 
+  const caducated = () => {
+    cambiarCaptchaValido(false);
+  }
+
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePassword = () => {
     setPasswordShown(!passwordShown);
@@ -56,6 +60,7 @@ function LoginForm() {
               sitekey="6LfbAWYmAAAAAIcvGyc_u-_dV9WKtiTnUE4dfAzU"
               ref={captcha}
               onChange={onChange}
+              onExpired={caducated}
             />
          </div>
          {captchaValido &&
