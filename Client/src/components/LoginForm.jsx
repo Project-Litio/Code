@@ -19,7 +19,7 @@ function LoginForm() {
     }
   }
 
-  const caducated = () => {
+  const caducated = () => { 
     cambiarCaptchaValido(false);
   }
 

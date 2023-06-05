@@ -9,7 +9,22 @@ const CardCar = ({title,text}) => {
         <div className="row g-0">
           <div className="col-md-6">
             <img src={img1} className="img-fluid rounded-start" alt="Auto"/>
+            <div className="row ">
+              <div className="col-3 col-md-3">
+              <img src={img1} className="img-fluid rounded-start" alt="Auto"/>
+              </div>
+              <div className="col-3 col-md-3">
+              <img src={img1} className="img-fluid rounded-start" alt="Auto"/>
+              </div>
+              <div className="col-3 col-md-3">
+              <img src={img1} className="img-fluid rounded-start" alt="Auto"/>
+              </div>
+              <div className="col-3  col-md-3">
+              <img src={img1} className="img-fluid rounded-start" alt="Auto"/>
+              </div>
+            </div>
           </div>
+
           <div className="col-md-6">
             <div className="card-body">
               <h5 className="card-title">{title} example</h5>
