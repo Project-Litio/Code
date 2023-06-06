@@ -1,8 +1,20 @@
 import React from 'react'
 import img1 from '../../assets/cars/t-m-3.png'
+import './style.css'
+import { useState } from 'react';
+
+
 
 
 const CardCar = ({title,text}) => {
+  const [color, setColor] = useState('wh'); // Estado inicial del color
+
+  const handleButtonClick = () => {
+
+    setColor('selected'); // Cambia el color al valor deseado
+  };
+
+
   return (
     <div>
       <div className="card mb-3">
@@ -28,10 +40,29 @@ const CardCar = ({title,text}) => {
           <div className="col-md-6">
             <div className="card-body">
               <h5 className="card-title">{title} example</h5>
-              <h3 className="">Precio: {
+              
+              <div>
+                <h4>Color</h4>
+                <div className='row w-50 py-1' >
+                  <div  className='col-3'>
+                    <button className='square rounded border-0 id-b'></button>
+                  </div>
+                  <div  className='col-3'>
+                    <button className='square rounded border-0 id-g'></button>
+                  </div>
+                  <div  className='col-3'>
+                    <button className='square rounded border-0 id-bk'></button>
+                  </div>
+                  <div  className='col-3'>
+                    <button className='square rounded border-0 id-y'></button>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="py-1">Precio: {
                 new Intl.NumberFormat('en-DE').format(130000000)
-              } COP </h3>
-              <p className="card-text"><small className="text-body-secondary">Last updated 3 mins ago</small></p>
+              } COP 
+              </h3>
             </div>
           </div>
         </div>
