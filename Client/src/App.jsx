@@ -8,6 +8,7 @@ import login from './pages/login'
 import DashboardPage from './pages/dashboard'
 import ManejoUsuarios from './pages/manejousuarios'
 import carDetail from './pages/carDetail'
+import userManagment from './pages/userManagment'
 
 
 import { cars } from './components/ModelAvailable'
@@ -29,8 +30,7 @@ function App() {
         <Routes >
           <Route path='/' exact Component={Home}></Route>
           <Route path='/collection/:id' Component={carDetail}></Route>
-
-
+          <Route path='/userManagment' exact Component={userManagment}></Route>
           <Route path='/collection' Component={Collection}></Route>
           <Route path='/repair' Component={Navbar}></Route>
           <Route path='/about' Component={Navbar}></Route>

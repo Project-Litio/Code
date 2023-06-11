@@ -1,0 +1,72 @@
+[
+  {
+    "id":1,
+    "Full Name":"Allyson Zurita",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"19/05/2003",
+    "Rol":"Usuario"
+  },
+  {
+    "id":2,
+    "Full Name":"Mauricio Muños",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"12/05/2003",
+    "Rol":"Gerente"
+  },
+  {
+    "id":3,
+    "Full Name":"juan Zurita",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"19/05/2003",
+    "Rol":"Usuario"
+  },
+  {
+    "id":4,
+    "Full Name":"Mauricio jimenez",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"12/05/2003",
+    "Rol":"Gerente"
+  },
+  {
+    "id":5,
+    "Full Name":"Allyson Zurita",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"19/05/2003",
+    "Rol":"Usuario"
+  },
+  {
+    "id":6,
+    "Full Name":"Mauricio Muños",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"12/05/2003",
+    "Rol":"Gerente"
+  },
+  {
+    "id":7,
+    "Full Name":"Allyson Zurita",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"19/05/2003",
+    "Rol":"Usuario"
+  },
+  {
+    "id":8,
+    "Full Name":"Mauricio Muños",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"12/05/2003",
+    "Rol":"Gerente"
+  },
+  {
+    "id":9,
+    "Full Name":"Allyson Zurita",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"19/05/2003",
+    "Rol":"Usuario"
+  },
+  {
+    "id":10,
+    "Full Name":"Mauricio Muños",
+    "Email":"test@email.com",
+    "Fecha Ingreso":"12/05/2003",
+    "Rol":"Gerente"
+  }
+]
