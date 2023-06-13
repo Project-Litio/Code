@@ -1,9 +1,11 @@
+from urllib import response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.backends import ModelBackend
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.mail import send_mail
 from django.db import transaction
 from .models import *
 from .serializers import *
@@ -58,3 +60,16 @@ class CustomerLogin(APIView):
         else:
             logout(request)
             return Response({"detail":"invalid user"})
+
+class otpLogin(APIView):
+    def post(self, request):
+        data = self.request.data
+        message = 'Tu código de verificación es: ' + str(data['code'])
+        email = data['email']
+        send_mail(
+            'Litio - Tu código de verificación de dos pasos',
+            message,
+            'settings.EMAIL_HOST_USER',
+            [email],
+            fail_silently=False)
+        return Response({"detail":str(data['code'])})

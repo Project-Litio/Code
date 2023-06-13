@@ -11,3 +11,7 @@ export const getCustomers = () => {
 export const login = (data) => {
     return loginApi.post('/customer/login',data)
 };
+
+export const otpLogin = (data) => {
+    return loginApi.post('/customer/otp',data)
+};

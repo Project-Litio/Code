@@ -274,7 +274,7 @@ font-size: 2em;
     margin-top: 10%;
   }
 
-  .btn{
+  #entrar{
     margin-left: 29vw;
     position: absolute;
   }
@@ -300,7 +300,7 @@ font-size: 2em;
     margin-top: 10%;
   }
 
-  .btn{
+  #entrar{
     margin-left: 33vw;
     position: absolute;
   }
@@ -326,7 +326,7 @@ font-size: 2em;
     margin-top: 10%;
   }
 
-  .btn{
+  #entrar{
     margin-left: 35vw;
     position: absolute;
     transform: scale(1.7);
@@ -349,6 +349,26 @@ font-size: 2em;
 
   .form-control{
     height: 70px;
+  }
+
+  .col p{
+    font-size: 36px;
+  }
+
+  .col input{
+    font-size: 30px;
+  }
+
+  #borrar{
+    width: 20%;
+    height: 5vh;
+    font-size: 25px;
+  }
+
+  #verificar{
+    width: 30%;
+    height: 5vh;
+    font-size: 25px;
   }
 }
 
@@ -377,7 +397,7 @@ font-size: 2em;
     position: absolute;
   }
 
-  .btn{
+  #entrar{
     margin-left: 38%;
     position: relative;
   }
@@ -462,6 +482,47 @@ input:focus, textarea:focus, select:focus{
 #customform{
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+.sentTo{
+  color: #00B86B;
+  font-style: italic;
+}
+
+.cIngresado{
+  margin-bottom: 20%;
+}
+
+#borrar{
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border: none;
+}
+
+#verificar{
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: #00B86B;
+  border: none;
+}
+
+#verificar:hover{
+  background-color: #039257;
+}
+
+.col{
+  padding-top: 3%;
+}
+
+.col input{
+  width: 15%;
+  text-align: center;
+  height: 8vh;
+  border-radius: 20%;
+  margin-bottom: 5%;
+  margin-left: 2%;
+  border: none;
+  background-color: #1C2631;
 }
 
 .triangle {
