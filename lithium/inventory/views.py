@@ -16,14 +16,6 @@ class ArticleAPI(APIView):
         return Response(serializer.data)
 
 
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "success", "data": {"note": serializer.data}}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
 class ArticleDetailAPI(APIView):
     queryset = Article.objects.all()
     serializer_class = Article_Serializer
@@ -138,12 +130,13 @@ class CarDetailAPI(APIView):
     def delete(self, request, pk):
         car = self.get_car(pk)
 
-        if car == None:
+        if car == None: 
             return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        #articleNumber = car.id_article
-        #article = self.get_article(articleNumber)
+        articleNumber = car.id_article_id  # Retrieve the primary key of the associated article correctly
+        article = self.get_article(articleNumber)
 
+        #Se puede borrar el articulo y automáticamente se borra el vehículo
         car.delete()
         article.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
