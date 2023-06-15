@@ -113,7 +113,7 @@ class CarDetailAPI(APIView):
 
     def get(self, request, pk):
         car = self.get_car(pk=pk)
-        if Car == None:
+        if car == None:
             return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.serializer_class(car)
