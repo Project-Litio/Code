@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from inventory.models import Article, Car, Replacement
 from inventory.serializers import Article_Serializer, Car_Serializer, All_Car_Serializer
+import json
 #from datetime import datetime
 
 # Create your views here.
@@ -67,26 +68,31 @@ class CarAPI(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        article_data = request.data.get('id_article')  # Extract the article data
+        article_data = json.loads(request.data.get('id_article'))  # Extract the article data
+        if not isinstance(article_data, dict):
+            article_data = json.loads(article_data)
+
         car_data = request.data.copy()
         car_data.pop('id_article')  # Remove the article data from car data
 
         article_serializer = self.article_serializer(data=article_data)
         car_serializer = self.car_serializer(data=car_data)
 
-        if article_serializer.is_valid() and car_serializer.is_valid():
+        is_valid_article = article_serializer.is_valid()
+        is_valid_car = car_serializer.is_valid()
+
+        if is_valid_article and is_valid_car:
             article_instance = article_serializer.save()  # Save the Article instance
+            print(article_instance)
 
             # Set the article field of the Car instance to the saved Article instance
-            car_instance = car_serializer.save(id_article=article_instance)
+            car_serializer.save(id_article = article_instance)
 
             return Response({"status": "success", "data": {"car": car_serializer.data}}, status=status.HTTP_201_CREATED)
         else:
             errors = article_serializer.errors
             errors.update(car_serializer.errors)
             return Response({"status": "fail", "message": errors}, status=status.HTTP_400_BAD_REQUEST)
-
-
     
 
 class CarDetailAPI(APIView):
