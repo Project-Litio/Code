@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from inventory.models import Article, Car, Replacement
 from inventory.serializers import Article_Serializer, Car_Serializer, All_Car_Serializer
 import json
+import cloudinary.uploader
 #from datetime import datetime
 
 # Create your views here.
@@ -68,7 +69,7 @@ class CarAPI(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        article_data = json.loads(request.data.get('id_article'))  # Extract the article data
+        article_data = request.data.get('id_article')  # Extract the article data
         if not isinstance(article_data, dict):
             article_data = json.loads(article_data)
 
@@ -83,12 +84,12 @@ class CarAPI(APIView):
 
         if is_valid_article and is_valid_car:
             article_instance = article_serializer.save()  # Save the Article instance
-            print(article_instance)
 
-            # Set the article field of the Car instance to the saved Article instance
-            car_serializer.save(id_article = article_instance)
+            # Assign the associated article instance to the car instance
+            car_instance = car_serializer.save(id_article=article_instance)
 
             return Response({"status": "success", "data": {"car": car_serializer.data}}, status=status.HTTP_201_CREATED)
+            #https://res.cloudinary.com/dao5kgzkm/[Insert URL of image here]
         else:
             errors = article_serializer.errors
             errors.update(car_serializer.errors)

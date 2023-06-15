@@ -1,5 +1,8 @@
+import cloudinary
 from django.db import models
 from login.models import Branch
+from cloudinary.models import CloudinaryField
+
 
 # Create your models here.
 class Article(models.Model):
@@ -19,6 +22,8 @@ class Car(models.Model):
     model=models.CharField(max_length=50)
     wheel=models.CharField(max_length=20)
     price=models.IntegerField()
+    image = cloudinary.models.CloudinaryField(
+        folder='media/car_images/', overwrite=True, resource_type='', blank=True)
     id_article=models.ForeignKey(Article,on_delete=models.CASCADE)
 
 class Replacement(models.Model):

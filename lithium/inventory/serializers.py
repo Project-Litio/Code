@@ -14,7 +14,7 @@ class All_Car_Serializer(serializers.ModelSerializer):
 class Car_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Car
-        fields = ['id','brand','type','model','wheel','price']
+        fields = ['id','brand','type','model','wheel','price','image']
 
 class Replacement_Serializer(serializers.ModelSerializer):
   class Meta:
