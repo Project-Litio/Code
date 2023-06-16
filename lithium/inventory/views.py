@@ -129,6 +129,14 @@ class CarDetailAPI(APIView):
             car, data=request.data, partial=True)
 
         if serializer.is_valid():
+            image_file = request.FILES.get('image')
+
+            if image_file:
+                cloudinary.uploader.destroy(car.image.public_id)
+                result = cloudinary.uploader.upload(image_file)
+                car.image = result['url']
+                car.save()
+
             serializer.save()
             return Response({"status": "success", "data": {"car": serializer.data}})
         return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -139,6 +147,12 @@ class CarDetailAPI(APIView):
 
         if car == None: 
             return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        #Delete the image from Cloudinary
+        image_url = car.image
+        if image_url:
+            public_id = image_url.public_id  # Retrieve the public ID from the CloudinaryResource object
+            cloudinary.uploader.destroy(public_id)  # Delete the image from Cloudinary
         
         articleNumber = car.id_article_id  # Retrieve the primary key of the associated article correctly
         article = self.get_article(articleNumber)
