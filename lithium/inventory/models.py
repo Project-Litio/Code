@@ -3,7 +3,6 @@ from django.db import models
 from login.models import Branch
 from cloudinary.models import CloudinaryField
 
-
 # Create your models here.
 class Article(models.Model):
     id=models.AutoField(primary_key=True)
