@@ -235,7 +235,7 @@ class ReplacementDetailAPI(APIView):
         if replacement == None:
             return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.all_article_serializer(replacement)
+        serializer = self.all_replacement_serializer(replacement)
         return Response({"status": "success", "data": {"replacement": serializer.data}})
 
     def patch(self, request, pk):
