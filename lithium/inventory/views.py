@@ -174,12 +174,13 @@ class CarDetailAPI(APIView):
 
 
 class ReplacementAPI(APIView):
+    article_serializer = Article_Serializer
     replacement_serializer = Replacement_Serializer
     all_replacement_serializer = All_Replacement_Serializer
     article_serializer = Article_Serializer
 
     def get(self, request):
-        queryset = Article.objects.all()
+        queryset = Replacement.objects.all()
         serializer = self.all_replacement_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -192,10 +193,10 @@ class ReplacementAPI(APIView):
         replacement_data.pop('id_article') #Remove the article data from replacement data
 
         article_serializer = self.article_serializer(data=article_data)
-        replacement_serializer = self.replacement_serializer(data=article_data)
+        replacement_serializer = self.replacement_serializer(data=replacement_data)
 
         is_valid_article = article_serializer.is_valid()
-        is_valid_replacement = article_serializer.is_valid()
+        is_valid_replacement = replacement_serializer.is_valid()
 
         if is_valid_article and is_valid_replacement:
             article_instance = article_serializer.save() #Save the Article instance
@@ -203,7 +204,7 @@ class ReplacementAPI(APIView):
             #Assign the associated article instance to the replacement instance
             replacement_instance = replacement_serializer.save(id_article=article_instance)
 
-            return Response({"status": "success", "data": {"car": replacement_serializer.data}}, status=status.HTTP_201_CREATED)
+            return Response({"status": "success", "data": {"Replacement": replacement_serializer.data}}, status=status.HTTP_201_CREATED)
 
         else:
             errors = article_serializer.errors
@@ -252,7 +253,7 @@ class ReplacementDetailAPI(APIView):
                 article_data = json.loads(article_data)
 
             if not article_data == None:
-                article = Article.objects.get(pk=car.id_article_id)
+                article = Article.objects.get(pk=replacement.id_article_id)
                 if article == None:
                     return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -270,12 +271,12 @@ class ReplacementDetailAPI(APIView):
         return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        replacement = self.get_car(pk)
+        replacement = self.get_replacement(pk)
 
         if replacement == None:
             return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        articleNumber = car.id_article_id #Retrieve the primary key of the associated article correctly
+        articleNumber = replacement.id_article_id #Retrieve the primary key of the associated article correctly
         article = self.get_article(articleNumber)
 
         #The article is deleted together with the replacement
