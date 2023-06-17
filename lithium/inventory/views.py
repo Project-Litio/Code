@@ -36,20 +36,6 @@ class ArticleDetailAPI(APIView):
         serializer = self.serializer_class(article)
         return Response({"status": "success", "data": {"article": serializer.data}})
 
-    def patch(self, request, pk):
-        print(pk)
-        article = self.get_article(pk)
-        if article == None:
-            return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = self.serializer_class(
-            article, data=request.data, partial=True)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "success", "data": {"article": serializer.data}})
-        return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
     def delete(self, request, pk):
         article = self.get_article(pk)
         if article == None:
@@ -226,8 +212,10 @@ class ReplacementAPI(APIView):
 
 
 class ReplacementDetailAPI(APIView):
+    article_serializer = Article_Serializer
+    replacement_serializer = Replacement_Serializer
+    all_replacement_serializer = All_Replacement_Serializer
     queryset = Replacement.objects.all()
-    serializer_class = Article_Serializer
 
     def get_replacement(self, pk):
         try:
@@ -246,7 +234,7 @@ class ReplacementDetailAPI(APIView):
         if replacement == None:
             return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.serializer_class(replacement)
+        serializer = self.all_article_serializer(replacement)
         return Response({"status": "success", "data": {"replacement": serializer.data}})
 
     def patch(self, request, pk):
@@ -254,10 +242,29 @@ class ReplacementDetailAPI(APIView):
         if replacement == None:
             return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = self.serializer_class(
+        serializer = self.article_serializer(
             replacement, data=request.data, partial=True)
 
         if serializer.is_valid():
+            #If there's an id_article---------------------------------------------------------------------------------------------------------
+            article_data = request.data.get('id_article') #If it doesn't exist, it returns "None"
+            if not isinstance(article_data, dict):
+                article_data = json.loads(article_data)
+
+            if not article_data == None:
+                article = Article.objects.get(pk=car.id_article_id)
+                if article == None:
+                    return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+                serializer = self.article_serializer(
+                    article, data=article_data, partial=True)
+                
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({"status": "success", "data": {"article": serializer.data}})
+                return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+            #Save the rest of the data input for the Replacement--------------------------------------------------------------------------------
             serializer.save()
             return Response({"status": "success", "data": {"replacement": serializer.data}})
         return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
