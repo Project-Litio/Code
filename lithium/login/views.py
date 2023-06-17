@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from django.db import transaction
+from rest_framework import status
 from .models import *
 from .serializers import *
 
@@ -38,6 +39,38 @@ class CustomerAPI(APIView):
 
         return Response({'resp':"done"})
 
+class CustomerDetailAPI(APIView):
+    queryset = Customer.objects.all()
+    serializer_class = Customer_Serializer
+
+    def get_customer(self, pk):
+        try:
+            return Customer.objects.get(pk=pk)
+        except:
+            return None
+
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except:
+            return None
+
+    def get(self, request, pk):
+        customer = self.get_customer(pk=pk)
+        if customer == None:
+            return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.serializer_class(customer)
+        return Response({"status": "success", "data": {"Customer": serializer.data}})
+
+    def delete(self, request, pk):
+        customer = self.get_customer(pk)
+        if customer  == None:
+            return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        customer.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         UserModel = get_user_model()
@@ -60,6 +93,11 @@ class CustomerLogin(APIView):
         else:
             logout(request)
             return Response({"detail":"invalid user"})
+
+class CustomerLogout(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({"detail":"Logout successful"})
 
 class otpLogin(APIView):
     def post(self, request):

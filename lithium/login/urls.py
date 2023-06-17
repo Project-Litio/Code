@@ -4,5 +4,6 @@ from .views import *
 urlpatterns = [
     path('customer',CustomerAPI.as_view(),name="customer"),
     path('customer/login',CustomerLogin.as_view(),name='customer_login'),
-    path('customer/otp',otpLogin.as_view(),name='customer_otp')
+    path('customerDetail/<str:pk>',CustomerDetailAPI.as_view(),name="customer_detail"),
+    path('customer/otp',otpLogin.as_view(),name='customer_otp'),
 ]
