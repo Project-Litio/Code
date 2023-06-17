@@ -37,6 +37,7 @@ class ArticleDetailAPI(APIView):
         return Response({"status": "success", "data": {"article": serializer.data}})
 
     def patch(self, request, pk):
+        print(pk)
         article = self.get_article(pk)
         if article == None:
             return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -97,8 +98,10 @@ class CarAPI(APIView):
     
 
 class CarDetailAPI(APIView):
+    article_serializer = Article_Serializer
+    car_serializer = Car_Serializer
+    all_car_serializer = All_Car_Serializer
     queryset = Car.objects.all()
-    serializer_class = Car_Serializer
 
     def get_car(self, pk):
         try:
@@ -117,7 +120,7 @@ class CarDetailAPI(APIView):
         if car == None:
             return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.serializer_class(car)
+        serializer = self.all_car_serializer(car)
         return Response({"status": "success", "data": {"car": serializer.data}})
 
     def patch(self, request, pk):
@@ -125,10 +128,11 @@ class CarDetailAPI(APIView):
         if car == None:
             return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = self.serializer_class(
+        serializer = self.car_serializer(
             car, data=request.data, partial=True)
 
         if serializer.is_valid():
+            #If there's an image--------------------------------------------------------------------------------------------------------------
             image_file = request.FILES.get('image')
 
             if image_file:
@@ -137,8 +141,28 @@ class CarDetailAPI(APIView):
                 car.image = result['url']
                 car.save()
 
+            #If there's an id_article---------------------------------------------------------------------------------------------------------
+            article_data = request.data.get('id_article') #If it doesn't exist, it returns "None"
+            if not isinstance(article_data, dict):
+                article_data = json.loads(article_data)
+
+            if not article_data == None:
+                article = Article.objects.get(pk=car.id_article_id)
+                if article == None:
+                    return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+                serializer = self.article_serializer(
+                    article, data=article_data, partial=True)
+                
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({"status": "success", "data": {"article": serializer.data}})
+                return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+            #Save the rest of the data input for the car--------------------------------------------------------------------------------------
             serializer.save()
             return Response({"status": "success", "data": {"car": serializer.data}})
+
         return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
