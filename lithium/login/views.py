@@ -62,13 +62,39 @@ class CustomerDetailAPI(APIView):
         
         serializer = self.serializer_class(customer)
         return Response({"status": "success", "data": {"Customer": serializer.data}})
-
+    
+    def patch(self, request, pk):
+        customer = self.get_customer(pk=pk)
+        if customer == None:
+            return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        #Modifying the user------------------------------------------------------------------------------------------------------
+        user = customer.id_user
+        user.first_name = request.data.get('name',user.first_name)
+        user.last_name = request.data.get('last_name',user.last_name)
+        user.email = request.data.get('email',user.email)
+        user.username = user.first_name + ' ' + user.last_name
+        user.set_password(request.data.get('password', ''))
+        user.save()
+    
+        #Modifying the customer---------------------------------------------------------------------------------------------------
+        serializer = self.serializer_class(customer, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
     def delete(self, request, pk):
         customer = self.get_customer(pk)
         if customer  == None:
             return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
+        id_user = customer.id_user_id
+        user = self.get_user(id_user)
+
         customer.delete()
+        user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class EmailBackend(ModelBackend):
