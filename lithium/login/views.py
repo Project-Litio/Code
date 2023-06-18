@@ -16,8 +16,18 @@ from .serializers import *
 class CustomerAPI(APIView):
     def get(self,request):
         queryset = Customer.objects.all()
-        serializers = Customer_Serializer(queryset,many=True)
-        return Response(serializers.data)
+        fullset = []
+        for c in queryset:
+            query = {"id":c.id,
+             "first_name":c.id_user.first_name,
+             "last_name":c.id_user.last_name,
+             "email":c.id_user.email,
+             "address":c.address,
+             "phone":c.phone,
+             "type":c.type}
+            fullset.append(query)
+        
+        return Response(fullset)
     
     def post(self,request):
         data = self.request.data
