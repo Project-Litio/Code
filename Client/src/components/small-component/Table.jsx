@@ -8,7 +8,10 @@ import {makeStyles} from '@material-ui/core/styles'
 const useStyles = makeStyles((theme) => ({
   modal: {
     position: 'absolute',
-    width: 500,
+    width: {
+      sm:300,
+      md:500
+    },
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
