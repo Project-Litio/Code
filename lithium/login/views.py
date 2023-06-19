@@ -27,7 +27,7 @@ class CustomerAPI(APIView):
              "type":c.type}
             fullset.append(query)
         
-        return Response(fullset)
+        return Response({"status":"success","data":fullset})
     
     def post(self,request):
         data = self.request.data
@@ -47,7 +47,7 @@ class CustomerAPI(APIView):
                                 id_user=last_user)
             customer.save()
 
-        return Response({'resp':"done"})
+        return Response({"status":"success","message":f"Customer {customer.id_user.first_name} was created"})
 
 class CustomerDetailAPI(APIView):
     queryset = Customer.objects.all()
@@ -59,19 +59,19 @@ class CustomerDetailAPI(APIView):
         except:
             return None
 
-    def get_user(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except:
-            return None
-
     def get(self, request, pk):
         customer = self.get_customer(pk=pk)
         if customer == None:
             return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = self.serializer_class(customer)
-        return Response({"status": "success", "data": {"Customer": serializer.data}})
+        data = {"id":customer.id,
+             "first_name":customer.id_user.first_name,
+             "last_name":customer.id_user.last_name,
+             "email":customer.id_user.email,
+             "address":customer.address,
+             "phone":customer.phone,
+             "type":customer.type}
+        return Response({"status": "success", "data": data})
     
     def patch(self, request, pk):
         customer = self.get_customer(pk=pk)
@@ -79,33 +79,40 @@ class CustomerDetailAPI(APIView):
             return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
         #Modifying the user------------------------------------------------------------------------------------------------------
-        user = customer.id_user
-        user.first_name = request.data.get('name',user.first_name)
-        user.last_name = request.data.get('last_name',user.last_name)
-        user.email = request.data.get('email',user.email)
-        user.username = user.first_name + ' ' + user.last_name
-        user.set_password(request.data.get('password', ''))
-        user.save()
-    
-        #Modifying the customer---------------------------------------------------------------------------------------------------
-        serializer = self.serializer_class(customer, data=request.data, partial=True)
+        with transaction.atomic():
+            user = customer.id_user
+            user.first_name = request.data.get('name',user.first_name)
+            user.last_name = request.data.get('last_name',user.last_name)
+            user.email = request.data.get('email',user.email)
+            user.username = user.first_name + ' ' + user.last_name
+            user.set_password(request.data.get('password', ''))
+            user.save()
+        
+            #Modifying the customer---------------------------------------------------------------------------------------------------
+            serializer = self.serializer_class(customer, data=request.data, partial=True)
+            data = {"id":customer.id,
+             "first_name":customer.id_user.first_name,
+             "last_name":customer.id_user.last_name,
+             "email":customer.id_user.email,
+             "address":customer.address,
+             "phone":customer.phone,
+             "type":customer.type}
+        
         if serializer.is_valid():
             serializer.save()
-            return Response({"status": "success", "data": serializer.data})
+            return Response({"status": "success"})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+            
     def delete(self, request, pk):
-        customer = self.get_customer(pk)
-        if customer  == None:
-            return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        id_user = customer.id_user_id
-        user = self.get_user(id_user)
-
-        customer.delete()
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        with transaction.atomic():
+            customer = self.get_customer(pk)
+            user = customer.id_user
+            if customer  == None:
+                return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
