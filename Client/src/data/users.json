@@ -1,72 +1,72 @@
 [
   {
     "id":1,
-    "Full Name":"Allyson Zurita",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"19/05/2003",
-    "Rol":"Usuario"
+    "name":"Allyson Zurita",
+    "email":"test@email.com",
+    "recruitment_date":"19/05/2003",
+    "rol":"Usuario"
   },
   {
     "id":2,
-    "Full Name":"Mauricio Muños",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"12/05/2003",
-    "Rol":"Gerente"
+    "name":"Mauricio Muños",
+    "email":"test@email.com",
+    "recruitment_date":"12/05/2003",
+    "rol":"Gerente"
   },
   {
     "id":3,
-    "Full Name":"juan Zurita",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"19/05/2003",
-    "Rol":"Usuario"
+    "name":"juan Zurita",
+    "email":"test@email.com",
+    "recruitment_date":"19/05/2003",
+    "rol":"Usuario"
   },
   {
     "id":4,
-    "Full Name":"Mauricio jimenez",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"12/05/2003",
-    "Rol":"Gerente"
+    "name":"Mauricio jimenez",
+    "email":"test@email.com",
+    "recruitment_date":"12/05/2003",
+    "rol":"Gerente"
   },
   {
     "id":5,
-    "Full Name":"Allyson Zurita",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"19/05/2003",
-    "Rol":"Usuario"
+    "name":"Allyson Zurita",
+    "email":"test@email.com",
+    "recruitment_date":"19/05/2003",
+    "rol":"Usuario"
   },
   {
     "id":6,
-    "Full Name":"Mauricio Muños",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"12/05/2003",
-    "Rol":"Gerente"
+    "name":"Mauricio Muños",
+    "email":"test@email.com",
+    "recruitment_date":"12/05/2003",
+    "rol":"Gerente"
   },
   {
     "id":7,
-    "Full Name":"Allyson Zurita",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"19/05/2003",
-    "Rol":"Usuario"
+    "name":"Allyson Zurita",
+    "email":"test@email.com",
+    "recruitment_date":"19/05/2003",
+    "rol":"Usuario"
   },
   {
     "id":8,
-    "Full Name":"Mauricio Muños",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"12/05/2003",
-    "Rol":"Gerente"
+    "name":"Mauricio Muños",
+    "email":"test@email.com",
+    "recruitment_date":"12/05/2003",
+    "rol":"Gerente"
   },
   {
     "id":9,
-    "Full Name":"Allyson Zurita",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"19/05/2003",
-    "Rol":"Usuario"
+    "name":"Allyson Zurita",
+    "email":"test@email.com",
+    "recruitment_date":"19/05/2003",
+    "rol":"Usuario"
   },
   {
     "id":10,
-    "Full Name":"Mauricio Muños",
-    "Email":"test@email.com",
-    "Fecha Ingreso":"12/05/2003",
-    "Rol":"Gerente"
+    "name":"Mauricio Muños",
+    "email":"test@email.com",
+    "recruitment_date":"12/05/2003",
+    "rol":"Gerente"
   }
 ]
