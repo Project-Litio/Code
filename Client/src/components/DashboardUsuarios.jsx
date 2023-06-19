@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,12 +14,12 @@ import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
-import Orders from './Users';
+import TableUSers from './small-component/Table';
+import {getCustomers} from '../api/login.api'
 
 const drawerWidth = 240;
 
@@ -113,6 +113,19 @@ export default function DashboardUsuarios() {
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
+  const [usersReg, setUsers] = useState([]);
+  const [load, setLoad] = useState(true);
+  const loaded = async () => {
+    if(load){
+      setLoad(false);
+      const result = await getCustomers();
+      console.log(result.data.data);
+      setUsers(result.data.data);
+    }
+  };
+
+  loaded();
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -128,7 +141,7 @@ export default function DashboardUsuarios() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Dashboard Ventas
+            Dashboard Usuarios
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
@@ -158,11 +171,9 @@ export default function DashboardUsuarios() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* Chart */}
-            {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Orders />
+                <TableUSers users={usersReg} />
               </Paper>
             </Grid>
           </Grid>
