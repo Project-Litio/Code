@@ -3,6 +3,7 @@ import {React,useEffect,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
+import {customerEdit, customerDelete, customerCreate} from '../../api/login.api'
 import TablePagination from "@material-ui/core/TablePagination";
 
 
@@ -36,7 +37,6 @@ const TableUSers = ({users}) => {
   //--LLamado a Styles
   const styles = useStyles();
   //--Estados
-  const [data,setData]=useState([]);
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
@@ -50,11 +50,14 @@ const TableUSers = ({users}) => {
 
 
   const [selectedUser,setSelectedUser]=useState({
-    name:'',
+    first_name:'',
+    last_name:'',
     email:'',
+    password:'',
     id:'',
-    recruitment_date:'',
-    rol:''
+    address:'',
+    phone:'',
+    type:''
   });
 
 
@@ -66,7 +69,6 @@ const TableUSers = ({users}) => {
         [name]:value
       })
     )
-    console.log(selectedUser);
   }
 
   const handleChangePage = (event, newPage) => {
@@ -90,18 +92,36 @@ const TableUSers = ({users}) => {
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
 
+  const deleteUser = async () => {
+    await customerDelete(selectedUser, selectedUser.id);
+    window.location.reload(false);
+  }
+
+  const editUser = async () => {
+    await customerEdit(selectedUser, selectedUser.id);
+    window.location.reload(false);
+  }
+
+  const createUser = async () => {
+    await customerCreate(selectedUser);
+    window.location.reload(false);
+  }
+
   //--Fin de Estados
   //--Componentes especificos
   const insertBody=(
     <div className={styles.modal}>
-      <h3>Agregar Nueva Usuario</h3>
-      <TextField name='nombre' className={styles.inputMaterial} label="Nombre" onChange={handleChange}></TextField>
+      <h3>Agregar Nuevo Usuario</h3>
+      <TextField name='first_name' className={styles.inputMaterial} label="Nombre" onChange={handleChange}></TextField>
+      <TextField name='last_name' className={styles.inputMaterial} label="Apellido" onChange={handleChange}></TextField>
       <TextField name='email' className={styles.inputMaterial} label="Email" onChange={handleChange}></TextField>
-      <TextField name='id' className={styles.inputMaterial} label="Identicador"></TextField>
-      <TextField name='recruitment_date' className={styles.inputMaterial} label="Activo Desde" onChange={handleChange}></TextField>
-      <TextField name='rol' className={styles.inputMaterial} label="Rol" onChange={handleChange}></TextField>
+      <TextField name='password' className={styles.inputMaterial} label="Password" onChange={handleChange}></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange}></TextField>
+      <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange}></TextField>
+      <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange}></TextField>
+      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
       <div align="right">
-      <Button color="primary" onClick={()=>handleChange()}>Insertar</Button>
+      <Button color="primary" onClick={createUser}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
       </div>
     </div>
@@ -110,13 +130,15 @@ const TableUSers = ({users}) => {
     const EditBody=(
     <div className={styles.modal}>
       <h3>Editar Usuario</h3>
-      <TextField name='nombre' className={styles.inputMaterial} label="Nombre" onChange={handleChange} value={selectedUser?.name || ''}></TextField>
-      <TextField name='email' className={styles.inputMaterial} label="Email" onChange={handleChange} value={selectedUser && selectedUser.email} ></TextField>
-      <TextField name='id' className={styles.inputMaterial} label="Identicador" value={selectedUser && selectedUser.id}></TextField>
-      <TextField name='recruitment_date' className={styles.inputMaterial} label="Activo Desde" onChange={handleChange} value={selectedUser && selectedUser.recruitment_date}></TextField>
-      <TextField name='rol' className={styles.inputMaterial} label="Rol" onChange={handleChange} value={selectedUser && selectedUser.rol}></TextField>
+      <TextField name='first_name' className={styles.inputMaterial} label="Nombre" onChange={handleChange} defaultValue={selectedUser && selectedUser.first_name}></TextField>
+      <TextField name='last_name' className={styles.inputMaterial} label="Apellido" onChange={handleChange} defaultValue={selectedUser && selectedUser.last_name}></TextField>
+      <TextField name='email' className={styles.inputMaterial} label="Email" onChange={handleChange} defaultValue={selectedUser && selectedUser.email} ></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedUser && selectedUser.id}></TextField>
+      <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange} defaultValue={selectedUser && selectedUser.address}></TextField>
+      <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange} defaultValue={selectedUser && selectedUser.phone}></TextField>
+      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedUser && selectedUser.type}></TextField>
       <div align="right">
-      <Button color="primary" onClick={()=>handleChange()}>Editar</Button>
+      <Button color="primary" onClick={editUser}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
       </div>
     </div>
@@ -124,9 +146,9 @@ const TableUSers = ({users}) => {
 
   const DeleteBody=(
     <div className={styles.modal}>
-      <p>Estas seguro que deseas eliminar el usuario {selectedUser && selectedUser.name}?</p>
+      <p>Estas seguro que deseas eliminar el usuario {selectedUser && selectedUser.first_name}?</p>
       <div align="right">
-      <Button color="secondary" onClick={()=>handleChange()}>Si</Button>
+      <Button color="secondary" onClick={deleteUser}>Si</Button>
       <Button onClick={()=>openCloseDeleteModal()}>No</Button>
       </div>
 
@@ -134,16 +156,12 @@ const TableUSers = ({users}) => {
 
   )
 
-
-
   //--Fin componentes no especificos
 
 
-  
   return (
     <div>
       <div className='text-center'>
-        
       <Button onClick={()=>openCloseIsertModal()}>
         Insertar
       </Button>
@@ -153,21 +171,25 @@ const TableUSers = ({users}) => {
           <TableHead>
             <TableRow>
             <TableCell>Nombre</TableCell>
+            <TableCell>Apellido</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Identificador</TableCell>
-            <TableCell>Activo Desde</TableCell>
-            <TableCell>Rol</TableCell>
+            <TableCell>Direccion</TableCell>
+            <TableCell>Telefono</TableCell>
+            <TableCell>Tipo</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user=>
               (
                 <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.first_name}</TableCell>
+                  <TableCell>{user.last_name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.id}</TableCell>
-                  <TableCell>{user.recruitment_date}</TableCell>
-                  <TableCell>{user.rol}</TableCell>
+                  <TableCell>{user.address}</TableCell>
+                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>{user.type}</TableCell>
                   <TableCell>
                     <Edit className={styles.iconos} onClick={()=>selectUser(user,'Editar')}  />
                     &nbsp;&nbsp;&nbsp;
@@ -194,7 +216,6 @@ const TableUSers = ({users}) => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
       </TableContainer>
-
 
       <Modal open={InsertModal} onClose={()=>openCloseIsertModal()} >
         {insertBody}

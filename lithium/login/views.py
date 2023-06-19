@@ -32,10 +32,10 @@ class CustomerAPI(APIView):
     def post(self,request):
         data = self.request.data
         with transaction.atomic():
-            username = data['name'] + "." + data['last_name']
+            username = data['first_name'] + "." + data['last_name']
             user = User.objects.create_user(username=username,password=data['password'],
                                             email=data['email'],
-                                            first_name=data['name'],
+                                            first_name=data['first_name'],
                                             last_name=data['last_name'])
             user.save()
             last_user = User.objects.last()
@@ -81,7 +81,7 @@ class CustomerDetailAPI(APIView):
         #Modifying the user------------------------------------------------------------------------------------------------------
         with transaction.atomic():
             user = customer.id_user
-            user.first_name = request.data.get('name',user.first_name)
+            user.first_name = request.data.get('first_name',user.first_name)
             user.last_name = request.data.get('last_name',user.last_name)
             user.email = request.data.get('email',user.email)
             user.username = user.first_name + ' ' + user.last_name
@@ -100,7 +100,7 @@ class CustomerDetailAPI(APIView):
         
         if serializer.is_valid():
             serializer.save()
-            return Response({"status": "success"})
+            return Response({"status": "success", "data": data})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
