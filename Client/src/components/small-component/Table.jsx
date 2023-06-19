@@ -3,6 +3,8 @@ import {React,useEffect,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
+import TablePagination from "@material-ui/core/TablePagination";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -43,6 +45,9 @@ const TableUSers = ({users}) => {
   const openCloseEditModal=()=>{setEditModal(!EditModal); }
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
 
   const [selectedUser,setSelectedUser]=useState({
     name:'',
@@ -63,6 +68,18 @@ const TableUSers = ({users}) => {
     )
     console.log(selectedUser);
   }
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, users.length - page * rowsPerPage);
 
 
   const selectUser=(user, caso)=>{
@@ -143,7 +160,7 @@ const TableUSers = ({users}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map(user=>
+            {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user=>
               (
                 <TableRow key={user.id}>
                   <TableCell>{user.name}</TableCell>
@@ -159,8 +176,23 @@ const TableUSers = ({users}) => {
                 </TableRow>
               )
               )}
+
+          {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+          )}
           </TableBody>
         </Table>
+        <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={users.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       </TableContainer>
 
 
