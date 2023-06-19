@@ -7,20 +7,18 @@ class Branch(models.Model):
     city=models.CharField(max_length=20)
 
 class Employee(models.Model):
+    ROLE_TYPES = [
+        ("Man","Manager"),
+        ("Sel","Seller"),
+        ("Mec","Mecanic")
+    ]
+    
     id=models.CharField(primary_key=True,max_length=20)
     address=models.CharField(max_length=30)
     phone=models.CharField(max_length=12)
+    role=models.CharField(max_length=5,choices=ROLE_TYPES)
     id_user=models.OneToOneField(User,on_delete=models.CASCADE)
     id_branch=models.ForeignKey(Branch,on_delete=models.SET_NULL,null=True)
-
-class Manager(models.Model):
-    id_employee=models.ForeignKey(Employee,on_delete=models.CASCADE)
-
-class Mecanic(models.Model):
-    id_employee=models.ForeignKey(Employee,on_delete=models.CASCADE)
-
-class Saleman(models.Model):
-    id_employee=models.ForeignKey(Employee,on_delete=models.CASCADE)
 
 class Customer(models.Model):
     CUSTOMER_TYPES = [
