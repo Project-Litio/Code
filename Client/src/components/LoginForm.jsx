@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import {getCustomers,login, otpLogin} from '../api/login.api'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useSelector} from 'react-redux';
 
 function LoginForm() {
   const navigateTo = useNavigate();
@@ -28,6 +29,9 @@ function LoginForm() {
   const getRandomPin = (chars, len)=>[...Array(len)].map(
     (i)=>chars[Math.floor(Math.random()*chars.length)]
  ).join('');
+
+  const authState = useSelector(state => state.auth);
+  console.log(authState);
 
   const {register, handleSubmit} = useForm();
   const [coderesult, setCode] = useState(null);

@@ -32,11 +32,11 @@ class CustomerAPI(APIView):
     def post(self,request):
         data = self.request.data
         with transaction.atomic():
-            username = data['name'] + "." + data['last_name']
+            username = data['first_name'] + "." + data['last_name']
             user = User.objects.create_user(username=username,
                                             password=data['password'],
                                             email=data['email'],
-                                            first_name=data['name'],
+                                            first_name=data['first_name'],
                                             last_name=data['last_name'])
             user.save()
             last_user = User.objects.last()
