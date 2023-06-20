@@ -10,8 +10,7 @@ import {getCustomers,login, otpLogin} from '../api/login.api'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import {useSelector, useDispatch} from 'react-redux';
-import {loginUser} from '../features/auth/authSlice'
+import Cookies from 'universal-cookie';
 
 function LoginForm() {
   const navigateTo = useNavigate();
@@ -32,20 +31,16 @@ function LoginForm() {
     (i)=>chars[Math.floor(Math.random()*chars.length)]
  ).join('');
 
-  const authState = useSelector(state => state.auth);
-  console.log(authState);
-  const dispatch = useDispatch();
-
   const {register, handleSubmit} = useForm();
   const [coderesult, setCode] = useState(null);
   const [correo, setCorreo] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [user, setUser] = useState(null);
   const onSubmit = handleSubmit(async data => {
     try {
       const result = await login(data);
       if(!(result.data.data == undefined)){
         setCorreo(data.email);
-        setPassword(data.password)
+        setUser(result.data.data)
         const resultEmail = await otpLogin({email: data.email, code: getRandomPin('0123456789', 4)});
         setCode(resultEmail.data.detail)
         toggleSecond();
@@ -88,8 +83,12 @@ function LoginForm() {
 
   const checkCode = () => {
     if(otp.join("") == coderesult){
-      const data = {"email": correo, "password":password}
-      dispatch(loginUser(data))
+      const cookies = new Cookies();
+      cookies.set('user', user, {
+        path: '/',
+        sameSite: 'None',
+        secure: true,
+      });
       navigateTo('/dashboard')
     } else {
       notifyCode();

@@ -174,9 +174,8 @@ class CustomerLogin(APIView):
         user = authenticate(username=data['email'],password=data['password'])
         if user is not None:
             login(request,user)
-
-            if(Customer.objects.filter(id_user=user.id) == 0):
-                customer = Customer.objects.filter(id_user=user.id)[0]
+            if(len(Customer.objects.filter(id_user=user.id)) == 1):    
+                customer = Customer.objects.filter(id_user=user.id)[0]       
                 data = {"id":customer.id,
                 "first_name":customer.id_user.first_name,
                 "last_name":customer.id_user.last_name,
