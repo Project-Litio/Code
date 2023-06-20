@@ -22,7 +22,14 @@ import Chart from './dashboardComponents/Chart';
 import Deposits from './dashboardComponents/Deposits';
 import Orders from './dashboardComponents/Orders';
 
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies()
+
+console.log(cookies.get('user'))
+
 const drawerWidth = 240;
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
