@@ -174,7 +174,28 @@ class CustomerLogin(APIView):
         user = authenticate(username=data['email'],password=data['password'])
         if user is not None:
             login(request,user)
-            return Response({"data":user.id})
+
+            if(Customer.objects.filter(id_user=user.id) == 0):
+                customer = Customer.objects.filter(id_user=user.id)[0]
+                data = {"id":customer.id,
+                "first_name":customer.id_user.first_name,
+                "last_name":customer.id_user.last_name,
+                "email":customer.id_user.email,
+                "address":customer.address,
+                "phone":customer.phone,
+                "type":customer.type}
+            else:
+                emp = Employee.objects.filter(id_user=user.id)[0]
+                data = {"id":emp.id,
+                "first_name":emp.id_user.first_name,
+                "last_name":emp.id_user.last_name,
+                "email":emp.id_user.email,
+                "address":emp.address,
+                "phone":emp.phone,
+                "role":emp.role,
+                "branch":emp.id_branch.id}
+
+            return Response({"data":data})
         else:
             logout(request)
             return Response({"detail":"invalid user"})
