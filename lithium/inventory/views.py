@@ -57,7 +57,7 @@ class CarAPI(APIView):
 
     def post(self, request):
         article_data = request.data.get('id_article')  # Extract the article data
-        if not isinstance(article_data, dict):
+        if (not isinstance(article_data, dict) and article_data != None):
             article_data = json.loads(article_data)
 
         car_data = request.data.copy()
@@ -129,7 +129,7 @@ class CarDetailAPI(APIView):
 
             #If there's an id_article---------------------------------------------------------------------------------------------------------
             article_data = request.data.get('id_article') #If it doesn't exist, it returns "None"
-            if not isinstance(article_data, dict):
+            if (not isinstance(article_data, dict) and article_data != None):
                 article_data = json.loads(article_data)
 
             if not article_data == None:
@@ -186,7 +186,7 @@ class ReplacementAPI(APIView):
 
     def post(self, request):
         article_data = request.data.get('id_article') #Extract the article data
-        if not isinstance(article_data, dict):
+        if (not isinstance(article_data, dict) and article_data != None):
             article_data = json.loads(article_data)
         
         replacement_data = request.data.copy()
@@ -249,7 +249,7 @@ class ReplacementDetailAPI(APIView):
         if serializer.is_valid():
             #If there's an id_article---------------------------------------------------------------------------------------------------------
             article_data = request.data.get('id_article') #If it doesn't exist, it returns "None"
-            if not isinstance(article_data, dict):
+            if (not isinstance(article_data, dict) and article_data != None):
                 article_data = json.loads(article_data)
 
             if not article_data == None:
