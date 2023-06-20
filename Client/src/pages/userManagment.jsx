@@ -1,5 +1,5 @@
 import React from 'react'
-import Table from '../components/small-component/Table'
+import TableUSers from '../components/small-component/Table'
 import data from '../data/users.json'
 const t =data
 const userManagment = () => {
@@ -9,7 +9,7 @@ const userManagment = () => {
         <h2>Gestion de Usuarios</h2>
       </div>
       <div className='container py-5'>
-      <Table users={data} ></Table>
+      <TableUSers users={data} ></TableUSers>
       </div>
     </div>
   )

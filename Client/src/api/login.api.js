@@ -15,3 +15,15 @@ export const login = (data) => {
 export const otpLogin = (data) => {
     return loginApi.post('/customer/otp',data)
 };
+
+export const customerEdit = (data, pk) => {
+    return loginApi.patch('customerDetail/'+pk, data)
+};
+
+export const customerDelete = (data, pk) => {
+    return loginApi.delete('customerDetail/'+pk, data)
+};
+
+export const customerCreate = (data) => {
+    return loginApi.post('/customer', data)
+};
