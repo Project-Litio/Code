@@ -33,7 +33,8 @@ class CustomerAPI(APIView):
         data = self.request.data
         with transaction.atomic():
             username = data['first_name'] + "." + data['last_name']
-            user = User.objects.create_user(username=username,password=data['password'],
+            user = User.objects.create_user(username=username,
+                                            password=data['password'],
                                             email=data['email'],
                                             first_name=data['first_name'],
                                             last_name=data['last_name'])
@@ -113,6 +114,47 @@ class CustomerDetailAPI(APIView):
             
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        
+class EmployeeAPI(APIView):
+    def get(self,request):
+        data = self.request.body
+
+        queryset = Employee.objects.filter(branch= data['branch'])
+        fulldata = []
+        for emp in queryset:
+            query = {"id":emp.id,
+             "first_name":emp.id_user.first_name,
+             "last_name":emp.id_user.last_name,
+             "email":emp.id_user.email,
+             "address":emp.address,
+             "phone":emp.phone,
+             "role":emp.role}
+            
+            fulldata.append(query)
+
+        return Response({"status":"success","data":fulldata})
+    
+    def post(self,request):
+        data = self.request.data
+        with transaction.atomic():
+            username = data['name'] + "." + data['last_name']
+            user = User.objects.create_user(username=username,
+                                            password=data['password'],
+                                            email=data['email'],
+                                            first_name=data['name'],
+                                            last_name=data['last_name'])
+            user.save()
+            last_user = User.objects.last()
+
+            employee = Employee(id=data['id'],
+                                address=data['address'],
+                                phone=data['phone'],
+                                role=data['role'],
+                                id_user=last_user,
+                                id_branch=data['branch'])
+            employee.save()
+
+        return Response({"status":"success","message":f"Employee {employee.id_user.first_name} was created"})
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
@@ -132,7 +174,27 @@ class CustomerLogin(APIView):
         user = authenticate(username=data['email'],password=data['password'])
         if user is not None:
             login(request,user)
-            return Response({"data":user.id})
+            if(len(Customer.objects.filter(id_user=user.id)) == 1):    
+                customer = Customer.objects.filter(id_user=user.id)[0]       
+                data = {"id":customer.id,
+                "first_name":customer.id_user.first_name,
+                "last_name":customer.id_user.last_name,
+                "email":customer.id_user.email,
+                "address":customer.address,
+                "phone":customer.phone,
+                "type":customer.type}
+            else:
+                emp = Employee.objects.filter(id_user=user.id)[0]
+                data = {"id":emp.id,
+                "first_name":emp.id_user.first_name,
+                "last_name":emp.id_user.last_name,
+                "email":emp.id_user.email,
+                "address":emp.address,
+                "phone":emp.phone,
+                "role":emp.role,
+                "branch":emp.id_branch.id}
+
+            return Response({"data":data})
         else:
             logout(request)
             return Response({"detail":"invalid user"})
