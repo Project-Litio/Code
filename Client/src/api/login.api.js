@@ -8,6 +8,10 @@ export const getCustomers = () => {
     return loginApi.get('/customer')
 };
 
+export const getEmployees = () => {
+    return loginApi.get('/employee')
+};
+
 export const login = (data) => {
     return loginApi.post('/customer/login',data)
 };
@@ -20,10 +24,22 @@ export const customerEdit = (data, pk) => {
     return loginApi.patch('customerDetail/'+pk, data)
 };
 
+export const employeeEdit = (data, pk) => {
+    return loginApi.patch('employeeDetail/'+pk, data)
+};
+
 export const customerDelete = (data, pk) => {
     return loginApi.delete('customerDetail/'+pk, data)
 };
 
+export const employeeDelete = (data, pk) => {
+    return loginApi.delete('employeeDetail/'+pk, data)
+};
+
 export const customerCreate = (data) => {
     return loginApi.post('/customer', data)
+};
+
+export const employeeCreate = (data) => {
+    return loginApi.post('/employee', data)
 };

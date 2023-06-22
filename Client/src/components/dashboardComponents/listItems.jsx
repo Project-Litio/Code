@@ -15,13 +15,13 @@ import {
 
 export const mainListItems = (
   <div>
-    <ListItem button>
+    <ListItem button component={Link} to="/Dashboard">
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItem>
-    <ListItem button component={Link} to="/ManejoUsers">
+    <ListItem button component={Link} to="/UserManagement">
       <ListItemIcon>
         <PeopleIcon />
       </ListItemIcon>
@@ -33,13 +33,13 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Sucursales" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component={Link} to="/VehicleManagement">
       <ListItemIcon>
         <DirectionsCarIcon />
       </ListItemIcon>
       <ListItemText primary="Vehículos" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component={Link} to="/StockManagement">
       <ListItemIcon>
         <BuildIcon />
       </ListItemIcon>
@@ -51,11 +51,5 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Reportes" />
     </ListItem>
-  </div>
-);
-
-export const secondaryListItems = (
-  <div>
-
   </div>
 );

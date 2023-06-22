@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react'
 import logo from '../assets/LogoFFFFFF.png'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './style.css'
 import { Link } from 'react-router-dom'
 import {useForm} from 'react-hook-form'
 import ReCAPTCHA from "react-google-recaptcha"
 import { useNavigate } from 'react-router-dom';
-import {getCustomers,login, otpLogin} from '../api/login.api'
+import {login, otpLogin} from '../api/login.api'
 import { ToastContainer, toast } from 'react-toastify';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './style.css'
 import 'react-toastify/dist/ReactToastify.css';
 
 import Cookies from 'universal-cookie';
@@ -119,8 +119,8 @@ function LoginForm() {
               <div className='passcode'> 
                 <input type={passwordShown ? "text" : "password"} className='form-control' id='customform' {...register("password", {required: true})}></input>
                 <button type="button" onClick={togglePassword}>
-                  {!passwordShown && <i class="fa fa-eye"></i>}
-                  {passwordShown && <i class="fa fa-eye-slash"></i>}
+                  {!passwordShown && <i className="fa fa-eye"></i>}
+                  {passwordShown && <i className="fa fa-eye-slash"></i>}
                 </button>
               </div>
             </div>

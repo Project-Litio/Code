@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,16 +17,19 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './dashboardComponents/listItems';
 import TableUSers from './small-component/Table';
-import {getCustomers, getEmployees} from '../api/login.api'
+import {getCustomers} from '../api/login.api'
 import img from '../assets/logo.png'
-import Tooltip from '@material-ui/core/Tooltip';
 import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router-dom';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import Cookies from 'universal-cookie';
 
+const cookies = new Cookies()
+
 const drawerWidth = 200;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -99,7 +102,6 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     display: 'flex',
-    justifyContent: 'flex-end',
     overflow: 'auto',
     flexDirection: 'column',
   },
@@ -108,8 +110,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DashboardUsuarios() {
-  const cookies = new Cookies()
+export default function DashboardInventario() {
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
@@ -127,20 +128,20 @@ export default function DashboardUsuarios() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   const [usersReg, setUsers] = useState([]);
+  const [load, setLoad] = useState(true);
   const loaded = async () => {
-      const usuarios = ((await getCustomers()).data.data).map(user=>({
-        ...user,
-        role:'Customer'
-      }));
-      const employees = (await getEmployees()).data.data;
-      setUsers(usuarios.concat(employees));
+    if(load){
+      setLoad(false);
+      const result = await getCustomers();
+      console.log(result.data.data);
+      setUsers(result.data.data);
+    }
   };
 
-  useEffect(() => {
-    loaded();
-  }, []);
+  loaded();
 
   return (
     <div className={classes.root}>
@@ -158,7 +159,7 @@ export default function DashboardUsuarios() {
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Usuarios
+            &emsp; Manejo de usuarios
           </Typography>
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">

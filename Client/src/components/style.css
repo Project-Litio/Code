@@ -278,6 +278,10 @@ font-size: 2em;
     margin-left: 29vw;
     position: absolute;
   }
+
+  .carimg{
+    width: 80%;
+  }
 }
 
 @media(min-width:301px) and (max-width:700px){
@@ -303,6 +307,10 @@ font-size: 2em;
   #entrar{
     margin-left: 33vw;
     position: absolute;
+  }
+
+  .carimg{
+    width: 90%;
   }
 }
 
@@ -370,6 +378,10 @@ font-size: 2em;
     height: 5vh;
     font-size: 25px;
   }
+
+  .carimg{
+    width: 70%;
+  }
 }
 
 
@@ -400,6 +412,10 @@ font-size: 2em;
   #entrar{
     margin-left: 38%;
     position: relative;
+  }
+
+  .carimg{
+    width: 40%;
   }
 }
 
@@ -537,3 +553,8 @@ input:focus, textarea:focus, select:focus{
   position: fixed;
 }
 
+.btnInsert{
+  border-radius: 5px;
+  background-color: #00B86B;
+  text-align: center;
+}

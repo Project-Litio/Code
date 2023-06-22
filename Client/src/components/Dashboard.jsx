@@ -10,17 +10,17 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems } from './dashboardComponents/listItems';
-import Chart from './dashboardComponents/Chart';
-import Deposits from './dashboardComponents/Deposits';
-import Orders from './dashboardComponents/Orders';
+import { mainListItems } from './dashboardComponents/listItems';
+import img from '../assets/logo.png'
+import { Link } from "react-router-dom";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { useNavigate } from 'react-router-dom';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import Cookies from 'universal-cookie';
 
@@ -28,10 +28,9 @@ const cookies = new Cookies()
 
 console.log(cookies.get('user'))
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({ 
   root: {
     display: 'flex',
   },
@@ -51,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    backgroundColor: '#212529',
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     }),
     width: theme.spacing(7),
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9),
+      width: theme.spacing(7),
     },
   },
   appBarSpacer: theme.mixins.toolbar,
@@ -111,8 +111,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Dashboard() {
+  const navigateTo = useNavigate();
+
+  const deleteCookies = () => {
+    Object.keys(cookies.getAll()).forEach((cookieName) => {
+      cookies.remove(cookieName, {path: '/'});
+    });
+    navigateTo('/');
+  };
+
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -122,7 +131,7 @@ export default function Dashboard() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} id='raiz'>
       <CssBaseline />
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
@@ -135,14 +144,17 @@ export default function Dashboard() {
           >
             <MenuIcon />
           </IconButton>
+          <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Dashboard Ventas
+            &emsp; Dashboard
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+          <div onClick={deleteCookies}>
+            <Tooltip title="Salir">
+              <IconButton>
+                  <ExitToAppIcon style={{ fill: '#ee2641' }}/>
+              </IconButton>
+            </Tooltip>
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -159,29 +171,24 @@ export default function Dashboard() {
         </div>
         <Divider />
         <List>{mainListItems}</List>
-        <Divider />
-        <List>{secondaryListItems}</List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                <Chart />
+                
               </Paper>
             </Grid>
-            {/* Recent Deposits */}
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
-                <Deposits />
+                
               </Paper>
             </Grid>
-            {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Orders />
+                
               </Paper>
             </Grid>
           </Grid>

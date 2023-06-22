@@ -1,12 +1,10 @@
-import {React,useEffect,useState} from 'react'
-//import users from '../../data/users.json'
+import {React,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
-import {customerEdit, customerDelete, customerCreate} from '../../api/login.api'
+import {customerEdit, customerDelete, customerCreate, employeeEdit, employeeDelete, employeeCreate} from '../../api/login.api'
 import TablePagination from "@material-ui/core/TablePagination";
-
-
+import '../style.css'
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -28,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   }, 
   inputMaterial:{
     width: '100%'
-  }
+  },
 }));
 
 const TableUSers = ({users}) => {
@@ -46,7 +44,7 @@ const TableUSers = ({users}) => {
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
 
   const [selectedUser,setSelectedUser]=useState({
@@ -57,7 +55,7 @@ const TableUSers = ({users}) => {
     id:'',
     address:'',
     phone:'',
-    type:''
+    role:''
   });
 
 
@@ -93,17 +91,30 @@ const TableUSers = ({users}) => {
   }
 
   const deleteUser = async () => {
-    await customerDelete(selectedUser, selectedUser.id);
+    if(selectedUser.role == "Customer"){
+      await customerDelete(selectedUser, selectedUser.id);
+    } else {
+      await employeeDelete(selectedUser, selectedUser.id);
+    }
     window.location.reload(false);
   }
 
   const editUser = async () => {
-    await customerEdit(selectedUser, selectedUser.id);
+    if(selectedUser.role == "Customer"){
+      await customerEdit(selectedUser, selectedUser.id);
+    } else {
+      console.log({...selectedUser, branch: '123'});
+      await employeeEdit({...selectedUser, branch: '123'}, selectedUser.id);
+    }
     window.location.reload(false);
   }
 
   const createUser = async () => {
-    await customerCreate(selectedUser);
+    if(selectedUser.role == "Customer"){
+      await customerCreate(selectedUser);
+    } else {
+      await employeeCreate({...selectedUser, branch: '123'});
+    }
     window.location.reload(false);
   }
 
@@ -119,7 +130,7 @@ const TableUSers = ({users}) => {
       <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange}></TextField>
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange}></TextField>
-      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
+      <TextField name='role' className={styles.inputMaterial} label="Rol" onChange={handleChange}></TextField>
       <div align="right">
       <Button color="primary" onClick={createUser}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
@@ -136,7 +147,7 @@ const TableUSers = ({users}) => {
       <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedUser && selectedUser.id}></TextField>
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange} defaultValue={selectedUser && selectedUser.address}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange} defaultValue={selectedUser && selectedUser.phone}></TextField>
-      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedUser && selectedUser.type}></TextField>
+      <TextField name='role' className={styles.inputMaterial} label="Rol" onChange={handleChange} defaultValue={selectedUser && selectedUser.role}></TextField>
       <div align="right">
       <Button color="primary" onClick={editUser}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -161,8 +172,8 @@ const TableUSers = ({users}) => {
 
   return (
     <div>
-      <div className='text-center'>
-      <Button onClick={()=>openCloseIsertModal()}>
+      <div className="btnInsert">
+      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
         Insertar
       </Button>
       </div>
@@ -170,13 +181,13 @@ const TableUSers = ({users}) => {
         <Table>
           <TableHead>
             <TableRow>
-            <TableCell>Nombre</TableCell>
-            <TableCell>Apellido</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Identificador</TableCell>
-            <TableCell>Direccion</TableCell>
-            <TableCell>Telefono</TableCell>
-            <TableCell>Tipo</TableCell>
+            <TableCell><b>Nombre</b></TableCell>
+            <TableCell><b>Apellido</b></TableCell>
+            <TableCell><b>Email</b></TableCell>
+            <TableCell><b>Identificador</b></TableCell>
+            <TableCell><b>Direccion</b></TableCell>
+            <TableCell><b>Telefono</b></TableCell>
+            <TableCell><b>Rol</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -189,7 +200,7 @@ const TableUSers = ({users}) => {
                   <TableCell>{user.id}</TableCell>
                   <TableCell>{user.address}</TableCell>
                   <TableCell>{user.phone}</TableCell>
-                  <TableCell>{user.type}</TableCell>
+                  <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <Edit className={styles.iconos} onClick={()=>selectUser(user,'Editar')}  />
                     &nbsp;&nbsp;&nbsp;
