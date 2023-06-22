@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Branch(models.Model):
+    id=models.AutoField(primary_key=True)
     address=models.CharField(max_length=20)
     city=models.CharField(max_length=20)
 

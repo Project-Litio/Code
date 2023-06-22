@@ -2,6 +2,7 @@ from urllib import response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.backends import ModelBackend
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -116,45 +117,55 @@ class CustomerDetailAPI(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         
 class EmployeeAPI(APIView):
-    def get(self,request):
-        data = self.request.body
 
-        queryset = Employee.objects.filter(branch= data['branch'])
+    def get(self, request):
+        branch_id = int(request.query_params.get('branch', 0))
         fulldata = []
-        for emp in queryset:
-            query = {"id":emp.id,
-             "first_name":emp.id_user.first_name,
-             "last_name":emp.id_user.last_name,
-             "email":emp.id_user.email,
-             "address":emp.address,
-             "phone":emp.phone,
-             "role":emp.role}
+
+        if (branch_id == 0):
+            queryset = Employee.objects.all()
+        else:
+            queryset = Employee.objects.filter(id_branch_id=branch_id)
             
+        for emp in queryset:
+            query = {
+                "id": emp.id,
+                "first_name": emp.id_user.first_name,
+                "last_name": emp.id_user.last_name,
+                "email": emp.id_user.email,
+                "address": emp.address,
+                "phone": emp.phone,
+                "role": emp.role
+            }
             fulldata.append(query)
 
-        return Response({"status":"success","data":fulldata})
-    
-    def post(self,request):
+        return Response({"status": "success", "data": fulldata})       
+
+    def post(self, request):
         data = self.request.data
+
         with transaction.atomic():
-            username = data['name'] + "." + data['last_name']
+            username = data['first_name'] + "." + data['last_name']
             user = User.objects.create_user(username=username,
                                             password=data['password'],
                                             email=data['email'],
-                                            first_name=data['name'],
+                                            first_name=data['first_name'],
                                             last_name=data['last_name'])
             user.save()
             last_user = User.objects.last()
+
+            branch_id = data['branch']
+            branch = get_object_or_404(Branch, id=branch_id)  # Retrieve the Branch instance
 
             employee = Employee(id=data['id'],
                                 address=data['address'],
                                 phone=data['phone'],
                                 role=data['role'],
                                 id_user=last_user,
-                                id_branch=data['branch'])
-            employee.save()
+                                id_branch=branch)  # Assign the Branch instance
+            employee.save() 
 
-        return Response({"status":"success","message":f"Employee {employee.id_user.first_name} was created"})
+        return Response({'resp': "done"})
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):

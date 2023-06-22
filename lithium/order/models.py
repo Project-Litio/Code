@@ -1,6 +1,6 @@
 from django.db import models
 from inventory.models import Article, Car, Replacement
-from login.models import Mecanic,Customer,Saleman
+from login.models import Employee
 
 
 # Create your models here.
@@ -12,7 +12,7 @@ class Work_order(models.Model):
     model_date=models.CharField(max_length=10)
     plate=models.CharField(max_length=10)
     observation=models.TextField(null=True)
-    id_mecanic=models.ForeignKey(Mecanic,on_delete=SET_NULL)
+    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
     id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
 
 class Order_detail(models.Model):
@@ -27,7 +27,7 @@ class Quotation(models.Model):
     observation=models.TextField(null=True)
     total=models.IntegerField()
     id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-    id_salesman=models.ForeignKey(Saleman,on_delete=SET_NULL)
+    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
 
 class Quotation_detail(models.Model):
     id=models.AutoField(primary_key=True)
@@ -49,7 +49,7 @@ class Bill(models.model):
     observation=models.TextField(null=True)
     total=models.IntegerField()
     id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-    id_saleman=models.ForeignKey(Saleman,on_delete=SET_NULL)
+    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
 
 class Bill_detail(models.model):
     id=models.AutoField(primary_key=True)
