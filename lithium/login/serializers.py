@@ -10,3 +10,8 @@ class Customer_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = '__all__'
+
+class Employee_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = '__all__'

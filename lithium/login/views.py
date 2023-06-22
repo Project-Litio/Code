@@ -117,7 +117,6 @@ class CustomerDetailAPI(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         
 class EmployeeAPI(APIView):
-
     def get(self, request):
         branch_id = int(request.query_params.get('branch', 0))
         fulldata = []
@@ -166,6 +165,81 @@ class EmployeeAPI(APIView):
             employee.save() 
 
         return Response({'resp': "done"})
+
+class EmployeeDetailAPI(APIView):
+    queryset = Employee.objects.all()
+    serializer_class = Employee_Serializer
+
+    def get_employee(self, pk):
+        try:
+            return Employee.objects.get(pk=pk)
+        except:
+            return None
+
+    def get(self, request, pk):
+        employee = self.get_employee(pk=pk)
+        if employee == None:
+            return Response({"status": "fail", "message": f"Employee with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+        data = {"id":employee.id,
+            "first_name":employee.id_user.first_name,
+            "last_name":employee.id_user.last_name,
+            "email":employee.id_user.email,
+            "address":employee.address,
+            "phone":employee.phone,
+            "role":employee.role,
+            "id_branch":employee.id_branch.id,
+            "address_branch":employee.id_branch.address,
+            "city_branch":employee.id_branch.city
+        }
+        return Response({"status": "success", "data": data})
+
+    def patch(self, request, pk):
+        employee = self.get_employee(pk=pk)
+        if employee == None:
+            return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        #Modifying the user
+        with transaction.atomic():
+            user = employee.id_user
+            user.first_name = request.data.get('first_name',user.first_name)
+            user.last_name = request.data.get('last_name',user.last_name)
+            user.email = request.data.get('email',user.email)
+            user.username = user.first_name + ' ' + user.last_name
+            user.set_password(request.data.get('password', ''))
+            user.save()            
+
+            #Modifying the employee
+            serializer = self.serializer_class(employee, data=request.data, partial=True)
+            data = {"id":employee.id,
+            "first_name":employee.id_user.first_name,
+            "last_name":employee.id_user.last_name,
+            "email":employee.id_user.email,
+            "address":employee.address,
+            "phone":employee.phone,
+            "role":employee.role,
+            "id_branch":employee.id_branch.id
+        }
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": data})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk):
+        with transaction.atomic():
+            employee = self.get_employee(pk)
+            user = employee.id_user
+            if employee == None:
+                return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
