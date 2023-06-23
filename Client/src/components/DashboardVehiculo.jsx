@@ -114,7 +114,7 @@ export default function DashboardVehiculo() {
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
-    cookies.set('user', {}, {
+    cookies.set('user', undefined, {
       path: '/',
       sameSite: 'None',
       secure: true,
