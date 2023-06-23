@@ -5,6 +5,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import {customerEdit, customerDelete, customerCreate} from '../../api/login.api'
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
+import { uploadCar } from '../../api/article.api.js';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -50,12 +51,13 @@ const TableCars = ({cars}) => {
   const [selectedcar,setSelectedcar]=useState({
     brand:'',
     id:'',
-    id_article:0,
     image:'',
     model:'',
     price:0,
     type:'',
-    wheel:''
+    wheel:'',
+    stock:0,
+    color:'',
   });
 
 
@@ -101,9 +103,27 @@ const TableCars = ({cars}) => {
   }
 
   const createcar = async () => {
-    await customerCreate(selectedcar);
+    const formData = new FormData();
+    formData.append('id', selectedcar.id);
+    formData.append('brand', selectedcar.brand);
+    formData.append('type', selectedcar.type);
+    formData.append('model', selectedcar.model);
+    formData.append('wheel', selectedcar.wheel);
+    formData.append('price', selectedcar.price);
+    formData.append('image', selectedImage); // Append the selected image to the form data
+    // Append other car data to the form data
+    
+    formData.append('id_article', JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color}));
+  
+    await uploadCar(formData); // Call the uploadCar function from the API file with the form data
     window.location.reload(false);
-  }
+  };
+
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleImageChange = (e) => {
+    setSelectedImage(e.target.files[0]);
+  };
 
   //--Fin de Estados
   //--Componentes especificos
@@ -112,12 +132,20 @@ const TableCars = ({cars}) => {
       <h3>Agregar Nuevo vehiculo</h3>
       <TextField name='brand' className={styles.inputMaterial} label="Marca" onChange={handleChange}></TextField>
       <TextField name='id' className={styles.inputMaterial} label="VIN" onChange={handleChange}></TextField>
-      <TextField name='id_article' className={styles.inputMaterial} label="ID" onChange={handleChange}></TextField>
-      <TextField name='image' className={styles.inputMaterial} label="Imagen" onChange={handleChange}></TextField>
+      <input
+  type="file"
+  id="image"
+  name="image"
+  accept="image/*"
+  onChange={handleImageChange}
+  className={styles.inputMaterial}
+/>
       <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange}></TextField>
       <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
       <TextField name='wheel' className={styles.inputMaterial} label="Llanta" onChange={handleChange}></TextField>
+      <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} ></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange}></TextField>
       <div align="right">
       <Button color="primary" onClick={createcar}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
@@ -136,6 +164,8 @@ const TableCars = ({cars}) => {
       <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange} defaultValue={selectedcar && selectedcar.price}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedcar && selectedcar.type}></TextField>
       <TextField name='wheel' className={styles.inputMaterial} label="Llanta" onChange={handleChange} defaultValue={selectedcar && selectedcar.wheel}></TextField>
+      <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedcar && selectedcar.stock}></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue={selectedcar && selectedcar.color}></TextField>
       <div align="right">
       <Button color="primary" onClick={editcar}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -170,13 +200,15 @@ const TableCars = ({cars}) => {
           <TableHead>
             <TableRow>
             <TableCell><b>Marca</b></TableCell>
-            <TableCell><b>ID</b></TableCell>
+            <TableCell><b>Article ID</b></TableCell>
             <TableCell><b>VIN</b></TableCell>
             <TableCell><b>Imagen</b></TableCell>
             <TableCell><b>Modelo</b></TableCell>
             <TableCell><b>Precio</b></TableCell>
             <TableCell><b>Tipo</b></TableCell>
             <TableCell><b>Llanta</b></TableCell>
+            <TableCell><b>Cantidad</b></TableCell>
+            <TableCell><b>Color</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -191,6 +223,8 @@ const TableCars = ({cars}) => {
                   <TableCell>{car.price}</TableCell>
                   <TableCell>{car.type}</TableCell>
                   <TableCell>{car.wheel}</TableCell>
+                  <TableCell>{car.stock}</TableCell>
+                  <TableCell>{car.color}</TableCell>
                   <TableCell>
                     <Edit className={styles.iconos} onClick={()=>selectcar(car,'Editar')}  />
                     &nbsp;&nbsp;&nbsp;

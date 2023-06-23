@@ -52,11 +52,27 @@ class CarAPI(APIView):
 
     def get(self, request):
         queryset = Car.objects.all()
-        serializer = self.all_car_serializer(queryset, many=True)
-        return Response(serializer.data)
+        fullset = []
+        for c in queryset:
+            query = {"id":c.id,
+            "brand":c.brand,
+            "type":c.type,
+            "model":c.model,
+            "wheel":c.wheel,
+            "price":c.price,
+            "image":str(c.image),
+            "id_article": c.id_article.id,
+            "stock":c.id_article.stock,
+            "color":c.id_article.color
+            }
+            fullset.append(query)
+
+        return Response(fullset)
 
     def post(self, request):
         article_data = request.data.get('id_article')  # Extract the article data
+        print(article_data)
+
         if (not isinstance(article_data, dict) and article_data != None):
             article_data = json.loads(article_data)
 

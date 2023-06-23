@@ -15,3 +15,9 @@ export const carEdit = (data, pk) => {
 export const carDelete = (data, pk) => {
     return articleApi.delete('/carDetail/'+pk, data)
 };
+
+export const uploadCar = async (carData) => {
+    const response = await articleApi.post('/car', carData);
+    return response.data;
+  };
+  
