@@ -188,7 +188,7 @@ class EmployeeDetailAPI(APIView):
             "address":employee.address,
             "phone":employee.phone,
             "role":employee.role,
-            "id_branch":employee.id_branch.id,
+            "id_branch":employee.id_branch_id,
             "address_branch":employee.id_branch.address,
             "city_branch":employee.id_branch.city
         }
@@ -218,7 +218,7 @@ class EmployeeDetailAPI(APIView):
             "address":employee.address,
             "phone":employee.phone,
             "role":employee.role,
-            "id_branch":employee.id_branch.id
+            "id_branch":employee.id_branch_id
         }
 
         if serializer.is_valid():
@@ -277,7 +277,7 @@ class CustomerLogin(APIView):
                 "address":emp.address,
                 "phone":emp.phone,
                 "role":emp.role,
-                "branch":emp.id_branch.id}
+                "branch":emp.id_branch_id}
 
             return Response({"data":data})
         else:

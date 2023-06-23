@@ -114,9 +114,7 @@ export default function Dashboard() {
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
-    Object.keys(cookies.getAll()).forEach((cookieName) => {
-      cookies.remove(cookieName, {path: '/'});
-    });
+    cookies.remove('user',{path:'/'})
     navigateTo('/');
   };
 
