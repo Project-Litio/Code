@@ -55,7 +55,8 @@ const TableUSers = ({users}) => {
     id:'',
     address:'',
     phone:'',
-    role:''
+    role:'',
+    id_branch:''
   });
 
 
@@ -103,8 +104,7 @@ const TableUSers = ({users}) => {
     if(selectedUser.role == "Customer"){
       await customerEdit(selectedUser, selectedUser.id);
     } else {
-      console.log({...selectedUser, branch: '123'});
-      await employeeEdit({...selectedUser, branch: '123'}, selectedUser.id);
+      await employeeEdit(selectedUser, selectedUser.id);
     }
     window.location.reload(false);
   }
@@ -113,7 +113,7 @@ const TableUSers = ({users}) => {
     if(selectedUser.role == "Customer"){
       await customerCreate(selectedUser);
     } else {
-      await employeeCreate({...selectedUser, branch: '123'});
+      await employeeCreate(selectedUser);
     }
     window.location.reload(false);
   }
@@ -131,6 +131,7 @@ const TableUSers = ({users}) => {
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange}></TextField>
       <TextField name='role' className={styles.inputMaterial} label="Rol" onChange={handleChange}></TextField>
+      <TextField name='id_branch' className={styles.inputMaterial} label="Sucursal (solo para empleados)" onChange={handleChange}></TextField>
       <div align="right">
       <Button color="primary" onClick={createUser}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
@@ -148,6 +149,7 @@ const TableUSers = ({users}) => {
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange} defaultValue={selectedUser && selectedUser.address}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange} defaultValue={selectedUser && selectedUser.phone}></TextField>
       <TextField name='role' className={styles.inputMaterial} label="Rol" onChange={handleChange} defaultValue={selectedUser && selectedUser.role}></TextField>
+      <TextField name='id_branch' className={styles.inputMaterial} label="Sucursal (solo para empleados)" onChange={handleChange} defaultValue={selectedUser && selectedUser.id_branch}></TextField>
       <div align="right">
       <Button color="primary" onClick={editUser}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -188,6 +190,7 @@ const TableUSers = ({users}) => {
             <TableCell><b>Direccion</b></TableCell>
             <TableCell><b>Telefono</b></TableCell>
             <TableCell><b>Rol</b></TableCell>
+            <TableCell><b>Sucursal</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -201,6 +204,7 @@ const TableUSers = ({users}) => {
                   <TableCell>{user.address}</TableCell>
                   <TableCell>{user.phone}</TableCell>
                   <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.id_branch}</TableCell>
                   <TableCell>
                     <Edit className={styles.iconos} onClick={()=>selectUser(user,'Editar')}  />
                     &nbsp;&nbsp;&nbsp;

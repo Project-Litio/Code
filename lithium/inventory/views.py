@@ -71,8 +71,6 @@ class CarAPI(APIView):
 
     def post(self, request):
         article_data = request.data.get('id_article')  # Extract the article data
-        print(article_data)
-
         if (not isinstance(article_data, dict) and article_data != None):
             article_data = json.loads(article_data)
 
@@ -197,8 +195,18 @@ class ReplacementAPI(APIView):
 
     def get(self, request):
         queryset = Replacement.objects.all()
-        serializer = self.all_replacement_serializer(queryset, many=True)
-        return Response(serializer.data)
+        fullset = []
+        for r in queryset:
+            query = {"id":r.id,
+            "type":r.type,
+            "name":r.name,
+            "id_article":r.id_article.id,
+            "stock":r.id_article.stock,
+            "color":r.id_article.color
+            }
+            fullset.append(query)
+        
+        return Response(fullset)
 
     def post(self, request):
         article_data = request.data.get('id_article') #Extract the article data

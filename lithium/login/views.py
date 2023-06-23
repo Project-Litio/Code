@@ -134,7 +134,8 @@ class EmployeeAPI(APIView):
                 "email": emp.id_user.email,
                 "address": emp.address,
                 "phone": emp.phone,
-                "role": emp.role
+                "role": emp.role,
+                "id_branch": emp.id_branch_id
             }
             fulldata.append(query)
 
@@ -267,7 +268,8 @@ class CustomerLogin(APIView):
                 "email":customer.id_user.email,
                 "address":customer.address,
                 "phone":customer.phone,
-                "type":customer.type}
+                "type":customer.type,
+                "role": "Customer"}
             else:
                 emp = Employee.objects.filter(id_user=user.id)[0]
                 data = {"id":emp.id,

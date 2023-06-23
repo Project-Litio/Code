@@ -2,10 +2,9 @@ import {React,useEffect,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
-import {customerEdit, customerDelete, customerCreate} from '../../api/login.api'
+import {carEdit, carDelete, carCreate} from '../../api/article.api'
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
-import { uploadCar } from '../../api/article.api.js';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -32,10 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TableCars = ({cars}) => {
 
-
-  //--LLamado a Styles
   const styles = useStyles();
-  //--Estados
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
@@ -47,7 +43,6 @@ const TableCars = ({cars}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-
   const [selectedcar,setSelectedcar]=useState({
     brand:'',
     id:'',
@@ -57,9 +52,8 @@ const TableCars = ({cars}) => {
     type:'',
     wheel:'',
     stock:0,
-    color:'',
+    color:''
   });
-
 
   const handleChange=e=>{
     const {name,value}= e.target;
@@ -83,63 +77,52 @@ const TableCars = ({cars}) => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, cars.length - page * rowsPerPage);
 
-
   const selectcar=(car, caso)=>{
-    console.log(car);
     setSelectedcar(car);
-
-    console.log(selectedcar);
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
 
+  const createFormData = () => {
+    const formData = new FormData();
+    for ( var key in selectedcar ) {
+      formData.append(key, selectedcar[key]);
+    }
+
+    if(selectedImage != null){
+      formData.append('image', selectedImage);
+    } 
+    
+    formData.append('id_article', JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color}));
+
+    return formData;
+  }
+
   const deletecar = async () => {
-    await customerDelete(selectedcar, selectedcar.id);
+    await carDelete({}, selectedcar.id);
     window.location.reload(false);
   }
 
   const editcar = async () => {
-    await customerEdit(selectedcar, selectedcar.id);
+    await carEdit(createFormData(), selectedcar.id); 
     window.location.reload(false);
   }
 
   const createcar = async () => {
-    const formData = new FormData();
-    formData.append('id', selectedcar.id);
-    formData.append('brand', selectedcar.brand);
-    formData.append('type', selectedcar.type);
-    formData.append('model', selectedcar.model);
-    formData.append('wheel', selectedcar.wheel);
-    formData.append('price', selectedcar.price);
-    formData.append('image', selectedImage); // Append the selected image to the form data
-    // Append other car data to the form data
-    
-    formData.append('id_article', JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color}));
-  
-    await uploadCar(formData); // Call the uploadCar function from the API file with the form data
+    await carCreate(createFormData()); 
     window.location.reload(false);
-  };
+  }
 
   const [selectedImage, setSelectedImage] = useState(null);
-
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
   };
 
-  //--Fin de Estados
-  //--Componentes especificos
   const insertBody=(
     <div className={styles.modal}>
       <h3>Agregar Nuevo vehiculo</h3>
       <TextField name='brand' className={styles.inputMaterial} label="Marca" onChange={handleChange}></TextField>
       <TextField name='id' className={styles.inputMaterial} label="VIN" onChange={handleChange}></TextField>
-      <input
-  type="file"
-  id="image"
-  name="image"
-  accept="image/*"
-  onChange={handleImageChange}
-  className={styles.inputMaterial}
-/>
+      <input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} className={styles.inputMaterial}/>
       <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange}></TextField>
       <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
@@ -157,9 +140,9 @@ const TableCars = ({cars}) => {
     <div className={styles.modal}>
       <h3>Editar vehiculo</h3>
       <TextField name='brand' className={styles.inputMaterial} label="Marca" onChange={handleChange} defaultValue={selectedcar && selectedcar.brand}></TextField>
-      <TextField name='id_article' className={styles.inputMaterial} label="VIN" onChange={handleChange} defaultValue={selectedcar && selectedcar.id_article}></TextField>
       <TextField name='id' className={styles.inputMaterial} label="ID" onChange={handleChange} defaultValue={selectedcar && selectedcar.id}></TextField>
-      <input type="file" id="img" name="image" accept="image/*" onChange={handleChange} label="Image"></input>
+      <label className={styles.inputMaterial} >Imagen</label>
+      <input type="file" id="img" name="image" accept="image/*" onChange={handleImageChange} label="Image"></input>
       <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange} defaultValue={selectedcar && selectedcar.model} ></TextField>
       <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange} defaultValue={selectedcar && selectedcar.price}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedcar && selectedcar.type}></TextField>
@@ -182,12 +165,7 @@ const TableCars = ({cars}) => {
       </div>
 
     </div>
-
   )
-
-  //--Fin componentes no especificos
-
-
   return (
     <div>
       <div className="btnInsert">
@@ -233,7 +211,6 @@ const TableCars = ({cars}) => {
                 </TableRow>
               )
               )}
-
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
               <TableCell colSpan={6} />
@@ -264,7 +241,6 @@ const TableCars = ({cars}) => {
         {DeleteBody}
       </Modal>
     </div>
-
   )
 }
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import img from '../assets/logo.png'
 import './style.css'
 
@@ -6,7 +6,24 @@ import {
   Link
 } from "react-router-dom";
 
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
+
 const Navbar = () => {
+  const [loggedIn, setLogged] = useState(false);
+  const logged = () => {
+    if(cookies.get('user') != "undefined"){
+      setLogged(true);
+    } else {
+      setLogged(false);
+    }
+  };
+
+  useEffect(() => {
+    logged();
+  }, []);
+
   return (
       <nav className="navbar navbar-expand-lg bg-dark " data-bs-theme="dark">
         <div className="container ">
@@ -28,9 +45,16 @@ const Navbar = () => {
               <li className="nav-item mx-3">
                 <Link className="nav-link" to='/about'> <font color='White'> Sobre Nosotros</font></Link>
               </li>
-              <li className="nav-item mx-3">
-                <Link className="nav-link active"  to='/login'> <font color='White'>Log In</font></Link>
-              </li> 
+              {!loggedIn &&
+                <li className="nav-item mx-3">
+                  <Link className="nav-link active"  to='/login'> <font color='White'>Log In</font></Link>
+                </li> 
+              }
+              {loggedIn &&
+                <li className="nav-item mx-3">
+                  <Link className="nav-link active"  to='/dashboard'> <font color='White'>Dashboard</font></Link>
+                </li> 
+              }
             </ul>
           </div>
         </div>

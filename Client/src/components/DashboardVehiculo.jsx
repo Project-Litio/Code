@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,7 +17,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './dashboardComponents/listItems';
 import TableCars from './small-component/TableCars';
-import {getCustomers} from '../api/login.api'
 import {getCars} from '../api/article.api'
 import img from '../assets/logo.png'
 import { Link } from "react-router-dom";
@@ -115,8 +114,10 @@ export default function DashboardVehiculo() {
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
-    Object.keys(cookies.getAll()).forEach((cookieName) => {
-      cookies.remove(cookieName, {path: '/'});
+    cookies.set('user', undefined, {
+      path: '/',
+      sameSite: 'None',
+      secure: true,
     });
     navigateTo('/');
   };
@@ -129,20 +130,16 @@ export default function DashboardVehiculo() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   const [carsReg, setCars] = useState([]);
-  const [load, setLoad] = useState(true);
   const loaded = async () => {
-    if(load){
-      setLoad(false);
-      const result = await getCars();
-      console.log(result.data);
-      setCars(result.data);
-    }
+    const result = await getCars();
+    setCars(result.data);
   };
 
-  loaded();
+  useEffect(() => {
+    loaded();
+  }, []);
 
   return (
     <div className={classes.root}>
