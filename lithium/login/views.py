@@ -288,6 +288,45 @@ class CustomerLogout(APIView):
     def post(self, request):
         logout(request)
         return Response({"detail":"Logout successful"})
+    
+class BranchAPI(APIView):
+    serializer_class = Branch_Serializer
+    def get_branch(self, pk):
+        try:
+            return Branch.objects.get(pk=pk)
+        except:
+            return None
+
+    def get(self,request,pk):
+        branch = self.get_branch(pk=pk)
+        if branch == None:
+            return Response({"status": "fail", "message": f"Branch with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+        data = {
+            "city": branch.city,
+            "address": branch.address    
+        }
+        return Response({"status": "success", "data": data})
+    
+    def patch(self, request, pk):
+        branch = Branch.objects.get(id=pk)
+
+        if branch == None:
+            return Response({"status": "fail", "message": f"Branch with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        #Modifying the user
+        with transaction.atomic():
+            serializer = self.serializer_class(branch, data=request.data, partial=True)
+            data = {
+                "city" : branch.city,
+                "address" : branch.address
+            }
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": data})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class otpLogin(APIView):
     def post(self, request):
