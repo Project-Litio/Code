@@ -114,10 +114,14 @@ export default function Dashboard() {
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
-    cookies.remove('user',{path:'/'})
+    cookies.set('user', undefined, {
+      path: '/',
+      sameSite: 'None',
+      secure: true,
+    });
     navigateTo('/');
   };
-
+  
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {

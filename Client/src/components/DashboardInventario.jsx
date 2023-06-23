@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,8 +16,8 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './dashboardComponents/listItems';
-import TableUSers from './small-component/Table';
-import {getCustomers} from '../api/login.api'
+import Tablestock from './small-component/TableStock';
+import {getStock} from '../api/article.api'
 import img from '../assets/logo.png'
 import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -114,8 +114,10 @@ export default function DashboardInventario() {
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
-    Object.keys(cookies.getAll()).forEach((cookieName) => {
-      cookies.remove(cookieName, {path: '/'});
+    cookies.set('user', {}, {
+      path: '/',
+      sameSite: 'None',
+      secure: true,
     });
     navigateTo('/');
   };
@@ -128,20 +130,18 @@ export default function DashboardInventario() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
-  const [usersReg, setUsers] = useState([]);
-  const [load, setLoad] = useState(true);
+  const [stockReg, setStock] = useState([]);
   const loaded = async () => {
-    if(load){
-      setLoad(false);
-      const result = await getCustomers();
-      console.log(result.data.data);
-      setUsers(result.data.data);
-    }
+    const result = await getStock();
+    console.log(result.data);
+    setStock(result.data);
   };
 
-  loaded();
+  useEffect(() => {
+    loaded();
+  }, []);
+
 
   return (
     <div className={classes.root}>
@@ -159,7 +159,7 @@ export default function DashboardInventario() {
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Manejo de usuarios
+            &emsp; Manejo de Repuestos
           </Typography>
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">
@@ -191,7 +191,7 @@ export default function DashboardInventario() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <TableUSers users={usersReg} />
+                <Tablestock stock={stockReg} />
               </Paper>
             </Grid>
           </Grid>

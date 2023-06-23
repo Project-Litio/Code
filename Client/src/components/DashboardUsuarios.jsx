@@ -109,12 +109,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DashboardUsuarios() {
-  const cookies = new Cookies()
+  const cookies = new Cookies();
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
-    Object.keys(cookies.getAll()).forEach((cookieName) => {
-      cookies.remove(cookieName, {path: '/'});
+    cookies.set('user', {}, {
+      path: '/',
+      sameSite: 'None',
+      secure: true,
     });
     navigateTo('/');
   };
@@ -132,7 +134,8 @@ export default function DashboardUsuarios() {
   const loaded = async () => {
       const usuarios = ((await getCustomers()).data.data).map(user=>({
         ...user,
-        role:'Customer'
+        role:'Cliente',
+        id_branch: 'No aplica'
       }));
       const employees = (await getEmployees()).data.data;
       setUsers(usuarios.concat(employees));

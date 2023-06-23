@@ -89,7 +89,11 @@ function LoginForm() {
         sameSite: 'None',
         secure: true,
       });
-      navigateTo('/dashboard')
+      if(user.role == "Customer"){
+        navigateTo('/collection');
+      } else {
+        navigateTo('/dashboard');
+      }
     } else {
       notifyCode();
     }

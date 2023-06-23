@@ -16,8 +16,22 @@ export const carDelete = (data, pk) => {
     return articleApi.delete('/carDetail/'+pk, data)
 };
 
-export const uploadCar = async (carData) => {
-    const response = await articleApi.post('/car', carData);
-    return response.data;
-  };
-  
+export const carCreate = (data) => {
+    return articleApi.post('/car', data);
+};
+
+export const getStock = () => {
+    return articleApi.get('/replacement');
+};
+
+export const stockEdit = (data, pk) => {
+    return articleApi.patch('/replacementDetail/'+pk, data)
+};
+
+export const stockDelete = (data, pk) => {
+    return articleApi.delete('/replacementDetail/'+pk, data)
+};
+
+export const stockCreate = (data) => {
+    return articleApi.post('/replacement', data);
+};
