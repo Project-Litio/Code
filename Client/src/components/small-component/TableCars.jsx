@@ -5,6 +5,9 @@ import {makeStyles} from '@material-ui/core/styles'
 import {carEdit, carDelete, carCreate} from '../../api/article.api'
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Select from 'react-select'
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -29,6 +32,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const marcas = [
+  { value: 'Renault', label: 'Renault' },
+  { value: 'Chevrolet', label: 'Chevrolet' },
+  { value: 'Mazda', label: 'Mazda' },
+  { value: 'Audi', label: 'Audi' },
+  { value: 'Mercedes Benz', label: 'Mercedes Benz' },
+  { value: 'Toyota', label: 'Toyota' },
+  { value: 'Tesla', label: 'Tesla' },
+  { value: 'Jac', label: 'Jac' },
+  { value: 'Hummer', label: 'Hummer' },
+  { value: 'Mitsubishi', label: 'Mitsubishi' },
+  { value: 'Byd', label: 'Byd' }
+]
+
+const llantas = [
+  { value: 'Magnesio', label: 'Magnesio' },
+  { value: 'Aluminio', label: 'Aluminio' },
+  { value: 'Aleacion', label: 'Aleacion' },
+  { value: 'Acero', label: 'Acero' }
+]
+
+const tipos = [
+  { value: 'Sedan', label: 'Sedan' },
+  { value: 'Hatchback', label: 'Hatchback' },
+  { value: 'Coupe', label: 'Coupe' },
+  { value: 'SUV', label: 'SUV' },
+  { value: 'Station Wagon', label: 'Station Wagon' },
+  { value: 'Crossover', label: 'Crossover' },
+  { value: 'Convertible', label: 'Convertible' },
+  { value: 'MPV', label: 'MPV' },
+  { value: 'Pick up', label: 'Pick up' }
+]
+
 const TableCars = ({cars}) => {
 
   const styles = useStyles();
@@ -41,17 +77,45 @@ const TableCars = ({cars}) => {
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
+  const notInt = () => toast("El precio y la cantidad deben ser enteros");
+
+  const dataTranslator = (data) => {
+    switch (data) {
+      case 'brand':
+        return 'Marca';
+      case 'id':
+        return 'VIN';
+      case 'image':
+        return 'Imagen';
+      case 'model':
+        return 'Modelo';
+      case 'price':
+        return 'Precio';
+      case 'type':
+        return 'Tipo';
+      case 'wheel':
+        return 'Llanta';
+      case 'stock':
+        return 'Cantidad';
+      case 'color':
+        return 'Color';
+      default:
+        console.log("Esto no debería pasar");
+    }
+  }
 
   const [selectedcar,setSelectedcar]=useState({
     brand:'',
     id:'',
     image:'',
     model:'',
-    price:0,
+    price:'',
     type:'',
     wheel:'',
-    stock:0,
+    stock:'',
     color:''
   });
 
@@ -82,19 +146,70 @@ const TableCars = ({cars}) => {
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
 
-  const createFormData = () => {
-    const formData = new FormData();
-    for ( var key in selectedcar ) {
-      formData.append(key, selectedcar[key]);
+  const beforeCreate = () => {verificarDatos("Crear");}
+  const beforeEdit = () => {verificarDatos("Editar");}
+
+  const verificarDatos = (act) => {
+    if(selectedcar.image == '' && act == "Editar"){
+      delete selectedcar.image;
     }
 
-    if(selectedImage != null){
-      formData.append('image', selectedImage);
-    } 
-    
-    formData.append('id_article', JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color}));
+    if(selectedcar.brand == '' && act == "Crear"){
+      selectedcar.brand = 'Renault';
+    }
 
-    return formData;
+    if(selectedcar.type == '' && act == "Crear"){
+      selectedcar.type = 'Sedan';
+    }
+
+    if(selectedcar.wheel == '' && act == "Crear"){
+      selectedcar.wheel = 'Magnesio';
+    }
+    
+    for ( var key in selectedcar ) {
+      if(selectedcar[key] == ''){
+        faltanDatos(key);
+        return false;
+      }
+    }
+
+    if(act == "Crear"){
+      createcar();
+    } else if(act == "Editar"){
+      editcar();
+    } else {
+      deletecar();
+    }
+  }
+
+  const createFormData = () => {
+    delete selectedcar.image;
+    try {
+      selectedcar.price = parseInt(selectedcar.price);
+      selectedcar.stock = parseInt(selectedcar.stock);
+      const formData = new FormData();
+      for ( var key in selectedcar ) {
+        formData.append(key, selectedcar[key]);
+      }
+  
+      if(selectedImage != null){
+        formData.append('image', selectedImage);
+      } 
+      
+      formData.append('id_article', JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color}));
+  
+      for (const key of formData.keys()) {
+        console.log(key);
+      }
+      for (const value of formData.values()) {
+        console.log(value);
+      }
+
+      return formData;
+
+    } catch (error) {
+      notInt();
+    }
   }
 
   const deletecar = async () => {
@@ -115,22 +230,47 @@ const TableCars = ({cars}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
+    selectedcar.image = 'some';
   };
+
+  const handleBrandChange = (selectedOption) => {
+    selectedcar['brand'] = selectedOption.value;
+  };
+
+  const handleTypeChange = (selectedOption) => {
+    selectedcar['type'] = selectedOption.value;
+  };
+
+  const handleWheelChange = (selectedOption) => {
+    selectedcar['wheel'] = selectedOption.value;
+  };
+
+  const searchIndex = (elem, array) => {
+    for(var key in array){
+      if(array[key].value == elem){
+        return key;
+      } 
+    }
+  }
 
   const insertBody=(
     <div className={styles.modal}>
       <h3>Agregar Nuevo vehiculo</h3>
-      <TextField name='brand' className={styles.inputMaterial} label="Marca" onChange={handleChange}></TextField>
+      <label className={styles.inputMaterial}>Marca</label>
+      <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[0]}/>
       <TextField name='id' className={styles.inputMaterial} label="VIN" onChange={handleChange}></TextField>
+      <label className={styles.inputMaterial}>Imagen</label>
       <input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} className={styles.inputMaterial}/>
       <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange}></TextField>
       <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange}></TextField>
-      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
-      <TextField name='wheel' className={styles.inputMaterial} label="Llanta" onChange={handleChange}></TextField>
+      <label className={styles.inputMaterial}>Tipo</label>
+      <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[0]}/>
+      <label className={styles.inputMaterial}>Llanta</label>
+      <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[0]}/>
       <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} ></TextField>
       <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange}></TextField>
       <div align="right">
-      <Button color="primary" onClick={createcar}>Insertar</Button>
+      <Button color="primary" onClick={beforeCreate}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
       </div>
     </div>
@@ -139,18 +279,21 @@ const TableCars = ({cars}) => {
     const EditBody=(
     <div className={styles.modal}>
       <h3>Editar vehiculo</h3>
-      <TextField name='brand' className={styles.inputMaterial} label="Marca" onChange={handleChange} defaultValue={selectedcar && selectedcar.brand}></TextField>
-      <TextField name='id' className={styles.inputMaterial} label="ID" onChange={handleChange} defaultValue={selectedcar && selectedcar.id}></TextField>
-      <label className={styles.inputMaterial} >Imagen</label>
+      <label className={styles.inputMaterial}>Marca</label>
+      <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[searchIndex(selectedcar.brand, marcas)]}/>
+      <TextField name='id' className={styles.inputMaterial} label="ID" onChange={handleChange} defaultValue={selectedcar && selectedcar.id} InputProps={{readOnly: true}}></TextField>
+      <label className={styles.inputMaterial}>Imagen</label>
       <input type="file" id="img" name="image" accept="image/*" onChange={handleImageChange} label="Image"></input>
       <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange} defaultValue={selectedcar && selectedcar.model} ></TextField>
       <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange} defaultValue={selectedcar && selectedcar.price}></TextField>
-      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedcar && selectedcar.type}></TextField>
-      <TextField name='wheel' className={styles.inputMaterial} label="Llanta" onChange={handleChange} defaultValue={selectedcar && selectedcar.wheel}></TextField>
+      <label className={styles.inputMaterial}>Tipo</label>
+      <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[searchIndex(selectedcar.type, tipos)]}/>
+      <label className={styles.inputMaterial}>Llanta</label>
+      <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[searchIndex(selectedcar.wheel, llantas)]}/>
       <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedcar && selectedcar.stock}></TextField>
       <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue={selectedcar && selectedcar.color}></TextField>
       <div align="right">
-      <Button color="primary" onClick={editcar}>Editar</Button>
+      <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
       </div>
     </div>
@@ -168,6 +311,7 @@ const TableCars = ({cars}) => {
   )
   return (
     <div>
+      <ToastContainer />
       <div className="btnInsert">
       <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
         Insertar

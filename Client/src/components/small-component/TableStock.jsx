@@ -5,6 +5,9 @@ import {makeStyles} from '@material-ui/core/styles'
 import {stockEdit, stockDelete, stockCreate} from '../../api/article.api'
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Select from 'react-select'
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -43,6 +46,23 @@ const Tablestock = ({stock}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
+
+  const dataTranslator = (data) => {
+    switch (data) {
+      case 'id':
+        return 'Identificador';
+      case 'name':
+        return 'Nombre';
+      case 'type':
+        return 'Tipo';
+      case 'stock':
+        return 'Cantidad';
+      default:
+        console.log("Esto no debería pasar");
+    }
+  }
+
   const [selectedPiece,setSelectedPiece]=useState({
     id:'',
     name:'',
@@ -50,7 +70,6 @@ const Tablestock = ({stock}) => {
     stock:'',
     color:''
   });
-
 
   const handleChange=e=>{
     const {name,value}= e.target;
@@ -75,11 +94,31 @@ const Tablestock = ({stock}) => {
     rowsPerPage - Math.min(rowsPerPage, stock.length - page * rowsPerPage);
 
   const selectPiece=(Piece, caso)=>{
-    console.log(Piece);
     setSelectedPiece(Piece);
 
-    console.log(selectedPiece);
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
+  }
+
+  const beforeCreate = () => {verificarDatos("Crear");}
+  const beforeEdit = () => {verificarDatos("Editar");}
+
+  const verificarDatos = (act) => {
+    selectedPiece.color = 'None';
+    for ( var key in selectedPiece ) {
+      if(selectedPiece[key] == ''){
+        faltanDatos(key);
+        return false;
+      }
+    }
+
+    if(act == "Crear"){
+      selectedPiece.id = 'None';
+      createPiece();
+    } else if(act == "Editar"){
+      editPiece();
+    } else {
+      deletePiece();
+    }
   }
 
   const createFormData = () => {
@@ -111,13 +150,13 @@ const Tablestock = ({stock}) => {
   const insertBody=(
     <div className={styles.modal}>
       <h3>Agregar Nueva Pieza</h3>
-      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange}></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} InputProps={{readOnly: true}} defaultValue="Generado Automaticamente"></TextField>
       <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
       <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange}></TextField>
-      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange}></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} InputProps={{readOnly: true}} defaultValue="None"></TextField>
       <div align="right">
-      <Button color="primary" onClick={createPiece}>Insertar</Button>
+      <Button color="primary" onClick={beforeCreate}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
       </div>
     </div>
@@ -126,13 +165,13 @@ const Tablestock = ({stock}) => {
     const EditBody=(
     <div className={styles.modal}>
       <h3>Editar Pieza</h3>
-      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.id}></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.id} InputProps={{readOnly: true}}></TextField>
       <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.name}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.type}></TextField>
       <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.stock}></TextField>
-      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.color}></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue="None" InputProps={{readOnly: true}}></TextField>
       <div align="right">
-      <Button color="primary" onClick={editPiece}>Editar</Button>
+      <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
       </div>
     </div>
@@ -152,6 +191,7 @@ const Tablestock = ({stock}) => {
 
   return (
     <div>
+      <ToastContainer />
       <div className="btnInsert">
       <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
         Insertar

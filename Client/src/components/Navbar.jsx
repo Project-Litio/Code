@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import img from '../assets/logo.png'
 import './style.css'
+import { useNavigate } from 'react-router-dom';
 
 import {
   Link
@@ -23,6 +24,17 @@ const Navbar = () => {
   useEffect(() => {
     logged();
   }, []);
+
+  const navigateTo = useNavigate();
+
+  const deleteCookies = () => {
+    cookies.set('user', undefined, {
+      path: '/',
+      sameSite: 'None',
+      secure: true,
+    });
+    navigateTo('/');
+  };
 
   return (
       <nav className="navbar navbar-expand-lg bg-dark " data-bs-theme="dark">
@@ -51,10 +63,15 @@ const Navbar = () => {
                 </li> 
               }
               {loggedIn &&
-                <li className="nav-item mx-3">
-                  <Link className="nav-link active"  to='/dashboard'> <font color='White'>Dashboard</font></Link>
-                </li> 
+                  <li className="nav-item mx-3">
+                    <Link className="nav-link active"  to={'/dashboard'+cookies.get('user').role}> <font color='White'>Dashboard</font></Link>
+                  </li>                   
               }
+              {loggedIn &&
+                  <div onClick={deleteCookies}>
+                  <Link className="nav-link active"  to='/'> <font style={{ color: '#ee2641' }}>Salir</font></Link>
+                </div>                 
+              }              
             </ul>
           </div>
         </div>

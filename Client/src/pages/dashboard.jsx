@@ -1,11 +1,11 @@
-import Dashboard from '../components/Dashboard.jsx'
+import DashboardGerente from '../components/DashboardGerente.jsx'
 
 import React from 'react'
 
 const DashboardPage = () => {
   return (
     <div>
-      <Dashboard></Dashboard>
+      <DashboardGerente></DashboardGerente>
     </div>
   )
 }

@@ -6,9 +6,9 @@ import ReCAPTCHA from "react-google-recaptcha"
 import { useNavigate } from 'react-router-dom';
 import {login, otpLogin} from '../api/login.api'
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css'
-import 'react-toastify/dist/ReactToastify.css';
 
 import Cookies from 'universal-cookie';
 
@@ -81,6 +81,19 @@ function LoginForm() {
         }
     };
 
+  const usrTranslator = (usrType) => {
+    switch (key) {
+      case 'Man': 
+        return 'Gerente';
+      case 'Sel': 
+        return 'Vendedor';
+      case 'Mec': 
+        return 'Mecanico';
+      default:
+        break;
+    }
+  }
+
   const checkCode = () => {
     if(otp.join("") == coderesult){
       const cookies = new Cookies();
@@ -89,10 +102,10 @@ function LoginForm() {
         sameSite: 'None',
         secure: true,
       });
-      if(user.role == "Customer"){
+      if(user.role == "Cliente"){
         navigateTo('/collection');
       } else {
-        navigateTo('/dashboard');
+        navigateTo('/dashboard'+usrTranslator(user.role));
       }
     } else {
       notifyCode();

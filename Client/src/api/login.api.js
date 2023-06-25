@@ -43,3 +43,19 @@ export const customerCreate = (data) => {
 export const employeeCreate = (data) => {
     return loginApi.post('/employee', data)
 };
+
+export const employeeDetail = (pk) => {
+    return loginApi.get('/employeeDetail/'+pk)
+};
+
+export const customerDetail = (pk) => {
+    return loginApi.get('/customerDetail/'+pk)
+};
+
+export const branchDetail = (pk) => {
+    return loginApi.get('/branch/'+pk)
+};
+
+export const branchEdit = (data, pk) => {
+    return loginApi.patch('/branch/'+pk, data)
+};

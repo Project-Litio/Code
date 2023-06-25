@@ -1,4 +1,4 @@
-import DashboardVehiculo from '../components/DashboardVehiculo.jsx'
+import DashboardVehiculo from '../components/manejoVehiculo.jsx'
 
 import React from 'react'
 

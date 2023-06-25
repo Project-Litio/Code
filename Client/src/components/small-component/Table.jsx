@@ -2,9 +2,15 @@ import {React,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
-import {customerEdit, customerDelete, customerCreate, employeeEdit, employeeDelete, employeeCreate} from '../../api/login.api'
+import {customerEdit, customerDelete, customerCreate, employeeEdit, employeeDelete, employeeCreate, customerDetail, employeeDetail} from '../../api/login.api'
 import TablePagination from "@material-ui/core/TablePagination";
+import Select from 'react-select'
 import '../style.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -29,12 +35,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const roles = [
+  { value: 'Cliente', label: 'Cliente' },
+  { value: 'Sel', label: 'Vendedor' },
+  { value: 'Man', label: 'Gerente' },
+  { value: 'Mec', label: 'Mecanico' }
+]
+
+const types = [
+  { value: 'N', label: 'Natural' },
+  { value: 'J', label: 'Jurídica' }
+]
+
 const TableUSers = ({users}) => {
 
-
-  //--LLamado a Styles
   const styles = useStyles();
-  //--Estados
+
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
@@ -46,6 +62,34 @@ const TableUSers = ({users}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
+
+  const dataTranslator = (data) => {
+    switch (data) {
+      case 'first_name':
+        return 'Nombre';
+      case 'last_name':
+        return 'Apellido';
+      case 'email':
+        return 'Email';
+      case 'password':
+        return 'Password';
+      case 'id':
+        return 'Identificador';
+      case 'address':
+        return 'Direccion';
+      case 'phone':
+        return 'Telefono';
+      case 'role':
+        return 'Rol';
+      case 'branch':
+        return 'Sucursal';
+      case 'type':
+        return 'Tipo';
+      default:
+        console.log("Esto no debería pasar");
+    }
+  }
 
   const [selectedUser,setSelectedUser]=useState({
     first_name:'',
@@ -56,9 +100,9 @@ const TableUSers = ({users}) => {
     address:'',
     phone:'',
     role:'',
-    id_branch:''
+    branch:'',
+    type:''
   });
-
 
   const handleChange=e=>{
     const {name,value}= e.target;
@@ -91,8 +135,42 @@ const TableUSers = ({users}) => {
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
 
+  const beforeCreate = () => {verificarDatos("Crear");}
+  const beforeEdit = () => {verificarDatos("Editar");}
+
+  const verificarDatos = (act) => {
+    selectedUser.branch = cookies.get('user').branch;
+
+    if(selectedUser.password == '' && act == "Editar"){
+      delete selectedUser.password;
+    }
+    
+    if(selectedUser.type == '' && act == "Crear"){
+      selectedUser.type = 'N';
+    }
+
+    if(selectedUser.role == '' && act == "Crear"){
+      selectedUser.role = 'Cliente';
+    }
+
+    for ( var key in selectedUser ) {
+      if(selectedUser[key] == ''){
+        faltanDatos(key);
+        return false;
+      }
+    }
+
+    if(act == "Crear"){
+      createUser();
+    } else if(act == "Editar"){
+      editUser();
+    } else {
+      deleteUser();
+    }
+  }
+
   const deleteUser = async () => {
-    if(selectedUser.role == "Customer"){
+    if(selectedUser.role == "Cliente"){
       await customerDelete(selectedUser, selectedUser.id);
     } else {
       await employeeDelete(selectedUser, selectedUser.id);
@@ -101,21 +179,59 @@ const TableUSers = ({users}) => {
   }
 
   const editUser = async () => {
-    if(selectedUser.role == "Customer"){
-      await customerEdit(selectedUser, selectedUser.id);
+    if(selectedUser.role == "Cliente"){
+      console.log(selectedUser);
+      try {
+        await customerEdit(selectedUser, selectedUser.id);
+        window.location.reload(false);
+      } catch (error) {
+        if('password' in selectedUser){
+          await employeeDetail(selectedUser.id);
+          await employeeDelete(selectedUser, selectedUser.id);
+          createUser();
+        } else {
+          faltanDatos('password');
+        }
+      }
     } else {
-      await employeeEdit(selectedUser, selectedUser.id);
+      try {
+        await employeeEdit(selectedUser, selectedUser.id);
+        window.location.reload(false);
+      } catch (error) {
+        if('password' in selectedUser){
+          await customerDetail(selectedUser.id);
+          await customerDelete(selectedUser, selectedUser.id);
+          createUser();         
+        } else {
+          faltanDatos('password');
+        }
+      }
     }
-    window.location.reload(false);
   }
 
   const createUser = async () => {
-    if(selectedUser.role == "Customer"){
-      await customerCreate(selectedUser);
+    if(selectedUser.role == "Cliente"){
+      await customerCreate(selectedUser);  
     } else {
       await employeeCreate(selectedUser);
-    }
+    } 
     window.location.reload(false);
+  }
+
+  const handleRoleChange = (selectedOption) => {
+    selectedUser['role'] = selectedOption.value;
+  };
+
+  const handleTypeChange = (selectedOption) => {
+    selectedUser['type'] = selectedOption.value;
+  };
+
+  const searchIndex = (elem, array) => {
+    for(var key in array){
+      if(array[key].value == elem){
+        return key;
+      } 
+    }
   }
 
   //--Fin de Estados
@@ -130,10 +246,13 @@ const TableUSers = ({users}) => {
       <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange}></TextField>
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange}></TextField>
-      <TextField name='role' className={styles.inputMaterial} label="Rol" onChange={handleChange}></TextField>
-      <TextField name='id_branch' className={styles.inputMaterial} label="Sucursal (solo para empleados)" onChange={handleChange}></TextField>
+      <label className={styles.inputMaterial}>Rol</label>
+      <Select options={roles} onChange={handleRoleChange} defaultValue={roles[0]}/>
+      <label className={styles.inputMaterial}>Tipo</label>
+      <Select options={types} onChange={handleTypeChange} defaultValue={types[0]}/>
+      <TextField name='branch' className={styles.inputMaterial} label="Sucursal" onChange={handleChange} defaultValue={cookies.get('user').branch} InputProps={{readOnly: true}} ></TextField>
       <div align="right">
-      <Button color="primary" onClick={createUser}>Insertar</Button>
+      <Button color="primary" onClick={beforeCreate}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
       </div>
     </div>
@@ -145,13 +264,17 @@ const TableUSers = ({users}) => {
       <TextField name='first_name' className={styles.inputMaterial} label="Nombre" onChange={handleChange} defaultValue={selectedUser && selectedUser.first_name}></TextField>
       <TextField name='last_name' className={styles.inputMaterial} label="Apellido" onChange={handleChange} defaultValue={selectedUser && selectedUser.last_name}></TextField>
       <TextField name='email' className={styles.inputMaterial} label="Email" onChange={handleChange} defaultValue={selectedUser && selectedUser.email} ></TextField>
-      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedUser && selectedUser.id}></TextField>
+      <TextField name='password' className={styles.inputMaterial} label="Password" onChange={handleChange} defaultValue={selectedUser && selectedUser.password}></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedUser && selectedUser.id} InputProps={{readOnly: true}}></TextField>
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange} defaultValue={selectedUser && selectedUser.address}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange} defaultValue={selectedUser && selectedUser.phone}></TextField>
-      <TextField name='role' className={styles.inputMaterial} label="Rol" onChange={handleChange} defaultValue={selectedUser && selectedUser.role}></TextField>
-      <TextField name='id_branch' className={styles.inputMaterial} label="Sucursal (solo para empleados)" onChange={handleChange} defaultValue={selectedUser && selectedUser.id_branch}></TextField>
+      <label className={styles.inputMaterial}>Rol</label>
+      <Select options={roles} onChange={handleRoleChange} defaultValue={roles[searchIndex(selectedUser.role, roles)]}/>
+      <label className={styles.inputMaterial}>Tipo</label>
+      <Select options={types} onChange={handleTypeChange} defaultValue={types[searchIndex(selectedUser.type, types)]}/>
+      <TextField name='branch' className={styles.inputMaterial} label="Sucursal" onChange={handleChange} defaultValue={cookies.get('user').branch} InputProps={{readOnly: true}}></TextField>
       <div align="right">
-      <Button color="primary" onClick={editUser}>Editar</Button>
+      <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
       </div>
     </div>
@@ -174,6 +297,7 @@ const TableUSers = ({users}) => {
 
   return (
     <div>
+      <ToastContainer />
       <div className="btnInsert">
       <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
         Insertar
@@ -190,6 +314,7 @@ const TableUSers = ({users}) => {
             <TableCell><b>Direccion</b></TableCell>
             <TableCell><b>Telefono</b></TableCell>
             <TableCell><b>Rol</b></TableCell>
+            <TableCell><b>Tipo</b></TableCell>
             <TableCell><b>Sucursal</b></TableCell>
             </TableRow>
           </TableHead>
@@ -204,6 +329,7 @@ const TableUSers = ({users}) => {
                   <TableCell>{user.address}</TableCell>
                   <TableCell>{user.phone}</TableCell>
                   <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.type}</TableCell>
                   <TableCell>{user.id_branch}</TableCell>
                   <TableCell>
                     <Edit className={styles.iconos} onClick={()=>selectUser(user,'Editar')}  />

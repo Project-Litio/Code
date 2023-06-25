@@ -1,4 +1,4 @@
-import DashboardUsuarios from '../components/DashboardUsuarios.jsx'
+import DashboardUsuarios from '../components/manejoUsuarios.jsx'
 
 import React from 'react'
 

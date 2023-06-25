@@ -15,7 +15,7 @@ import {
 
 export const mainListItems = (
   <div>
-    <ListItem button component={Link} to="/Dashboard">
+    <ListItem button component={Link} to="/DashboardGerente">
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
@@ -27,7 +27,7 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Usuarios" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component={Link} to="/SucursalesManagement">
       <ListItemIcon>
         <StoreIcon />
       </ListItemIcon>
@@ -45,7 +45,7 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Repuestos" />
     </ListItem>
-    <ListItem button>
+    <ListItem button >
       <ListItemIcon>
         <BarChartIcon />
       </ListItemIcon>
