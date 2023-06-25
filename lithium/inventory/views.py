@@ -163,7 +163,7 @@ class CarDetailAPI(APIView):
             serializer_car.save()
             return Response({"status": "success", "data": {"car": serializer_car.data}})
 
-        return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"status": "fail", "message": serializer_car.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
     def delete(self, request, pk):
@@ -292,7 +292,7 @@ class ReplacementDetailAPI(APIView):
             #Save the rest of the data input for the Replacement--------------------------------------------------------------------------------
             serializer_replacement.save()
             return Response({"status": "success", "data": {"replacement": serializer_replacement.data}})
-        return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"status": "fail", "message": serializer_replacement.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         replacement = self.get_replacement(pk)

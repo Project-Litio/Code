@@ -13,9 +13,9 @@ class Work_order(models.Model):
     plate=models.CharField(max_length=10)
     observation=models.TextField(null=True)
     amount=models.IntegerField()
-    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
-    id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-    id_replacement=models.ForeignKey(Replacement,on_delete=PROTECT)
+    id_employee=models.ForeignKey(Employee,on_delete=models.SET_NULL)
+    id_customer=models.ForeignKey(models.Customer,on_delete=models.SET_NULL)
+    id_replacement=models.ForeignKey(Replacement,on_delete=models.PROTECT)
 
 class Quotation(models.Model):
     id=models.AutoField(primary_key=True)
@@ -24,9 +24,9 @@ class Quotation(models.Model):
     total=models.IntegerField()
     amount=models.IntegerField()
     subtotal=models.IntegerField()
-    id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
-    id_car=ForeignKey(Car,on_delete=SET_NULL)
+    id_customer=models.ForeignKey(models.Customer,on_delete=models.SET_NULL)
+    id_employee=models.ForeignKey(Employee,on_delete=models.SET_NULL)
+    id_car=models.ForeignKey(Car,on_delete=models.SET_NULL)
     
 class Bill(models.model):
     PAYMENT_METHODS = [
@@ -42,7 +42,7 @@ class Bill(models.model):
     total=models.IntegerField()
     amount=models.IntegerField()
     subtotal=models.IntegerField()
-    id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
-    id_car=ForeignKey(Car,on_delete=SET_NULL)
+    id_customer=models.ForeignKey(models.Customer,on_delete=models.SET_NULL)
+    id_employee=models.ForeignKey(Employee,on_delete=models.SET_NULL)
+    id_car=models.ForeignKey(Car,on_delete=models.SET_NULL)
 
