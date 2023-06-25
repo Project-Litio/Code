@@ -12,30 +12,22 @@ class Work_order(models.Model):
     model_date=models.CharField(max_length=10)
     plate=models.CharField(max_length=10)
     observation=models.TextField(null=True)
+    amount=models.IntegerField()
     id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
     id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-
-class Order_detail(models.Model):
-    id=models.AutoField(primary_key=True)
     id_replacement=models.ForeignKey(Replacement,on_delete=PROTECT)
-    id_order=models.ForeignKey(Work_oder,on_delete=CASCADE)
-    amount=models.IntegerField()
 
 class Quotation(models.Model):
     id=models.AutoField(primary_key=True)
     date=models.DateTimeField(auto_now_add=True)
     observation=models.TextField(null=True)
     total=models.IntegerField()
-    id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
-
-class Quotation_detail(models.Model):
-    id=models.AutoField(primary_key=True)
-    id_car=ForeignKey(Car,on_delete=SET_NULL)
-    id_quotation=ForeignKey(Quotation,on_delete=CASCADE)
     amount=models.IntegerField()
     subtotal=models.IntegerField()
-
+    id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
+    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
+    id_car=ForeignKey(Car,on_delete=SET_NULL)
+    
 class Bill(models.model):
     PAYMENT_METHODS = [
         ("TC","Tarjeta de crédito"),
@@ -48,18 +40,9 @@ class Bill(models.model):
     payment_method=models.CharField(max_length=2,choices=PAYMENT_METHODS)
     observation=models.TextField(null=True)
     total=models.IntegerField()
-    id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
-    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
-
-class Bill_detail(models.model):
-    id=models.AutoField(primary_key=True)
-    id_car=ForeignKey(Car,on_delete=SET_NULL)
-    id_bill=ForeignKey(Bill,on_delete=CASCADE)
     amount=models.IntegerField()
     subtotal=models.IntegerField()
+    id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
+    id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
+    id_car=ForeignKey(Car,on_delete=SET_NULL)
     
-    
-
-
-
-
