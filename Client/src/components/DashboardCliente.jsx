@@ -24,7 +24,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import Cookies from 'universal-cookie';
 
-const cookies = new Cookies()
+var cookies = new Cookies();
+var cookies = new Cookies();
 
 const drawerWidth = 200;
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -24,11 +24,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import Cookies from 'universal-cookie';
 
-const cookies = new Cookies()
-
-console.log(cookies.get('user'))
-
 const drawerWidth = 200;
+var cookies = new Cookies();
+console.log(cookies.get('user'));
+var cookies = new Cookies();
 
 const useStyles = makeStyles((theme) => ({ 
   root: {
@@ -121,7 +120,7 @@ export default function DashboardGerente() {
     });
     navigateTo('/');
   };
-  
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {

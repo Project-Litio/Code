@@ -82,7 +82,7 @@ function LoginForm() {
     };
 
   const usrTranslator = (usrType) => {
-    switch (key) {
+    switch (usrType) {
       case 'Man': 
         return 'Gerente';
       case 'Sel': 
@@ -104,8 +104,10 @@ function LoginForm() {
       });
       if(user.role == "Cliente"){
         navigateTo('/collection');
+        window.location.reload(false);
       } else {
-        navigateTo('/dashboard/'+usrTranslator(user.role));
+        navigateTo('/dashboard'+usrTranslator(user.role));
+        //window.location.reload(false);
       }
     } else {
       notifyCode();

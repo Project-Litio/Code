@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import img from '../assets/logo.png'
 import './style.css'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
   Link
@@ -12,7 +12,7 @@ import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
 const usrTranslator = (usrType) => {
-  switch (key) {
+  switch (usrType) {
     case 'Man': 
       return 'Gerente';
     case 'Sel': 
@@ -25,6 +25,7 @@ const usrTranslator = (usrType) => {
 }
 
 const Navbar = () => {
+  const location = useLocation();
   const [loggedIn, setLogged] = useState(false);
   const logged = () => {
     if(cookies.get('user') != "undefined"){
@@ -47,6 +48,9 @@ const Navbar = () => {
       secure: true,
     });
     navigateTo('/');
+    if(location.pathname == "/"){
+      window.location.reload(false);
+    }
   };
 
   return (
@@ -77,12 +81,13 @@ const Navbar = () => {
               }
               {loggedIn &&
                   <li className="nav-item mx-3">
-                    <Link className="nav-link active"  to={'/dashboard/'+usrTranslator(cookies.get('user').role)}> <font color='White'>Dashboard</font></Link>
+                    <Link className="nav-link active"  to={'/dashboard'+usrTranslator(cookies.get('user').role)}> <font color='White'>Dashboard</font></Link>
                   </li>                   
               }
               {loggedIn &&
                   <div onClick={deleteCookies}>
-                  <Link className="nav-link active"  to='/'> <font style={{ color: '#ee2641' }}>Salir</font></Link>
+                  <Link className="nav-link active"> <font style={{ color: '#ee2641' }}>Salir</font></Link>
+                  
                 </div>                 
               }              
             </ul>
