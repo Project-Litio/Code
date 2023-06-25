@@ -1,6 +1,6 @@
 import React from 'react'
-import img from '../assets/logo.png'
 import './style.css'
+import {Link} from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -16,15 +16,19 @@ const Footer = () => {
               <h5>Copyright&copy;  </h5>
             </div>
             <div className="col-lg-2 col-sm-2 col-3">
-              <h5>Incio</h5>
-
+              <Link className="navbar-brand " to='/'>
+                <h5>Inicio</h5>
+              </Link>
             </div>
             <div className="col-lg-2 col-sm-2 col-3">
-              <h5>Coleccion</h5>
+              <Link className="navbar-brand " to='/collection'>
+                <h5>Coleccion</h5>
+              </Link>
             </div>
             <div className="col-lg-2 col-sm-2  col-0">
-              <h5>Idenfificate</h5>
-
+              <Link className="navbar-brand " to='/login'>
+                <h5>Idenfificate</h5>
+              </Link>
             </div>
           </div>
         </div>

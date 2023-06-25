@@ -128,10 +128,10 @@ class CarDetailAPI(APIView):
         if car == None:
             return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = self.car_serializer(
+        serializer_car = self.car_serializer(
             car, data=request.data, partial=True)
 
-        if serializer.is_valid():
+        if serializer_car.is_valid():
             #If there's an image--------------------------------------------------------------------------------------------------------------
             image_file = request.FILES.get('image')
 
@@ -151,17 +151,17 @@ class CarDetailAPI(APIView):
                 if article == None:
                     return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-                serializer = self.article_serializer(
+                serializer_article = self.article_serializer(
                     article, data=article_data, partial=True)
                 
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({"status": "success", "data": {"article": serializer.data}})
-                return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                if serializer_article.is_valid():
+                    serializer_article.save()
+                    #return Response({"status": "success", "data": {"article": serializer.data}})
+                #return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
             #Save the rest of the data input for the car--------------------------------------------------------------------------------------
-            serializer.save()
-            return Response({"status": "success", "data": {"car": serializer.data}})
+            serializer_car.save()
+            return Response({"status": "success", "data": {"car": serializer_car.data}})
 
         return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -267,10 +267,10 @@ class ReplacementDetailAPI(APIView):
         if replacement == None:
             return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = self.article_serializer(
+        serializer_replacement = self.replacement_serializer(
             replacement, data=request.data, partial=True)
 
-        if serializer.is_valid():
+        if serializer_replacement.is_valid():
             #If there's an id_article---------------------------------------------------------------------------------------------------------
             article_data = request.data.get('id_article') #If it doesn't exist, it returns "None"
             if (not isinstance(article_data, dict) and article_data != None):
@@ -281,17 +281,17 @@ class ReplacementDetailAPI(APIView):
                 if article == None:
                     return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-                serializer = self.article_serializer(
+                serializer_article = self.article_serializer(
                     article, data=article_data, partial=True)
                 
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({"status": "success", "data": {"article": serializer.data}})
-                return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                if serializer_article.is_valid():
+                    serializer_article.save()
+                    #return Response({"status": "success", "data": {"article": serializer.data}})
+                #return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
             #Save the rest of the data input for the Replacement--------------------------------------------------------------------------------
-            serializer.save()
-            return Response({"status": "success", "data": {"replacement": serializer.data}})
+            serializer_replacement.save()
+            return Response({"status": "success", "data": {"replacement": serializer_replacement.data}})
         return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):

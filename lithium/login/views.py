@@ -135,7 +135,8 @@ class EmployeeAPI(APIView):
                 "address": emp.address,
                 "phone": emp.phone,
                 "role": emp.role,
-                "id_branch": emp.id_branch_id
+                "id_branch": emp.id_branch_id,
+                "type": "No aplica"
             }
             fulldata.append(query)
 
@@ -269,7 +270,9 @@ class CustomerLogin(APIView):
                 "address":customer.address,
                 "phone":customer.phone,
                 "type":customer.type,
-                "role": "Customer"}
+                "role": "Cliente",
+                "branch": "No aplica"
+                }
             else:
                 emp = Employee.objects.filter(id_user=user.id)[0]
                 data = {"id":emp.id,
@@ -279,7 +282,8 @@ class CustomerLogin(APIView):
                 "address":emp.address,
                 "phone":emp.phone,
                 "role":emp.role,
-                "branch":emp.id_branch_id}
+                "branch":emp.id_branch_id,
+                "type": "No aplica"}
 
             return Response({"data":data})
         else:
@@ -303,19 +307,19 @@ class BranchAPI(APIView):
         branch = self.get_branch(pk=pk)
         if branch == None:
             return Response({"status": "fail", "message": f"Branch with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-    
+
         data = {
             "city": branch.city,
             "address": branch.address    
         }
         return Response({"status": "success", "data": data})
-    
+
     def patch(self, request, pk):
         branch = Branch.objects.get(id=pk)
 
         if branch == None:
             return Response({"status": "fail", "message": f"Branch with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+
         #Modifying the user
         with transaction.atomic():
             serializer = self.serializer_class(branch, data=request.data, partial=True)

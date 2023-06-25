@@ -13,7 +13,6 @@ const Collection = () => {
     <Carousel></Carousel>
     <Add></Add>
     <ModelAvailable></ModelAvailable>
-    <Findus></Findus>
     <Footer/>
     </div>
 

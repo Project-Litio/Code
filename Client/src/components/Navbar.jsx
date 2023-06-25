@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import img from '../assets/logo.png'
 import './style.css'
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
   Link
@@ -10,7 +11,23 @@ import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
 
+const usrTranslator = (usrType) => {
+  if(usrType != undefined){
+    switch (usrType.role) {
+      case 'Man': 
+        return 'Gerente';
+      case 'Sel': 
+        return 'Vendedor';
+      case 'Mec': 
+        return 'Mecanico';
+      default:
+        break;
+    }
+  }
+}
+
 const Navbar = () => {
+  const location = useLocation();
   const [loggedIn, setLogged] = useState(false);
   const logged = () => {
     if(cookies.get('user') != "undefined"){
@@ -23,6 +40,20 @@ const Navbar = () => {
   useEffect(() => {
     logged();
   }, []);
+
+  const navigateTo = useNavigate();
+
+  const deleteCookies = () => {
+    cookies.set('user', undefined, {
+      path: '/',
+      sameSite: 'None',
+      secure: true,
+    });
+    navigateTo('/');
+    if(location.pathname == "/"){
+      window.location.reload(false);
+    }
+  };
 
   return (
       <nav className="navbar navbar-expand-lg bg-dark " data-bs-theme="dark">
@@ -51,10 +82,16 @@ const Navbar = () => {
                 </li> 
               }
               {loggedIn &&
-                <li className="nav-item mx-3">
-                  <Link className="nav-link active"  to='/dashboard'> <font color='White'>Dashboard</font></Link>
-                </li> 
+                  <li className="nav-item mx-3">
+                    <Link className="nav-link active"  to={'/dashboard'+usrTranslator(cookies.get('user'))}> <font color='White'>Dashboard</font></Link>
+                  </li>                   
               }
+              {loggedIn &&
+                  <div onClick={deleteCookies}>
+                  <Link className="nav-link active"> <font style={{ color: '#ee2641' }}>Salir</font></Link>
+                  
+                </div>                 
+              }              
             </ul>
           </div>
         </div>

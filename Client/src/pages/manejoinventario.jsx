@@ -1,4 +1,4 @@
-import DashboardInventario from '../components/DashboardInventario.jsx'
+import DashboardInventario from '../components/manejoInventario.jsx'
 
 import React from 'react'
 
