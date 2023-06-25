@@ -105,7 +105,7 @@ function LoginForm() {
       if(user.role == "Cliente"){
         navigateTo('/collection');
       } else {
-        navigateTo('/dashboard'+usrTranslator(user.role));
+        navigateTo('/dashboard/'+usrTranslator(user.role));
       }
     } else {
       notifyCode();
