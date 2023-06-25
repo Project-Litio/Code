@@ -6,32 +6,32 @@ const cards = [
   {
     id:1,
     title: 'Seguro',
-    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
+    test: 'Contamos con una plataforma de pago segura, certificada por los mejores. Tu información siempre estará a salvo. '
   },
   {
     id:2,
     title: 'Amplia Selección',
-    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
+    test: 'Ofrecemos autos eléctricos de varias marcas y proveedores, con la finalidad de que encuentres uno que se ajuste a tus gustos.'
   },
   {
     id:3,
     title: 'Precios Justos',
-    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
+    test: '¡Tenemos precios de locura! Si dudas de nosotros, busca uno de nuestros vehículos en otra web y comparas sus precios.'
   },
   {
     id:4,
-    title: 'Financiamiento Flexible',
-    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
+    title: 'Variedad de opciones de pago',
+    test: 'Puedes pagarnos por medio de tarjetas de crédito, débito, o incluso, con cheques, ¿No es eso impresionante?'
   },
   {
     id:5,
     title: 'En Manos De Expertos',
-    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
+    test: 'Todo nuestro personal está ampliamente capacitado para brindarte la mejor atención. Esta página ha tomado tiempo, apreciala.'
   },
   {
     id:6,
     title: 'Buen Servicio Postventa',
-    test: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam interdum, ante ut viverra convallis, libero lorem pulvinar odio, '
+    test: 'Estaremos al tanto de como vas con tu nuevo vehículo, seguramente no tendrás ninguna queja, pero estaremos aquí por si acaso.'
   }
 ]
 

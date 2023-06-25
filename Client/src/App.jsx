@@ -30,15 +30,17 @@ function App() {
   const [seller, setSeller] = useState(false);
   const [mechanic, setMechanic] = useState(false);
   const logged = () => {
-    if(cookies.get('user').role == "Cliente"){
-      setClient(true);
-    } else if(cookies.get('user').role == "Man"){
-      setManager(true);
-    } else if(cookies.get('user').role == "Sel"){
-      setSeller(true);
-    } else if(cookies.get('user').role == "Mec"){
-      setMechanic(true);
-    } 
+    if(cookies.get('user') != undefined){
+      if(cookies.get('user').role == "Cliente"){
+        setClient(true);
+      } else if(cookies.get('user').role == "Man"){
+        setManager(true);
+      } else if(cookies.get('user').role == "Sel"){
+        setSeller(true);
+      } else if(cookies.get('user').role == "Mec"){
+        setMechanic(true);
+      } 
+    }
   };
 
   useEffect(() => {

@@ -8,25 +8,25 @@ const Add = () => {
       <div className="col-12 col-sm-6 col-md-3 cardI text-center py-2">
         <div className="div">
           <h5>Reserva Online</h5>
-          <p>Hola como tas</p>
+          <p>Compra tu vehículo desde la comodidad de tu hogar</p>
         </div>
       </div>
       <div className="col-12 col-sm-6 col-md-3 cardI text-center py-2">
         <div className="div">
-          <h5>Ver Precios</h5>
-          <p>Hola como tas</p>
+          <h5>Compara Precios</h5>
+          <p>Y verás que los nuestros son los mejores</p>
         </div>
       </div>
       <div className="col-12 col-sm-6 col-md-3 cardI text-center py-2">
         <div className="div">
           <h5>Agenda Tu Test Drive</h5>
-          <p>Hola como tas</p>
+          <p>Prueba el vehículo de tus sueños</p>
         </div>
       </div>
       <div className="col-12 col-sm-6 col-md-3 cardI text-center py-2">
         <div className="div">
           <h5>Encuentra Uno Para Ti</h5>
-          <p>Hola como tas</p>
+          <p>Una amplia variedad sobre la cual escoger</p>
         </div>
       </div>
 

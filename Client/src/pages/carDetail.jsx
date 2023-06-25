@@ -6,12 +6,12 @@ import CarSpecification from '../components/vehicle/CarSpecification'
 import Footer from '../components/Footer'
 
 const carDetail = () => {
-  const params = useParams()
+  const params = useParams();
   return (
     <div className='bg-white'>
       <Navbar></Navbar>
         <div className='container py-5'>
-          <CardCar title={params.id} text={params.test} ></CardCar>
+          <CardCar title={params.brand+' '+params.model} ></CardCar>
         </div>
       <div className='container pb-5'>
       <CarSpecification></CarSpecification>

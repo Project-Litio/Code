@@ -1,60 +1,22 @@
-import React from 'react'
-import img1 from '../assets/cars/t-m-3.png'
-import {
-  Link
-} from "react-router-dom";
+import React, {useState, useEffect} from 'react'
+import {Link} from "react-router-dom";
 import CardI from './small-component/CardI'
+import {getCars} from '../api/article.api'
+import Cookies from 'universal-cookie';
 
-
-const cars =[
-  {
-    "id":1,
-    "title": "Molel S",
-    "test": "Sedan",
-    "image":img1
-  },
-  {
-    "id":2,
-    "title": "Molel 3",
-    "test": "Sedan",
-    "image":img1
-  },
-  {
-    "id":3,
-    "title": "Molel X",
-    "test": "Sedan",
-    "image":img1
-  },
-  {
-    "id":4,
-    "title": "Molel Y",
-    "test": "SUV",
-    "image":img1
-  },
-  {
-    "id":5,
-    "title": "Renault Zoe ",
-    "test": "SUV",
-    "image":img1
-  },
-  {
-    "id":6,
-    "title": "kia Soul EV",
-    "test": "Sedan",
-    "image":img1
-  },
-  {
-    "id":7,
-    "title": "Bmw IX Xdrive",
-    "test": "SUV",
-    "image":img1
-  }
-]
-
-export {cars}
-
+const cookies = new Cookies()
 
 const ModelAvailable = () => {
+  const [cars, setCars] = useState([]);
+  const loaded = async () => {
+    const result = await getCars();
+    setCars(result.data);
+  };
+
+  useEffect(() => {
+    loaded();
+  }, []);
+
   return (
     <div className='container'>
       <h2 className='px-3'>NUESTROS VEHÍCULOS</h2>
@@ -62,14 +24,12 @@ const ModelAvailable = () => {
       {
         cars.map(car => 
           (
-          <div className="col-6 col-sm-6 col-md-4 col-lg-4 " key={car.id}>
-            <Link to={`/collection/${car.title}`} > <CardI title={car.title} text={car.test} imageSource={car.image}></CardI> </Link>
-          </div>
+            <div className="col-6 col-sm-6 col-md-4 col-lg-4 " key={car.id}>
+              <Link to={`/collection/${car.id}`} > <CardI title={car.brand+' '+car.model} text={car.price} imageSource={"https://res.cloudinary.com/dao5kgzkm/"+car.image}></CardI> </Link>
+            </div>
 
           )
-          )
-          
-      
+        ) 
       }
     </div>
     </div>

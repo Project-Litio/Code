@@ -103,11 +103,9 @@ function LoginForm() {
         secure: true,
       });
       if(user.role == "Cliente"){
-        navigateTo('/collection');
-        window.location.reload(false);
+        window.location.assign('collection');
       } else {
-        navigateTo('/dashboard'+usrTranslator(user.role));
-        //window.location.reload(false);
+        window.location.assign('dashboard'+usrTranslator(user.role));
       }
     } else {
       notifyCode();

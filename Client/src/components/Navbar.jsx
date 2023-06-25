@@ -12,15 +12,17 @@ import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
 const usrTranslator = (usrType) => {
-  switch (usrType) {
-    case 'Man': 
-      return 'Gerente';
-    case 'Sel': 
-      return 'Vendedor';
-    case 'Mec': 
-      return 'Mecanico';
-    default:
-      break;
+  if(usrType != undefined){
+    switch (usrType.role) {
+      case 'Man': 
+        return 'Gerente';
+      case 'Sel': 
+        return 'Vendedor';
+      case 'Mec': 
+        return 'Mecanico';
+      default:
+        break;
+    }
   }
 }
 
@@ -81,7 +83,7 @@ const Navbar = () => {
               }
               {loggedIn &&
                   <li className="nav-item mx-3">
-                    <Link className="nav-link active"  to={'/dashboard'+usrTranslator(cookies.get('user').role)}> <font color='White'>Dashboard</font></Link>
+                    <Link className="nav-link active"  to={'/dashboard'+usrTranslator(cookies.get('user'))}> <font color='White'>Dashboard</font></Link>
                   </li>                   
               }
               {loggedIn &&
