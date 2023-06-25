@@ -45,5 +45,4 @@ class Bill(models.model):
     id_customer=models.ForeignKey(Customer,on_delete=SET_NULL)
     id_employee=models.ForeignKey(Employee,on_delete=SET_NULL)
     id_car=ForeignKey(Car,on_delete=SET_NULL)
-    
-    
+
