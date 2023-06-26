@@ -2,6 +2,7 @@ import React from 'react'
 import img1 from '../../assets/cars/t-m-3.png'
 import './style.css'
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 
 
@@ -63,6 +64,7 @@ const CardCar = ({title,text}) => {
                 new Intl.NumberFormat('en-DE').format(130000000)
               } COP 
               </h3>
+              <Link to='/collection/buy'>  <button className='buttonC'>Comprar</button> </Link>
             </div>
           </div>
         </div>

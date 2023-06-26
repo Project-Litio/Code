@@ -301,7 +301,7 @@ const TableCars = ({cars}) => {
 
   const DeleteBody=(
     <div className={styles.modal}>
-      <p>Estas seguro que deseas eliminar el vehiculo {selectedcar && selectedcar.brand}?</p>
+      <p>¿Estas seguro que deseas eliminar el vehiculo {selectedcar && selectedcar.brand}?</p>
       <div align="right">
       <Button color="secondary" onClick={deletecar}>Si</Button>
       <Button onClick={()=>openCloseDeleteModal()}>No</Button>
