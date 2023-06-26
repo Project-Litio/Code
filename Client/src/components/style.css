@@ -552,3 +552,11 @@ input:focus, textarea:focus, select:focus{
   background-color: #00B86B;
   text-align: center;
 }
+
+.search-form input {
+  transition: width 0.3s ease-in-out;
+}
+
+.search-form input:focus {
+  width: 200px; /* Ancho deseado al enfocar el campo de búsqueda */
+}

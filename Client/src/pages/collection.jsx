@@ -5,16 +5,17 @@ import Carousel from '../components/Carousel'
 import Add from '../components/small-component/Add'
 import ModelAvailable from '../components/ModelAvailable'
 import Findus from '../components/Findus'
+import { motion } from 'framer-motion'
 const Collection = () => {
   
   return (
-    <div className='bg-white'>
+    <motion.div layout className='bg-white'>
     <Navbar  />
     <Carousel></Carousel>
     <Add></Add>
     <ModelAvailable></ModelAvailable>
     <Footer/>
-    </div>
+    </motion.div>
 
   )
 }
