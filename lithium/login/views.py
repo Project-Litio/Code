@@ -11,12 +11,13 @@ from django.db import transaction
 from rest_framework import status
 from .models import *
 from .serializers import *
+from order.models import *
 
 # Create your views here.
 
 class CustomerAPI(APIView):
     def get(self,request):
-        queryset = Customer.objects.all()
+        queryset = Customer.objects.all().exclude(id="000000000000")
         fullset = []
         for c in queryset:
             query = {"id":c.id,
@@ -113,6 +114,23 @@ class CustomerDetailAPI(APIView):
             if customer  == None:
                 return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
             
+            def_user = Customer.objects.get(id="000000000000")
+            
+            work_order = Work_order.objects.filter(id_customer=pk)
+            for w in work_order:
+                w.id_customer = def_user
+                w.save()
+
+            quotation = Quotation.objects.filter(id_customer=pk)
+            for q in quotation:
+                q.id_customer = def_user
+                q.save()
+
+            bill = Bill.objects.filter(id_customer=pk)
+            for b in bill:
+                b.id_customer = def_user
+                b.save()
+                
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         
@@ -122,7 +140,7 @@ class EmployeeAPI(APIView):
         fulldata = []
 
         if (branch_id == 0):
-            queryset = Employee.objects.all()
+            queryset = Employee.objects.all().exclude(id="000000000000").exclude(id="00000000000")
         else:
             queryset = Employee.objects.filter(id_branch_id=branch_id)
             
@@ -237,10 +255,28 @@ class EmployeeDetailAPI(APIView):
             if employee == None:
                 return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
             
+            if employee.role == "Sel":
+                def_user = Employee.objects.get(id="000000000000")
+            elif employee.role == "Mec":
+                def_user = Employee.objects.get(id="00000000000")
+
+            work_order = Work_order.objects.filter(id_employee=pk)
+            for w in work_order:
+                w.id_employee = def_user
+                w.save()
+
+            quotation = Quotation.objects.filter(id_employee=pk)
+            for q in quotation:
+                q.id_employee = def_user
+                q.save()
+
+            bill = Bill.objects.filter(id_employee=pk)
+            for b in bill:
+                b.id_employee = def_user
+                b.save()            
+
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 
 
 class EmailBackend(ModelBackend):

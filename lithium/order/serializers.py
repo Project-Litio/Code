@@ -11,8 +11,8 @@ class All_work_order_Serializer(serializers.ModelSerializer):
 class Work_order_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Work_order
-        fields = ['end_date','model','model_date','plate','observation','amount','id_employee','id_customer','id_replacement']
-
+        fields = '__all__'
+        
 class All_quotation_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Quotation
@@ -21,7 +21,7 @@ class All_quotation_Serializer(serializers.ModelSerializer):
 class Quotation_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Quotation
-        fields = ['observation','total','amount','subtotal','id_customer','id_employee','id_car']
+        fields = '__all__'
 
 class All_bill_Serializer(serializers.ModelSerializer):
     class Meta:
@@ -31,5 +31,5 @@ class All_bill_Serializer(serializers.ModelSerializer):
 class Bill_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Bill
-        fields = ['payment_method','observation','total','amount','subtotal','id_customer','id_employee','id_car']
+        fields = '__all__'
 
