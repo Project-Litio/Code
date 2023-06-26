@@ -52,7 +52,7 @@ class Order_detailDetailAPI(APIView):
             return Response({"status": "fail", "message": f"Order_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = self.all_order_detail_serializer(order_detail)
-        return Response({"status": "success", "data": {"order_detail": serializer.data}})
+        return Response(serializer.data)
         
     '''
     def patch(self, request, pk):
@@ -152,7 +152,7 @@ class Work_orderAPI(APIView):
             }
             fullset.append(query)
         
-        return Response({"status":"success","data":fullset})
+        return Response(fullset)
 
     def post(self, request):
         serializer = self.work_order_serializer(data=request.data)
@@ -192,7 +192,7 @@ class Work_orderDetailAPI(APIView):
                 "id_customer":w.id_customer.id,
                 "order_detail": order_details_serializer.data,
             }
-        return Response({"status": "success", "data": {"work_order": data}})
+        return Response(data)
 
     def patch(self, request, pk):
         work_order = self.get_work_order(pk=pk)
