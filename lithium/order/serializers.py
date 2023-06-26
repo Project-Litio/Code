@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from order.models import Work_order, Order_detail, Quotation, Quotation_detail, Bill, Bill_detail
+from order.models import Work_order, Quotation, Bill
 from inventory.models import Article, Car, Replacement
 from login.models import Employee,Customer
 
@@ -11,7 +11,7 @@ class All_work_order_Serializer(serializers.ModelSerializer):
 class Work_order_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Work_order
-        fields = ['end_date','model','model_date','plate','observations','amount','id_employee','id_customer','id_replacement']
+        fields = ['end_date','model','model_date','plate','observation','amount','id_employee','id_customer','id_replacement']
 
 class All_quotation_Serializer(serializers.ModelSerializer):
     class Meta:

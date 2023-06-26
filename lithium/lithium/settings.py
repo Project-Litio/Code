@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',  #Para configurar que dominios pueden hacer peticiones a la app
     'login',
     'inventory',
+    'order',
 ]
 
 MIDDLEWARE = [

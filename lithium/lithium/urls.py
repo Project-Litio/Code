@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', include('login.urls')),
     path('inventory/',include('inventory.urls')),
+    path('order/',include('order.urls')),
 ]
 
 #The line beneath this should be deleted aftert Deployment:
