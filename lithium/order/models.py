@@ -17,8 +17,8 @@ class Work_order(models.Model):
 
 class Order_detail(models.Model):
     id=models.AutoField(primary_key=True)
-    id_work_order=models.ForeignKey(Work_order,on_delete=models.CASCADE, null=True)
-    id_article=models.ForeignKey(Replacement,on_delete=models.SET_NULL, null=True)
+    id_work_order=models.ForeignKey(Work_order,on_delete=models.SET_NULL, null=True)
+    id_replacement=models.ForeignKey(Replacement,on_delete=models.SET_NULL, null=True)
     amount=models.IntegerField()
 
 class Quotation(models.Model):
@@ -31,8 +31,8 @@ class Quotation(models.Model):
 
 class Quotation_detail(models.Model):
     id=models.AutoField(primary_key=True)
-    id_quotation=models.ForeignKey(Quotation,on_delete=models.CASCADE)
-    id_car=models.ForeignKey(Car,on_delete=models.SET_NULL,null=True)
+    id_quotation=models.ForeignKey(Quotation,on_delete=models.SET_NULL, null=True)
+    id_car=models.ForeignKey(Car,on_delete=models.SET_NULL, null=True)
     amount=models.IntegerField()
     subtotal=models.FloatField()
     
@@ -53,7 +53,7 @@ class Bill(models.Model):
 
 class Bill_detail(models.Model):
     id=models.AutoField(primary_key=True)
-    id_bill=models.ForeignKey(Bill,on_delete=models.CASCADE)
+    id_bill=models.ForeignKey(Bill,on_delete=models.SET_NULL, null=True)
     id_car=models.ForeignKey(Car,on_delete=models.SET_NULL, null=True)
     amount=models.IntegerField()
     subtotal=models.IntegerField()
