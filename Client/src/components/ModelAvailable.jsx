@@ -51,7 +51,7 @@ const ModelAvailable = () => {
         }).map(car => 
           (
             <motion.div layout className="col-6 col-sm-6 col-md-4 col-lg-4 " key={car.id}>
-              <Link to={`/collection/${car.id}`} > <CardI  title={car.brand+' '+car.model} text={car.price} imageSource={"https://res.cloudinary.com/dao5kgzkm/"+car.image}></CardI> </Link>
+              <Link className='link-style' to={`/collection/${car.id}`}  state={car} > <CardI  title={car.brand+' '+car.model} price={car.price} imageSource={"https://res.cloudinary.com/dao5kgzkm/"+car.image}></CardI> </Link>
             </motion.div>
 
           )

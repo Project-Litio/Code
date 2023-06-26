@@ -553,10 +553,6 @@ input:focus, textarea:focus, select:focus{
   text-align: center;
 }
 
-.search-form input {
-  transition: width 0.3s ease-in-out;
-}
-
-.search-form input:focus {
-  width: 200px; /* Ancho deseado al enfocar el campo de búsqueda */
+.link-style {
+  text-decoration: none;
 }

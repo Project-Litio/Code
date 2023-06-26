@@ -85,6 +85,8 @@ const PaymentForm = () => {
                 placeholder="CVC"
                 pattern="\d{3,4}"
                 required
+                maxLength="4"
+                minLength="3"
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
               />
