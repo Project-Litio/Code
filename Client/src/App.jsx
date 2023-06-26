@@ -13,6 +13,7 @@ import ManejoVehiculos from './pages/manejovehiculos'
 import ManejoInventario from './pages/manejoinventario'
 import ManejoSucursales from './pages/manejosucursales'
 import carDetail from './pages/carDetail'
+import Buy from './pages/buy'
 import Error from './pages/404'
 
 import Cookies from 'universal-cookie';
@@ -23,6 +24,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route} from "react-router-dom";
+
 
 function App() {
   const [client, setClient] = useState(false);
@@ -53,6 +55,7 @@ function App() {
         <Routes>
           <Route path='/'>
               <Route path='/collection/:id' Component={carDetail}></Route>
+              <Route path='/collection/buy' Component={Buy}></Route>
               <Route path='/collection' Component={Collection}></Route>
               <Route path='repair' Component={Navbar}></Route>
               <Route path='about' Component={Navbar}></Route>
