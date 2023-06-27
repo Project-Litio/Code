@@ -109,34 +109,44 @@ class CarAPI(APIView):
 
         return Response(fullset)
 
-    """ 
+
     def post(self, request):
-        article_data = request.data.get('id_article')  # Extract the article data
-        if (not isinstance(article_data, dict) and article_data != None):
-            article_data = json.loads(article_data)
+        with transaction.atomic():
+            article_data = request.data.get('id_article')  # Extract the article data
+            if (not isinstance(article_data, dict) and article_data != None):
+                article_data = json.loads(article_data)
 
-        car_data = request.data.copy()
-        car_data.pop('id_article')  # Remove the article data from car data
+            car_data = request.data.copy()
+            car_data.pop('id_article')  # Remove the article data from car data
 
-        article_serializer = self.article_serializer(data=article_data)
-        car_serializer = self.car_serializer(data=car_data)
+            article_serializer = self.article_serializer(data=article_data)
+            car_serializer = self.car_serializer(data=car_data)
 
-        is_valid_article = article_serializer.is_valid()
-        is_valid_car = car_serializer.is_valid()
+            is_valid_article = article_serializer.is_valid()
+            is_valid_car = car_serializer.is_valid()
 
-        if is_valid_article and is_valid_car:
-            article_instance = article_serializer.save()  # Save the Article instance
+            if is_valid_article and is_valid_car:
+                article_instance = article_serializer.save()  # Save the Article instance
 
-            # Assign the associated article instance to the car instance
-            car_instance = car_serializer.save(id_article=article_instance)
+                # Assign the associated article instance to the car instance
+                car_instance = car_serializer.save(id_article=article_instance)
 
-            return Response({"status": "success", "data": {"car": car_serializer.data}}, status=status.HTTP_201_CREATED)
-            #https://res.cloudinary.com/dao5kgzkm/[Insert URL of image here]
-        else:
-            errors = article_serializer.errors
-            errors.update(car_serializer.errors)
-            return Response({"status": "fail", "message": errors}, status=status.HTTP_400_BAD_REQUEST) """
-    
+                branches = Branch.objects.all()
+
+                for branch in branches:
+                    Branch_article.objects.create(
+                        id_article=article_instance,
+                        id_branch=branch,
+                        stock=0,
+                        color= None
+                    )
+
+                return Response({"status": "success", "data": {"car": car_serializer.data}}, status=status.HTTP_201_CREATED)
+                #https://res.cloudinary.com/dao5kgzkm/[Insert URL of image here]
+            else:
+                errors = article_serializer.errors
+                errors.update(car_serializer.errors)
+                return Response({"status": "fail", "message": errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class CarDetailAPI(APIView):
     """ article_serializer = Article_Serializer
