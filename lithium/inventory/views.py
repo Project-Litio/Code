@@ -1,21 +1,44 @@
 from django.shortcuts import render
 from rest_framework.response import Response
+from django.db import transaction
 from rest_framework import status
 from rest_framework.views import APIView
-from inventory.models import Article, Car, Replacement
-from inventory.serializers import Article_Serializer, Car_Serializer, All_Car_Serializer, Replacement_Serializer, All_Replacement_Serializer
+from inventory.models import *
+from inventory.serializers import *
 import json
 import cloudinary.uploader
 #from datetime import datetime
 
 # Create your views here.
 class ArticleAPI(APIView):
-    serializer_class = Article_Serializer
-
     def get(self, request):
-        queryset = Article.objects.all()
-        serializer = self.serializer_class(queryset,many=True)
-        return Response(serializer.data)
+        data = []
+        rep = Replacement.objects.all()
+        for r in rep:
+            if r.id_article.deleted == False:
+                aux = {"id_article":r.id_article.id,
+                    "article":"replacement",
+                    "id":r.id,
+                    "name":r.name,
+                    "type":r.type,
+                }
+                data.append(aux)
+
+        cars = Car.objects.all()
+        for c in cars:
+            if c.id_article.deleted == False:
+                aux = {"id_article":c.id_article.id,
+                    "article":"car",
+                    "id":c.id,
+                    "brand":c.brand,
+                    "type":c.type,
+                    "model":c.model,
+                    "wheel":c.wheel,
+                    "price":c.price,
+                    "image":str(c.image),
+                }
+                data.append(aux)
+        return Response(data)
 
 
 class ArticleDetailAPI(APIView):
@@ -30,18 +53,37 @@ class ArticleDetailAPI(APIView):
 
     def get(self, request, pk):
         article = self.get_article(pk=pk)
-        if Article == None:
+        if article == None:
             return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.serializer_class(article)
-        return Response({"status": "success", "data": {"article": serializer.data}})
+        if(len(Car.objects.filter(id_article=pk)) != 0):
+            c = Car.objects.get(id_article=pk)
+            data = {"article":"car",
+                   "id":c.id,
+                   "brand":c.brand,
+                   "type":c.type,
+                   "model":c.model,
+                   "wheel":c.wheel,
+                   "price":c.price,
+                   "image":str(c.image),
+            }
+        else:
+            r = Replacement.objects.get(id_article=pk)
+            data = {"article":"replacement",
+                   "id":r.id,
+                   "name":r.name,
+                   "type":r.type,
+            }
+
+        return Response({"status": "success", "data": {"article": data}})
 
     def delete(self, request, pk):
         article = self.get_article(pk)
         if article == None:
             return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        article.delete()
+        article.deleted = True
+        article.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -62,13 +104,12 @@ class CarAPI(APIView):
             "price":c.price,
             "image":str(c.image),
             "id_article": c.id_article.id,
-            "stock":c.id_article.stock,
-            "color":c.id_article.color
             }
             fullset.append(query)
 
         return Response(fullset)
 
+    """ 
     def post(self, request):
         article_data = request.data.get('id_article')  # Extract the article data
         if (not isinstance(article_data, dict) and article_data != None):
@@ -94,11 +135,11 @@ class CarAPI(APIView):
         else:
             errors = article_serializer.errors
             errors.update(car_serializer.errors)
-            return Response({"status": "fail", "message": errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "fail", "message": errors}, status=status.HTTP_400_BAD_REQUEST) """
     
 
 class CarDetailAPI(APIView):
-    article_serializer = Article_Serializer
+    """ article_serializer = Article_Serializer
     car_serializer = Car_Serializer
     all_car_serializer = All_Car_Serializer
     queryset = Car.objects.all()
@@ -185,59 +226,84 @@ class CarDetailAPI(APIView):
         car.delete()
         article.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+"""
+class Car_Stock(APIView):
+    def get(self,request,pk):
+        try:
+            cars = Car.objects.all()
+            result = []
 
+            for car in cars:        
+                info = Branch_article.objects.get(id_branch=pk,id_article=car.id_article.id)
+                car_info = {
+                    "id":car.id,
+                    "id_article":car.id_article.id,
+                    "brand":car.brand,
+                    "type":car.type,
+                    "model":car.model,
+                    "wheel":car.wheel,
+                    "price":car.price,
+                    "image":str(car.image),
+                    "stock":info.stock,
+                    "color":info.color
+                }
+                result.append(car_info)
 
+            return Response({"status": "success", "data":result})
+        
+        except:
+            return Response({"status": "failed", "message":"Something went wrong"})
+        
 class ReplacementAPI(APIView):
-    article_serializer = Article_Serializer
-    replacement_serializer = Replacement_Serializer
-    all_replacement_serializer = All_Replacement_Serializer
-    article_serializer = Article_Serializer
-
     def get(self, request):
         queryset = Replacement.objects.all()
         fullset = []
         for r in queryset:
-            query = {"id":r.id,
-            "type":r.type,
-            "name":r.name,
-            "id_article":r.id_article.id,
-            "stock":r.id_article.stock,
-            "color":r.id_article.color
-            }
-            fullset.append(query)
+            if r.id_article.deleted == False:
+                query = {"id":r.id,
+                "type":r.type,
+                "name":r.name,
+                "id_article":r.id_article.id,
+                }
+                fullset.append(query)
         
         return Response(fullset)
 
     def post(self, request):
-        article_data = request.data.get('id_article') #Extract the article data
-        if (not isinstance(article_data, dict) and article_data != None):
-            article_data = json.loads(article_data)
-        
-        replacement_data = request.data.copy()
-        replacement_data.pop('id_article') #Remove the article data from replacement data
+        data = request.data   
+        try:
+            with transaction.atomic():
+                article = Article.objects.create(deleted=False)
 
-        article_serializer = self.article_serializer(data=article_data)
-        replacement_serializer = self.replacement_serializer(data=replacement_data)
+                replacement = Replacement.objects.create(
+                    type=data.get('type'),
+                    name=data.get('name'),
+                    id_article=article
+                )
 
-        is_valid_article = article_serializer.is_valid()
-        is_valid_replacement = replacement_serializer.is_valid()
+                rep = {
+                    "id":replacement.id,
+                    "type":replacement.type,
+                    "name":replacement.name,
+                    "id_article":replacement.id_article.id
+                }
 
-        if is_valid_article and is_valid_replacement:
-            article_instance = article_serializer.save() #Save the Article instance
+                branches = Branch.objects.all()
 
-            #Assign the associated article instance to the replacement instance
-            replacement_instance = replacement_serializer.save(id_article=article_instance)
-
-            return Response({"status": "success", "data": {"Replacement": replacement_serializer.data}}, status=status.HTTP_201_CREATED)
-
-        else:
-            errors = article_serializer.errors
-            errors.update(replacement_serializer.errors)
-            return Response({"status": "fail", "message": errors}, status=status.HTTP_400_BAD_REQUEST)
-
+                for branch in branches:
+                    Branch_article.objects.create(
+                        id_article=article,
+                        id_branch=branch,
+                        stock=0,
+                        color= None
+                    )
+                
+                return Response({"status": "success", "data":rep})
+        except:
+            return Response({"status": "fail", "message":"Something went wrong"})
 
 class ReplacementDetailAPI(APIView):
-    article_serializer = Article_Serializer
+    """article_serializer = Article_Serializer
     replacement_serializer = Replacement_Serializer
     all_replacement_serializer = All_Replacement_Serializer
     queryset = Replacement.objects.all()
@@ -306,10 +372,27 @@ class ReplacementDetailAPI(APIView):
         #The article is deleted together with the replacement
         replacement.delete()
         article.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+        return Response(status=status.HTTP_204_NO_CONTENT) """
     
-        
-        
+class Replacement_Stock(APIView):
+    def get(self,request,pk):
+        try:
+            replacement = Replacement.objects.all()
+            result = []
 
-    
+            for rep in replacement:        
+                info = Branch_article.objects.get(id_branch=pk,id_article=rep.id_article.id)
+                rep_info = {
+                    "id":rep.id,
+                    "id_article":rep.id_article.id,
+                    "name":rep.name,    
+                    "type":rep.type,
+                    "stock":info.stock,
+                    "color":info.color
+                }
+                result.append(rep_info)
+
+            return Response({"status": "success", "data":result})
+        
+        except:
+            return Response({"status": "failed", "message":"Something went wrong"})

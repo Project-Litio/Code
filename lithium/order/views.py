@@ -3,10 +3,9 @@ from django.db import transaction
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from inventory.models import Car, Replacement, Article
-from order.models import Work_order, Order_detail, Quotation, Bill
-from order.serializers import Work_order_Serializer, Order_detail_Serializer, Quotation_Serializer, Bill_Serializer, All_work_order_Serializer, All_Order_detail_Serializer, All_quotation_Serializer, All_bill_Serializer
-import json
+from inventory.models import *
+from order.models import *
+from order.serializers import *
 from datetime import datetime
 
 class Order_detailAPI(APIView):
