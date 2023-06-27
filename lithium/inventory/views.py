@@ -10,12 +10,34 @@ import cloudinary.uploader
 
 # Create your views here.
 class ArticleAPI(APIView):
-    serializer_class = Article_Serializer
-
     def get(self, request):
-        queryset = Article.objects.all()
-        serializer = self.serializer_class(queryset,many=True)
-        return Response(serializer.data)
+        data = []
+        rep = Replacement.objects.all()
+        for r in rep:
+            if r.id_article.deleted == False:
+                aux = {"id_article":r.id_article.id,
+                    "article":"replacement",
+                    "id":r.id,
+                    "name":r.name,
+                    "type":r.type,
+                }
+                data.append(aux)
+
+        cars = Car.objects.all()
+        for c in cars:
+            if c.id_article.deleted == False:
+                aux = {"id_article":c.id_article.id,
+                    "article":"car",
+                    "id":c.id,
+                    "brand":c.brand,
+                    "type":c.type,
+                    "model":c.model,
+                    "wheel":c.wheel,
+                    "price":c.price,
+                    "image":str(c.image),
+                }
+                data.append(aux)
+        return Response(data)
 
 
 class ArticleDetailAPI(APIView):
@@ -30,18 +52,37 @@ class ArticleDetailAPI(APIView):
 
     def get(self, request, pk):
         article = self.get_article(pk=pk)
-        if Article == None:
+        if article == None:
             return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.serializer_class(article)
-        return Response({"status": "success", "data": {"article": serializer.data}})
+        if(len(Car.objects.filter(id_article=pk)) != 0):
+            c = Car.objects.get(id_article=pk)
+            data = {"article":"car",
+                   "id":c.id,
+                   "brand":c.brand,
+                   "type":c.type,
+                   "model":c.model,
+                   "wheel":c.wheel,
+                   "price":c.price,
+                   "image":str(c.image),
+            }
+        else:
+            r = Replacement.objects.get(id_article=pk)
+            data = {"article":"replacement",
+                   "id":r.id,
+                   "name":r.name,
+                   "type":r.type,
+            }
+
+        return Response({"status": "success", "data": {"article": data}})
 
     def delete(self, request, pk):
         article = self.get_article(pk)
         if article == None:
             return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        article.delete()
+        article.deleted = True
+        article.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
