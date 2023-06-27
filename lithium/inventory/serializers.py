@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from inventory.models import Article, Car, Replacement
+from inventory.models import Article, Car, Replacement, Branch_article
 
 class Article_Serializer(serializers.ModelSerializer):
     class Meta:
@@ -25,3 +25,8 @@ class Replacement_Serializer(serializers.ModelSerializer):
   class Meta:
     model = Replacement
     fields = ['type','name']
+
+class Branch_Article_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branch_article
+        fields = '__all__'

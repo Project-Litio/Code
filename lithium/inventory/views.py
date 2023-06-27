@@ -149,9 +149,10 @@ class CarAPI(APIView):
                 return Response({"status": "fail", "message": errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class CarDetailAPI(APIView):
-    """ article_serializer = Article_Serializer
+    article_serializer = Article_Serializer
     car_serializer = Car_Serializer
     all_car_serializer = All_Car_Serializer
+    branch_article_serializer = Branch_Article_Serializer
     queryset = Car.objects.all()
 
     def get_car(self, pk):
@@ -160,83 +161,80 @@ class CarDetailAPI(APIView):
         except:
             return None
 
-    def get_article(self, pk):
-        try:
-            return Article.objects.get(pk=pk)
-        except:
-            return None
-
-    def get(self, request, pk):
+    def get(self, request, pk,bid):
         car = self.get_car(pk=pk)
         if car == None:
             return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.all_car_serializer(car)
-        return Response({"status": "success", "data": {"car": serializer.data}})
+        info = Branch_article.objects.get(id_branch=bid,id_article=car.id_article)
+        data = {
+            "brand":car.brand,
+            "type":car.type,
+            "model":car.model,
+            "wheel":car.wheel,
+            "price":car.price,
+            "image":str(car.image),
+            "id_article": car.id_article.id,
+            "stock": info.stock,
+            "color": info.color
+        }
+        return Response({"status": "success", "data": {"car": data}})
 
-    def patch(self, request, pk):
-        car = self.get_car(pk)
-        if car == None:
-            return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer_car = self.car_serializer(
-            car, data=request.data, partial=True)
 
-        if serializer_car.is_valid():
-            #If there's an image--------------------------------------------------------------------------------------------------------------
-            image_file = request.FILES.get('image')
+    def patch(self, request, pk, bid):
+        with transaction.atomic():
+            car = self.get_car(pk)
+            if car == None:
+                return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            serializer_car = self.car_serializer(
+                car, data=request.data, partial=True)
 
-            if image_file:
-                cloudinary.uploader.destroy(car.image.public_id)
-                result = cloudinary.uploader.upload(image_file)
-                car.image = result['url']
-                car.save()
+            if serializer_car.is_valid():
+                #If there's an image--------------------------------------------------------------------------------------------------------------
+                image_file = request.FILES.get('image')
 
-            #If there's an id_article---------------------------------------------------------------------------------------------------------
-            article_data = request.data.get('id_article') #If it doesn't exist, it returns "None"
-            if (not isinstance(article_data, dict) and article_data != None):
-                article_data = json.loads(article_data)
+                if image_file:
+                    cloudinary.uploader.destroy(car.image.public_id)
+                    result = cloudinary.uploader.upload(image_file)
+                    car.image = result['url']
+                    car.save()
 
-            if not article_data == None:
-                article = Article.objects.get(pk=car.id_article_id)
-                if article == None:
-                    return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-
-                serializer_article = self.article_serializer(
-                    article, data=article_data, partial=True)
+                #If there's an id_article---------------------------------------------------------------------------------------------------------
                 
-                if serializer_article.is_valid():
-                    serializer_article.save()
-                    #return Response({"status": "success", "data": {"article": serializer.data}})
-                #return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-            #Save the rest of the data input for the car--------------------------------------------------------------------------------------
-            serializer_car.save()
-            return Response({"status": "success", "data": {"car": serializer_car.data}})
+                info = Branch_article.objects.get(id_branch=bid,id_article=car.id_article)
+                serializer_branch_article = self.branch_article_serializer(
+                    info, data=request.data, partial=True
+                )
 
-        return Response({"status": "fail", "message": serializer_car.errors}, status=status.HTTP_400_BAD_REQUEST)
+                if serializer_branch_article.is_valid():
+                    serializer_branch_article.save()
 
+                #Save the rest of the data input for the car--------------------------------------------------------------------------------------
+                serializer_car.save()
+                return Response({"status": "success", "data": {"car": serializer_car.data}})
 
-    def delete(self, request, pk):
-        car = self.get_car(pk)
+            return Response({"status": "fail", "message": serializer_car.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        if car == None: 
-            return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+    def delete(self, request, pk,bid):
+        with transaction.atomic():
+            car = self.get_car(pk)
 
-        #Delete the image from Cloudinary
-        image_url = car.image
-        if image_url:
-            public_id = image_url.public_id  # Retrieve the public ID from the CloudinaryResource object
-            cloudinary.uploader.destroy(public_id)  # Delete the image from Cloudinary
-        
-        articleNumber = car.id_article_id  # Retrieve the primary key of the associated article correctly
-        article = self.get_article(articleNumber)
+            if car == None: 
+                return Response({"status": "fail", "message": f"Car with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            branch_article = Branch_article.objects.filter(id_article=car.id_article)
 
-        #Se puede borrar el articulo y automáticamente se borra el vehículo
-        car.delete()
-        article.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-"""
+            for item in branch_article:
+                item.delete()
+
+            article = car.id_article
+            article.deleted = True
+            article.save()
+            
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
 class Car_Stock(APIView):
     def get(self,request,pk):
         try:
@@ -313,9 +311,9 @@ class ReplacementAPI(APIView):
             return Response({"status": "fail", "message":"Something went wrong"})
 
 class ReplacementDetailAPI(APIView):
-    """article_serializer = Article_Serializer
     replacement_serializer = Replacement_Serializer
     all_replacement_serializer = All_Replacement_Serializer
+    branch_article_serializer = Branch_Article_Serializer
     queryset = Replacement.objects.all()
 
     def get_replacement(self, pk):
@@ -323,66 +321,64 @@ class ReplacementDetailAPI(APIView):
             return Replacement.objects.get(pk=pk)
         except:
             return None
-
-    def get_article(self, pk):
-        try:
-            return Article.objects.get(pk=pk)
-        except:
-            return None
-
-    def get(self, request, pk):
+    
+    def get(self, request, pk,bid):
         replacement = self.get_replacement(pk=pk)
         if replacement == None:
             return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.all_replacement_serializer(replacement)
-        return Response({"status": "success", "data": {"replacement": serializer.data}})
-
-    def patch(self, request, pk):
-        replacement = self.get_replacement(pk=pk)
-        if replacement == None:
-            return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        info = Branch_article.objects.get(id_branch=bid,id_article=replacement.id_article)
+        data = {
+            "id": replacement.id,
+            "name":replacement.name,
+            "type":replacement.type,
+            "id_article": replacement.id_article.id,
+            "stock": info.stock,
+            "color": info.color
+        }
+        return Response({"status": "success", "data": {"replacement": data}})
         
-        serializer_replacement = self.replacement_serializer(
-            replacement, data=request.data, partial=True)
+    def patch(self, request, pk,bid):
+        with transaction.atomic():
+            replacement = self.get_replacement(pk=pk)
+            if replacement == None:
+                return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            serializer_replacement = self.replacement_serializer(
+                replacement, data=request.data, partial=True)
 
-        if serializer_replacement.is_valid():
-            #If there's an id_article---------------------------------------------------------------------------------------------------------
-            article_data = request.data.get('id_article') #If it doesn't exist, it returns "None"
-            if (not isinstance(article_data, dict) and article_data != None):
-                article_data = json.loads(article_data)
-
-            if not article_data == None:
-                article = Article.objects.get(pk=replacement.id_article_id)
-                if article == None:
-                    return Response({"status": "fail", "message": f"Article with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-
-                serializer_article = self.article_serializer(
-                    article, data=article_data, partial=True)
+            if serializer_replacement.is_valid():
                 
-                if serializer_article.is_valid():
-                    serializer_article.save()
-                    #return Response({"status": "success", "data": {"article": serializer.data}})
-                #return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                info = Branch_article.objects.get(id_branch=bid,id_article=replacement.id_article)
+                serializer_branch_article = self.branch_article_serializer(
+                    info, data=request.data, partial=True
+                )
 
-            #Save the rest of the data input for the Replacement--------------------------------------------------------------------------------
-            serializer_replacement.save()
-            return Response({"status": "success", "data": {"replacement": serializer_replacement.data}})
-        return Response({"status": "fail", "message": serializer_replacement.errors}, status=status.HTTP_400_BAD_REQUEST)
+                if serializer_branch_article.is_valid():
+                    serializer_branch_article.save()
 
-    def delete(self, request, pk):
-        replacement = self.get_replacement(pk)
+                serializer_replacement.save()
+                return Response({"status": "success", "data": {"replacement": serializer_replacement.data}})
+            
+            return Response({"status": "fail", "message": serializer_replacement.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        if replacement == None:
-            return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+    def delete(self, request, pk,bid):
+        with transaction.atomic():
+            replacement = self.get_replacement(pk)
 
-        articleNumber = replacement.id_article_id #Retrieve the primary key of the associated article correctly
-        article = self.get_article(articleNumber)
+            if replacement == None:
+                return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        #The article is deleted together with the replacement
-        replacement.delete()
-        article.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT) """
+            branch_article = Branch_article.objects.filter(id_article=replacement.id_article)
+
+            for item in branch_article:
+                item.delete()
+
+            article = replacement.id_article
+            article.deleted = True
+            article.save()
+            
+            return Response(status=status.HTTP_204_NO_CONTENT)
     
 class Replacement_Stock(APIView):
     def get(self,request,pk):
