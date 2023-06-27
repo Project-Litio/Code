@@ -31,7 +31,17 @@ class All_quotation_Serializer(serializers.ModelSerializer):
 class Quotation_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Quotation
+        fields = ['observation','id_customer','id_employee', 'total']
+
+class All_quotation_detail_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quotation_detail
         fields = '__all__'
+
+class Quotation_detail_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quotation_detail
+        fields = ['id_quotation','id_car','amount','subtotal']
 
 class All_bill_Serializer(serializers.ModelSerializer):
     class Meta:
@@ -42,4 +52,14 @@ class Bill_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Bill
         fields = '__all__'
+
+class All_bill_detail_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bill_detail
+        fields = '__all__'
+
+class Bill_detail_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bill_detail
+        fields = ['id_bill','id_car','amount','subtotal']
 

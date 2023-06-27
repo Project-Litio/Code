@@ -228,6 +228,318 @@ class Work_orderDetailAPI(APIView):
         work_order.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class Quotation_detailAPI(APIView):
+    quotation_detail_serializer = Quotation_detail_Serializer
+    all_quotation_detail_serializer = All_quotation_detail_Serializer
+
+    def get(self, request):
+        queryset = Quotation_detail.objects.all()
+        serializer = self.all_quotation_detail_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        request.data['subtotal'] = request.data['id_car'].price * request.data['amount']
+        serializer = self.quotation_detail_serializer(data=request.data)
+        is_valid_quotation_detail = serializer.is_valid()
+
+        if is_valid_quotation_detail:
+            
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Quotation_detailDetailAPI(APIView):
+    quotation_detail_serializer = Quotation_detail_Serializer
+    all_quotation_detail_serializer = All_quotation_detail_Serializer
+
+    def get_quotation_detail(self, pk):
+        try:
+            return Quotation_detail.objects.get(pk=pk)
+        except:
+            return None
+
+    def get(self, request, pk):
+        quotation_detail = self.get_quotation_detail(pk=pk)
+        if quotation_detail == None:
+            return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.all_quotation_detail_serializer(quotation_detail)
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        quotation_detail = self.get_quotation_detail(pk=pk)
+        if quotation_detail == None:
+            return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        #Selecting the car
+        if (request.data['id_car'] == None):
+            id_car = quotation_detail.id_car
+        else:
+            id_car = request.data['id_car']
+
+        #Selecting the amount
+        if (request.data['amount'] == None):
+            amount = quotation_detail.amount
+        else:
+            amount = request.data['amount']
+
+        request.data['subtotal'] = id_car.price * amount            
+        
+        serializer = self.quotation_detail_serializer(quotation_detail, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": {"quotation_detail": serializer.data}})
+        return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        quotation_detail = self.get_quotation_detail(pk=pk)
+        if quotation_detail == None:
+            return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        quotation_detail.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class QuotationAPI(APIView):
+    quotation_serializer = Quotation_Serializer
+    all_quotation_serializer = All_quotation_Serializer
+    all_quotation_detail_serializer = All_quotation_detail_Serializer
+
+    def get(self, request):
+        queryset = Quotation.objects.all()
+        fullset = []
+        for q in queryset:
+            quotation_details = Quotation_detail.objects.filter(id_quotation=q.id)
+            quotation_details_serializer = self.all_quotation_detail_serializer(quotation_details, many=True)
+            query = {
+                "id":q.id,
+                "date":q.date,
+                "observation":q.observation,
+                "total":q.total,
+                "id_customer":q.id_customer.id,
+                "id_employee":q.id_employee.id,
+                "quotation_details": quotation_details_serializer.data,
+            }
+            fullset.append(query)
+
+        return Response(fullset)
+
+    def post(self, request):
+        request.data["total"] = 0
+        serializer = self.quotation_serializer(data=request.data)
+        is_valid_quotation = serializer.is_valid()
+
+        if is_valid_quotation:
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+class QuotationDetailAPI(APIView):
+    quotation_serializer = Quotation_Serializer
+    all_quotation_serializer = All_quotation_Serializer
+
+    def get_quotation(self, pk):
+        try:
+            return Quotation.objects.get(pk=pk)
+        except:
+            return None
+        
+    def get(self, request, pk):
+        quotation = self.get_quotation(pk=pk)
+        if quotation == None:
+            return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.all_quotation_serializer(quotation)
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        quotation = self.get_quotation(pk=pk)
+        if quotation == None:
+            return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        #Collecting the total
+        queryset = Quotation_detail.objects.filter(id_quotation=quotation.id)
+        request.data["total"] = 0
+        for q in queryset:
+            request.data["total"] += q.subtotal
+        
+        serializer = self.quotation_serializer(quotation, data=request.data, partial=True)
+
+        is_valid_quotation = serializer.is_valid()
+
+        if is_valid_quotation:
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        quotation = self.get_quotation(pk=pk)
+        if quotation == None:
+            return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        quotation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class Bill_detailAPI(APIView):
+    bill_detail_serializer = Bill_detail_Serializer
+    all_bill_detail_serializer = All_bill_detail_Serializer
+
+    def get(self, request):
+        queryset = Bill_detail.objects.all()
+        serializer = self.all_bill_detail_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        #Calcular el subtotal aquí
+        #request.data['subtotal'] = request.data['id_car'].price * request.data['amount']
+
+        #Also take the amount and substract it to the stock of the cars
+        request.data['subtotal'] = 0
+        serializer = self.bill_detail_serializer(data=request.data)
+        is_valid_bill_detail = serializer.is_valid()
+
+        if is_valid_bill_detail:
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+
+
+class Bill_detailDetailAPI(APIView):
+    bill_detail_serializer = Bill_detail_Serializer
+    all_bill_detail_serializer = All_bill_detail_Serializer
+
+    def get_bill_detail(self, pk):
+        try:
+            return Bill_detail.objects.get(pk=pk)
+        except:
+            return None
+
+    def get(self, request, pk):
+        bill_detail = self.get_bill_detail(pk=pk)
+        if bill_detail == None:
+            return Response({"status": "fail", "message": f"Bill_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+        serializer = self.all_bill_detail_serializer(bill_detail)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        bill_detail = self.get_bill_detail(pk=pk)
+        if bill_detail == None:
+            return Response({"status": "fail", "message": f"Bill_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND) 
+
+        #Take the amount and add it to the stock of the cars
+
+        bill_detail.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class BillAPI(APIView):
+    bill_serializer = Bill_Serializer
+    all_bill_serializer = All_bill_Serializer
+    all_bill_detail_serializer = All_bill_detail_Serializer
+
+    def get(self, request):
+        queryset = Bill.objects.all()
+        fullset = []
+        for b in queryset:
+            bill_details = Bill_detail.objects.filter(id_bill=b.id)
+            bill_details_serializer = self.all_bill_detail_serializer(bill_details, many=True)
+            query = {
+                "id":b.id,
+                "date":b.date,
+                "payment_method":b.date,
+                "observation":b.observation,
+                "total":b.total,
+                "id_customer":b.id_customer.id,
+                "id_employee":b.id_employee.id,
+                "bill_details":bill_details_serializer.data
+            }
+            fullset.append(query)
+        
+        return Response(fullset)
+    
+    def post(self, request):
+        request.data["total"] = 0
+        serializer = self.bill_serializer(data=request.data)
+        is_valid_quotation = serializer.is_valid()
+
+        if is_valid_quotation:
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+class BillDetailAPI(APIView):
+    bill_serializer = Bill_Serializer
+    all_bill_serializer = All_bill_Serializer
+    all_bill_detail_serializeer = All_bill_detail_Serializer
+
+    def get_bill(self, pk):
+        try:
+            return Bill.objects.get(pk=pk)
+        except:
+            return None
+
+    def get(self, request, pk):
+        b = self.get_bill(pk=pk)
+        if b == None:
+            return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        bill_details = Bill_detail.objects.filter(id_bill=b.id)
+        bill_details_serializer = self.all_bill_detail_serializer(bill_details, many=True)
+        data = {
+            "id":b.id,
+            "date":b.date,
+            "payment_method":b.payment_method,
+            "observation":b.observation,
+            "total":b.total,
+            "id_customer":b.id_customer,
+            "id_employee":b.id_employee,
+        }
+        return Response(data)
+
+    def patch(self, request, pk):
+        bill = self.get_bill(pk=pk)
+        if bill == None:
+            return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        #Collects the total
+        queryset = Quotation_detail.objects.filter(id_bill=bill.id)
+        request.data["total"] = 0
+        for b in queryset:
+            request.data["total"] += b.subtotal
+        
+        serializer = self.bill_serializer(bill, data=request.data, partial=True)
+
+        is_valid_bill = serializer.is_valid()
+
+        if is_valid_bill:
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        bill = self.get_bill(pk=pk)
+        if bill == None:
+            return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        bill.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+        
+
+    
+
+    
+        
+    
+
+
+
         
 
         

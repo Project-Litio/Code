@@ -254,6 +254,8 @@ class EmployeeDetailAPI(APIView):
             user = employee.id_user
             if employee == None:
                 return Response({"status": "fail", "message": f"Customer with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+            def_user = Employee.objects.get(id="000000000000")
             
             if employee.role == "Sel":
                 def_user = Employee.objects.get(id="000000000000")
