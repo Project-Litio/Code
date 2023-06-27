@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie';
 import {motion} from 'framer-motion'
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
-
+import { useTranslation } from 'react-i18next';
 const cookies = new Cookies()
 
 const ModelAvailable = () => {
@@ -24,19 +24,20 @@ const ModelAvailable = () => {
   console.log(cars);
 
   const [search, setSearch] = useState('');
-
+  const [t]=useTranslation("global");
   return (
 
     
     <div className='container'>
+      
       <div className='px-3'>
-        <h2 >Nuestros Vehículos</h2>
+        <h2 >{t("ModelAvailable.us")}</h2>
         <Form>
           <InputGroup className='my-3'>
             {/* onChange for search */}
             <Form.Control
               onChange={(e) => setSearch(e.target.value)}
-              placeholder='Buscar Vehículo'
+              placeholder={t("ModelAvailable.placeholder")}
             />
           </InputGroup>
         </Form>

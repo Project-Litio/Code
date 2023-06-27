@@ -1,8 +1,10 @@
 import React from 'react'
 import './style.css'
 import {Link} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const [t]=useTranslation("global");
   return (
     <div>
       <footer className="footer ft pt-3 pb-2 ">
@@ -17,17 +19,17 @@ const Footer = () => {
             </div>
             <div className="col-lg-2 col-sm-2 col-3">
               <Link className="navbar-brand " to='/'>
-                <h5>Inicio</h5>
+                <h5>{t("NavBar.home")}</h5>
               </Link>
             </div>
             <div className="col-lg-2 col-sm-2 col-3">
               <Link className="navbar-brand " to='/collection'>
-                <h5>Coleccion</h5>
+                <h5>{t("NavBar.collection")}</h5>
               </Link>
             </div>
             <div className="col-lg-2 col-sm-2  col-0">
               <Link className="navbar-brand " to='/login'>
-                <h5>Idenfificate</h5>
+                <h5>{t("NavBar.in")}</h5>
               </Link>
             </div>
           </div>

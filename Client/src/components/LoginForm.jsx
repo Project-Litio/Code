@@ -9,10 +9,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css'
+import { useTranslation } from 'react-i18next';
 
 import Cookies from 'universal-cookie';
 
 function LoginForm() {
+  const [t]=useTranslation("global");
   const navigateTo = useNavigate();
   const notify = () => toast("¡Credenciales incorrectas!");
   const notifyCode = () => toast("¡Codigo incorrecto!");
@@ -126,13 +128,13 @@ function LoginForm() {
             <img src={logo} className='logoImage'/>
           </div>
           <form onSubmit={onSubmit} id="formulario">
-            <h2 className='title'>Inicio de sesión</h2>
+            <h2 className='title'>{t("LoginForm.title")}</h2>
             <div className='form-group mb-2'>
-              <label htmlFor='ID' className='form-label'>Ingresa tu correo electrónico</label>
+              <label htmlFor='ID' className='form-label'>{t("LoginForm.email")}</label>
               <input type="text" className='form-control' id='inputEmail' {...register("email", {required: true})}></input>
             </div>
             <div className='form-group mb-2'>
-              <label htmlFor='password' className='form-label'>Ingresa tu Contraseña </label>
+              <label htmlFor='password' className='form-label'>{t("LoginForm.password")}</label>
               <div className='passcode'> 
                 <input type={passwordShown ? "text" : "password"} className='form-control' id='customform' {...register("password", {required: true})}></input>
                 <button type="button" onClick={togglePassword}>
@@ -150,7 +152,7 @@ function LoginForm() {
               />
           </div>
           {captchaValido &&
-            <button type='buttom' className='btn btn-success mt-5' id='entrar'>Entrar</button>
+            <button type='buttom' className='btn btn-success mt-5' id='entrar'>{t("LoginForm.login_button")}</button>
           }
           </form>
         </div>
@@ -162,10 +164,10 @@ function LoginForm() {
               <img src={logo} className='logoImage'/>
             </div>
             <form>
-            <h2 className='title'>Inicio de sesión</h2>
+            <h2 className='title'>{t("LoginForm.title")}</h2>
             <div className="row">
                 <div className="col text-center">
-                    <p>Ingresa el código que enviamos a</p>
+                    <p>{t("LoginForm.verification")}</p>
                     <p className='sentTo'>{correo}</p>
 
                     {otp.map((data, index) => {
@@ -183,19 +185,19 @@ function LoginForm() {
                         );
                     })}
 
-                    <p className='cIngresado'>Código ingresado - {otp.join("")}</p>
+                    <p className='cIngresado'>{t("LoginForm.helper")} - {otp.join("")}</p>
                     <p>
                         <button
                             className="btn btn-secondary" id='borrar' type = "button"
                             onClick={e => setOtp([...otp.map(v => "")])}
                         >
-                            Borrar
+                            {t("LoginForm.helper_2")}
                         </button>
                         <button
                             className="btn btn-success btn-primary" id='verificar' type = "button"
                             onClick={checkCode}
                         >
-                            Verificar
+                            {t("LoginForm.helper_3")}
                             
                         </button>
                     </p>

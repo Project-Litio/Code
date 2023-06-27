@@ -1,0 +1,73 @@
+{
+  "NavBar":{
+    "home":"Home",
+    "collection":"Collection",
+    "maintenance":"Maintenance",
+    "us":"About us",
+    "in":"Login"
+  },
+  "Hero":{
+    "banner":"Find today the electric car of your dreams",
+    "sub_banner":"Huge selection, easy search"
+  },
+  "Services":{
+    "banner":"Experience the benefits of acquiring your vehicle with us",
+    "cards":[
+      {"id":1,
+      "title":"Secure",
+      "text":"We have a secure payment platform, certified by the best. Your information will always be safe."
+      },
+      {"id":2,
+      "title":"Wide Choice",
+      "text":"We offer electric cars of various brands and suppliers, in order for you to find one that suits your tastes."
+      },
+      {"id":3,
+      "title":"Right Prices",
+      "text":"We have crazy prices! If you doubt us, look for one of our vehicles on another website and compare their prices."
+      },
+      {"id":4,
+      "title":"Variety of payment options",
+      "text": "You can pay us by credit card, debit card, or even check, isn't that awesome?"
+      },
+      {"id":5,
+      "title":"In Hands of Proffesionals",
+      "text":"All our staff are extensively trained to provide you with the best care. This page has taken time, appreciate it."
+      },
+      {"id":6,
+      "title":"Nice Postbuy Service",
+      "text":"We will be aware of how you are doing with your new vehicle, surely you will not have any complaints, but we will be here just in case."
+      }
+    ]
+  },
+  "Carousel":{
+
+  },
+  "Add":[
+    {"title":"online booking",
+    "text":"Buy your vehicle from the comfort of your home"
+    },
+    {"title":"Compare Prices",
+    "text":"And you will see that ours are the best"
+    },
+    {"title":"Schedule Your Test Drive",
+    "text":"Try the vehicle of your dreams"
+    },
+    {"title":"Find One For You",
+    "text":"A wide variety to choose from"
+    }
+  ],
+  "ModelAvailable":{
+    "us":"Our Vehicles",
+    "placeholder":"Search Vehicles"
+  },
+  "LoginForm":{
+    "title":"Log in",
+    "email":"Enter your email",
+    "password":"Enter your password",
+    "login_button":"Log in",
+    "verification":"Enter the code we've send you",
+    "helper":"Code enter",
+    "helper_2":"Delete",
+    "helper_3":"Verify"
+  }
+}

@@ -556,3 +556,12 @@ input:focus, textarea:focus, select:focus{
 .link-style {
   text-decoration: none;
 }
+
+.custom-ul {
+  padding: 0;
+  text-align: center;
+}
+
+.custom-text{
+  cursor: pointer;
+}

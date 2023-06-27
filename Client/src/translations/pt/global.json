@@ -1,0 +1,73 @@
+{
+  "NavBar":{
+    "home":"Início",
+    "collection":"coleção",
+    "maintenance":"reparação",
+    "us":"nós",
+    "in":"Login"
+  },
+  "Hero":{
+    "banner":"Encontre hoje o carro elétrico dos seus sonhos",
+    "sub_banner":"Ampla seleção, pesquisas simples."
+  },
+  "Services":{
+    "banner":"Experimente as vantagens de adquirir seu veículo conosco",
+    "cards":[
+      {"id":1,
+      "title":"Seguro",
+      "text":"Temos uma plataforma de pagamento segura, certificada pelos melhores. Suas informações estarão sempre protegidas."
+      },
+      {"id":2,
+      "title":"Ampla seleção",
+      "text":"Oferecemos carros elétricos de várias marcas e fornecedores, com o objetivo de encontrar um que se adapte aos seus gostos."
+      },
+      {"id":3,
+      "title":"Preços justos",
+      "text":"Temos preços loucos! Se você duvida de nós, procure um de nossos veículos em outro site e compare seus preços."
+      },
+      {"id":4,
+      "title":"Variedade de opções de pagamento",
+      "text": "Você pode nos pagar com cartão de crédito, cartão de débito ou até mesmo cheque, não é incrível?"
+      },
+      {"id":5,
+      "title":"Em mãos de especialistas",
+      "text":"Todos os nossos funcionários são amplamente treinados para lhe fornecer o melhor atendimento. Esta página demorou, obrigado."
+      },
+      {"id":6,
+      "title":"Bom serviço pós-venda",
+      "text":"Estaremos cientes de como você está se saindo com seu novo veículo, certamente você não terá nenhuma reclamação, mas estaremos aqui para o caso."
+      }
+    ]
+  },
+  "Carousel":{
+
+  },
+  "Add":[
+    {"title":"Reserva Online",
+    "text":"Compre seu veículo do conforto da sua casa"
+    },
+    {"title":"Compare Preços",
+    "text":"E veja que os nossos são os melhores"
+    },
+    {"title":"Agende Seu Test Drive",
+    "text":"Experimente o carro dos seus sonhos"
+    },
+    {"title":"Encontre o Ideal Para Você",
+    "text":"Uma ampla variedade para escolher"
+    }
+    ],
+    "ModelAvailable":{
+      "us":"Nossos Veículos",
+      "placeholder":"Pesquisar Veículos"
+      },
+    "LoginForm":{
+      "title":"Iniciar sessão",
+      "email":"Insira o seu email",
+      "password":"Insira a sua senha",
+      "login_button":"Iniciar sessão",
+      "verification":"Insira o código que enviamos para você",
+      "helper":"Digite o código",
+      "helper_2":"Excluir",
+      "helper_3":"Verificar"
+      }
+}
