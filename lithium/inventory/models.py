@@ -6,7 +6,7 @@ from cloudinary.models import CloudinaryField
 # Create your models here.
 class Article(models.Model):
     id=models.AutoField(primary_key=True)
-    deleted=models.BooleanField(default=True)
+    deleted=models.BooleanField(default=False)
 
 class Branch_article(models.Model):
     id=models.AutoField(primary_key=True)
