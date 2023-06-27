@@ -16,6 +16,7 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './dashboardComponents/listItems';
+import { mainListItemsVend } from './dashboardComponents/listItemsVendedor';
 import TableCars from './small-component/TableCars';
 import {getCars} from '../api/article.api'
 import img from '../assets/logo.png'
@@ -26,7 +27,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import Cookies from 'universal-cookie';
 
-const cookies = new Cookies()
+const cookies = new Cookies();
 
 const drawerWidth = 200;
 
@@ -132,9 +133,17 @@ export default function DashboardVehiculo() {
   };
 
   const [carsReg, setCars] = useState([]);
+  const [manager, setManager] = useState(false);
   const loaded = async () => {
-    const result = await getCars();
-    setCars(result.data);
+    if(cookies.get('user') != undefined){
+      if(cookies.get('user').role == "Man"){
+        setManager(true);
+      }
+    }
+
+    const result = await getCars(cookies.get('user').branch);
+    console.log(result);
+    setCars(result.data.data);
   };
 
   useEffect(() => {
@@ -156,9 +165,16 @@ export default function DashboardVehiculo() {
             <MenuIcon />
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Manejo de Vehículos
-          </Typography>
+          {manager &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Manejo de Vehículos
+            </Typography>
+          }
+          {!manager &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Consulta de Vehículos
+            </Typography>
+          }
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">
               <IconButton>
@@ -181,7 +197,12 @@ export default function DashboardVehiculo() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        {manager &&
+          <List>{mainListItems}</List>
+        }
+        {!manager &&
+          <List>{mainListItemsVend}</List>
+        } 
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

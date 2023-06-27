@@ -1,13 +1,14 @@
-import {React,useEffect,useState} from 'react'
+// Componente desarrollado completamente. No editar a menos que sea estrictamente necesario.
+
+import {React,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
-import {Edit,Delete} from '@material-ui/icons'
+import {Edit} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
 import {branchEdit} from '../../api/login.api'
-import TablePagination from "@material-ui/core/TablePagination";
-import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'universal-cookie';
+import 'react-toastify/dist/ReactToastify.css';
+import '../style.css'
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -39,6 +40,7 @@ const TableSucursal = ({branch}) => {
   const openCloseEditModal=()=>{setEditModal(!EditModal); }
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
+  const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -71,13 +73,20 @@ const TableSucursal = ({branch}) => {
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
 
-  const beforeEdit = () => {verificarDatos("Editar");}
+  const beforeEdit = () => {verificarDatos();}
 
-  const verificarDatos = (act) => {
+  var n = 0;
+  const verificarDatos = () => {
+    const lengths = [20,20];
     for ( var key in selectedBranch ) {
       if(selectedBranch[key] == ''){
         faltanDatos(key);
         return false;
+      } else if((selectedBranch[key]).length > lengths[n]){
+        cantidadExcedida(key, lengths[n]);
+        return false;
+      } else {
+        n++;
       }
     }
     editBranch();
@@ -88,7 +97,6 @@ const TableSucursal = ({branch}) => {
     window.location.reload(false);
   }
  
-
     const EditBody=(
     <div className={styles.modal}>
       <h3>Editar Sucursal</h3>      

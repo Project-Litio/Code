@@ -1,4 +1,6 @@
-import {React,useState} from 'react'
+// Componente desarrollado completamente. No editar a menos que sea estrictamente necesario.
+
+import {React,useState, useEffect} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
@@ -48,6 +50,31 @@ const types = [
 ]
 
 const TableUSers = ({users}) => {
+  const [manager, setManager] = useState(false);
+  const logged = () => {
+    if(cookies.get('user') != undefined){
+      if(cookies.get('user').role == "Man"){
+        setManager(true);
+      }
+    }
+  };
+
+  const [selectedUser,setSelectedUser]=useState({
+    first_name:'',
+    last_name:'',
+    email:'',
+    password:'',
+    id:'',
+    address:'',
+    phone:'',
+    role:'',
+    branch:'',
+    type:''
+  });
+
+  useEffect(() => {
+    logged();
+  }, [cookies]);
 
   const styles = useStyles();
 
@@ -55,14 +82,22 @@ const TableUSers = ({users}) => {
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
 
-  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); }
-  const openCloseEditModal=()=>{setEditModal(!EditModal); }
+  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata();}
+  const openCloseEditModal=()=>{setEditModal(!EditModal);}
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
+  const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
+  const invalidEmail = () => toast("El email no cumple el formato texto@texto.texto")
+
+  const cleandata = () =>{
+    for (var key in selectedUser){
+      selectedUser[key] = '';
+    }
+  }
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -90,19 +125,6 @@ const TableUSers = ({users}) => {
         console.log("Esto no debería pasar");
     }
   }
-
-  const [selectedUser,setSelectedUser]=useState({
-    first_name:'',
-    last_name:'',
-    email:'',
-    password:'',
-    id:'',
-    address:'',
-    phone:'',
-    role:'',
-    branch:'',
-    type:''
-  });
 
   const handleChange=e=>{
     const {name,value}= e.target;
@@ -139,13 +161,14 @@ const TableUSers = ({users}) => {
   const beforeEdit = () => {verificarDatos("Editar");}
 
   const verificarDatos = (act) => {
+    const lengths = [30, 50, 50, 50, 20, 30, 12, 7, 5, 5];
     selectedUser.branch = cookies.get('user').branch;
 
     if(selectedUser.password == '' && act == "Editar"){
       delete selectedUser.password;
     }
     
-    if(selectedUser.type == '' && act == "Crear"){
+    if(selectedUser.type == '' || selectedUser.type == 'No aplica'){
       selectedUser.type = 'N';
     }
 
@@ -153,19 +176,34 @@ const TableUSers = ({users}) => {
       selectedUser.role = 'Cliente';
     }
 
-    for ( var key in selectedUser ) {
-      if(selectedUser[key] == ''){
-        faltanDatos(key);
-        return false;
-      }
+    if(selectedUser.hasOwnProperty('id_branch')){
+      delete selectedUser.id_branch;
     }
 
-    if(act == "Crear"){
-      createUser();
-    } else if(act == "Editar"){
-      editUser();
+    if(/^[a-zA-Z0-9+_.\-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/u.test(selectedUser.email)){
+      var n = 0;
+      for ( var key in selectedUser ) {
+        if(selectedUser[key] == ''){
+          faltanDatos(key);
+          return false;
+        } else if((selectedUser[key]).length > lengths[n]){
+          cantidadExcedida(key, lengths[n]);
+          return false;
+        } else {
+          n++;
+        }
+      }
+
+      if(act == "Crear"){
+        createUser();
+      } else if(act == "Editar"){
+        editUser();
+      } else {
+        deleteUser();
+      }
     } else {
-      deleteUser();
+      invalidEmail();
+      return false;
     }
   }
 
@@ -232,10 +270,9 @@ const TableUSers = ({users}) => {
         return key;
       } 
     }
+    return 0;
   }
 
-  //--Fin de Estados
-  //--Componentes especificos
   const insertBody=(
     <div className={styles.modal}>
       <h3>Agregar Nuevo Usuario</h3>
@@ -269,7 +306,7 @@ const TableUSers = ({users}) => {
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange} defaultValue={selectedUser && selectedUser.address}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange} defaultValue={selectedUser && selectedUser.phone}></TextField>
       <label className={styles.inputMaterial}>Rol</label>
-      <Select options={roles} onChange={handleRoleChange} defaultValue={roles[searchIndex(selectedUser.role, roles)]}/>
+      <Select options={roles} onChange={handleRoleChange} defaultValue={roles[searchIndex(selectedUser.role, roles)]} />
       <label className={styles.inputMaterial}>Tipo</label>
       <Select options={types} onChange={handleTypeChange} defaultValue={types[searchIndex(selectedUser.type, types)]}/>
       <TextField name='branch' className={styles.inputMaterial} label="Sucursal" onChange={handleChange} defaultValue={cookies.get('user').branch} InputProps={{readOnly: true}}></TextField>
@@ -282,7 +319,7 @@ const TableUSers = ({users}) => {
 
   const DeleteBody=(
     <div className={styles.modal}>
-      <p>Estas seguro que deseas eliminar el usuario {selectedUser && selectedUser.first_name}?</p>
+      <p>Estas seguro que deseas eliminar el usuario {selectedUser && selectedUser.first_name} con ID {selectedUser && selectedUser.id}?</p>
       <div align="right">
       <Button color="secondary" onClick={deleteUser}>Si</Button>
       <Button onClick={()=>openCloseDeleteModal()}>No</Button>
@@ -292,17 +329,16 @@ const TableUSers = ({users}) => {
 
   )
 
-  //--Fin componentes no especificos
-
-
   return (
     <div>
       <ToastContainer />
-      <div className="btnInsert">
-      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
-        Insertar
-      </Button>
-      </div>
+      {manager &&
+        <div className="btnInsert">
+          <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
+            Insertar
+          </Button>
+        </div>
+      }
       <TableContainer>
         <Table>
           <TableHead>
@@ -331,11 +367,13 @@ const TableUSers = ({users}) => {
                   <TableCell>{user.role}</TableCell>
                   <TableCell>{user.type}</TableCell>
                   <TableCell>{user.id_branch}</TableCell>
-                  <TableCell>
-                    <Edit className={styles.iconos} onClick={()=>selectUser(user,'Editar')}  />
-                    &nbsp;&nbsp;&nbsp;
-                    <Delete  className={styles.iconos} onClick={()=>selectUser(user,'Elminar')}/>
-                  </TableCell>
+                  {manager &&
+                    <TableCell>
+                      <Edit className={styles.iconos} onClick={()=>selectUser(user,'Editar')}  />
+                      &nbsp;&nbsp;&nbsp;
+                      <Delete  className={styles.iconos} onClick={()=>selectUser(user,'Elminar')}/>
+                    </TableCell>
+                  }
                 </TableRow>
               )
               )}
@@ -370,7 +408,6 @@ const TableUSers = ({users}) => {
         {DeleteBody}
       </Modal>
     </div>
-
   )
 }
 

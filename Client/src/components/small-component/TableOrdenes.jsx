@@ -1,4 +1,4 @@
-import {React,useState,useEffect} from 'react'
+import {React,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
@@ -7,9 +7,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Cookies from 'universal-cookie';
-
-const cookies = new Cookies();
+import Select from 'react-select'
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -19,12 +17,12 @@ const useStyles = makeStyles((theme) => ({
       md:500
     },
     backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)',
-    borderRadius: '10px',
+    transform: 'translate(-50%, -50%)'
   },
   iconos:{
     cursor: 'pointer'
@@ -35,39 +33,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Tablestock = ({stock}) => {
-  const [manager, setManager] = useState(false);
-  const logged = () => {
-    if(cookies.get('user') != undefined){
-      if(cookies.get('user').role == "Man"){
-        setManager(true);
-      }
-    }
-  };
-
-  useEffect(() => {
-    logged();
-  }, [cookies]);
 
   const styles = useStyles();
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
 
-  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata()}
+  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); }
   const openCloseEditModal=()=>{setEditModal(!EditModal); }
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
-
-  const cleandata = () =>{
-    for (var key in selectedPiece){
-      selectedPiece[key] = '';
-    }
-  }
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
-  const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -88,7 +67,8 @@ const Tablestock = ({stock}) => {
     id:'',
     name:'',
     type:'',
-    stock:''
+    stock:'',
+    color:''
   });
 
   const handleChange=e=>{
@@ -123,27 +103,16 @@ const Tablestock = ({stock}) => {
   const beforeEdit = () => {verificarDatos("Editar");}
 
   const verificarDatos = (act) => {
-    var lengths = [20,100,50,4];
-    if(act == "Crear"){
-      delete selectedPiece.id;
-      delete selectedPiece.stock;
-      lengths = [100,50];
-    }
-
-    var n = 0;
-    for (var key in selectedPiece) {
+    selectedPiece.color = 'None';
+    for ( var key in selectedPiece ) {
       if(selectedPiece[key] == ''){
         faltanDatos(key);
         return false;
-      } else if((selectedPiece[key]).length > lengths[n]){
-        cantidadExcedida(key, lengths[n]);
-        return false;
-      } else {
-        n++;
       }
     }
 
     if(act == "Crear"){
+      selectedPiece.id = 'None';
       createPiece();
     } else if(act == "Editar"){
       editPiece();
@@ -153,10 +122,14 @@ const Tablestock = ({stock}) => {
   }
 
   const createFormData = () => {
-    selectedPiece.deleted = false;
-    selectedPiece.id_article = JSON.stringify({"stock": selectedPiece.stock, "color": selectedPiece.color});
+    const formData = new FormData();
+    for ( var key in selectedPiece ) {
+      formData.append(key, selectedPiece[key]);
+    }
 
-    return selectedPiece;
+    formData.append('id_article', JSON.stringify({"stock": selectedPiece.stock, "color": selectedPiece.color}));
+
+    return formData;
   }
 
   const deletePiece = async () => {
@@ -177,8 +150,11 @@ const Tablestock = ({stock}) => {
   const insertBody=(
     <div className={styles.modal}>
       <h3>Agregar Nueva Pieza</h3>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} InputProps={{readOnly: true}} defaultValue="Generado Automaticamente"></TextField>
       <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
+      <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange}></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} InputProps={{readOnly: true}} defaultValue="None"></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeCreate}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
@@ -193,6 +169,7 @@ const Tablestock = ({stock}) => {
       <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.name}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.type}></TextField>
       <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.stock}></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue="None" InputProps={{readOnly: true}}></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -215,13 +192,11 @@ const Tablestock = ({stock}) => {
   return (
     <div>
       <ToastContainer />
-      {manager &&
-        <div className="btnInsert">
-          <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
-            Insertar
-          </Button>
-        </div>
-      }
+      <div className="btnInsert">
+      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
+        Insertar
+      </Button>
+      </div>
       <TableContainer>
         <Table>
           <TableHead>
@@ -231,6 +206,7 @@ const Tablestock = ({stock}) => {
             <TableCell><b>Nombre</b></TableCell>
             <TableCell><b>Tipo</b></TableCell>
             <TableCell><b>Cantidad</b></TableCell>
+            <TableCell><b>Color</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -242,13 +218,12 @@ const Tablestock = ({stock}) => {
                   <TableCell>{Piece.name}</TableCell>
                   <TableCell>{Piece.type}</TableCell>
                   <TableCell>{Piece.stock}</TableCell>
-                  {manager &&
-                    <TableCell>
-                      <Edit className={styles.iconos} onClick={()=>selectPiece(Piece,'Editar')}  />
-                      &nbsp;&nbsp;&nbsp;
-                      <Delete  className={styles.iconos} onClick={()=>selectPiece(Piece,'Elminar')}/>
-                    </TableCell>
-                  }
+                  <TableCell>{Piece.color}</TableCell>
+                  <TableCell>
+                    <Edit className={styles.iconos} onClick={()=>selectPiece(Piece,'Editar')}  />
+                    &nbsp;&nbsp;&nbsp;
+                    <Delete  className={styles.iconos} onClick={()=>selectPiece(Piece,'Elminar')}/>
+                  </TableCell>
                 </TableRow>
               )
               )}

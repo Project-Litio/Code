@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,6 +16,8 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItemsMec } from './dashboardComponents/listItemsMecanico';
+import TableCotizaciones from './small-component/TableCotizaciones';
+import {getStock} from '../api/article.api'
 import img from '../assets/logo.png'
 import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -24,12 +26,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import Cookies from 'universal-cookie';
 
-var cookies = new Cookies();
-var cookies = new Cookies();
+const cookies = new Cookies()
 
 const drawerWidth = 200;
 
-const useStyles = makeStyles((theme) => ({ 
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
@@ -109,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DashboardMec() {
+export default function DashboardOrdenes() {
   const navigateTo = useNavigate();
 
   const deleteCookies = () => {
@@ -120,7 +121,7 @@ export default function DashboardMec() {
     });
     navigateTo('/');
   };
-  
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
@@ -129,10 +130,20 @@ export default function DashboardMec() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+  const [cotizReg, setCotiz] = useState([]);
+  const loaded = async () => {
+    const result = await getStock();
+    setCotiz(result.data);
+  };
+
+  useEffect(() => {
+    loaded();
+  }, []);
+
 
   return (
-    <div className={classes.root} id='raiz'>
+    <div className={classes.root}>
       <CssBaseline />
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
@@ -147,7 +158,7 @@ export default function DashboardMec() {
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Mecanico
+            &emsp; Manejo de Ordenes
           </Typography>
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">
@@ -177,19 +188,9 @@ export default function DashboardMec() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                
-              </Paper>
-            </Grid>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                
+                <TableCotizaciones cotiz={cotizReg} />
               </Paper>
             </Grid>
           </Grid>

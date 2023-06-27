@@ -1,5 +1,4 @@
-@import url('https://fonts.cdnfonts.com/css/abeezee');             
-
+@import url('https://fonts.cdnfonts.com/css/abeezee');            
 
 .cardI{
   transition: all 0.3s;
@@ -7,7 +6,6 @@
 
 .cardI:hover{
   transform: scale(1.15);
-  
 }
 
 .button1 {
@@ -25,7 +23,6 @@
 }
 
 .hero{
-
   background-size: cover;
   position: relative;
   height: 50em;
@@ -38,6 +35,7 @@
   height:fit-content;
   background-size: cover;
 }
+
 .back1{
   background-image: url(../assets/t_Model_3.jpg);
 }
@@ -53,12 +51,9 @@
 }
 
 .hero h1 {
-
-  
   align-items: center;
   color: white;
   font-size: 7em;
-
 }
 
 .hero h2{
@@ -78,13 +73,16 @@
 .card-title{
   text-align: left;
 }
+
 .card-text{
   text-align: left;
   color: #9d9c9c;
 }
+
 .exp{
   height: 20vh;
 }
+
 .space{
   padding: 7%;
   padding-top: 10%;
@@ -97,9 +95,6 @@
   font-weight: 500;
   color: aliceblue;
 }
-
-
-
 
 .footer{
   background-color: #2A2B2E ;
@@ -116,21 +111,29 @@
 
 }
 
-
 #card{
   margin-left: 12%;
 }
 
+@media (min-width:1000px) and (max-width:1200px){
+  .navbar font{
+    font-size: 0.9em;
+  }
+
+  .navbar img{
+    height: 10%;
+  }
+}
+
 @media (min-width:1000px){
   .hero h1{
-  font-size: 4em;
-  margin-left: 0%;
-  margin-top: -20vh;
-  padding-right: 0rem;
-  justify-content: right;
-  text-align: right;
-
-}
+    font-size: 4em;
+    margin-left: 0%;
+    margin-top: -20vh;
+    padding-right: 0rem;
+    justify-content: right;
+    text-align: right;
+  }
 
   .hero h2{
     margin-top: 7vw;
@@ -140,6 +143,7 @@
     font-size: 2em;
     text-align: right;
   }
+
   .hero{
     align-items: center;
     justify-content: center;
@@ -150,29 +154,25 @@
     height: fit-content;
   }
 
-
 }
 
 @media (max-width:1000px) and (min-width:600px) {
-
-
   .hero h1{
     font-size: 6.5vw;
     margin-left: 0;
     text-align: center;
-
   }
+
   .hero h2{
-
-
     margin-left: 0%;
-
     font-size: 3.5vw;
     text-align: center;
   }
+
   .hero{
     height: 60vw;
   }
+
   .serv{
     background-size: cover;
     height: fit-content;
@@ -188,11 +188,7 @@
 
   .hero{
     height: 55vh;
-
   }
-
-
-  
 
   .hero h1{
     font-size: 2.7em;
@@ -226,7 +222,11 @@
 @media(max-width:800px){
 
   .hero h1{
-font-size: 2em;
+    font-size: 2em;
+  }
+
+  .footer h5{
+    font-size: 0.8em;
   }
 }
 
@@ -259,12 +259,16 @@ font-size: 2em;
   }
 
   #entrar{
-    margin-left: 29vw;
+    margin-left: 28vw;
     position: absolute;
   }
 
   .carimg{
     width: 80%;
+  }
+
+  .footer h5{
+    font-size: 0.5em;
   }
 }
 
@@ -289,7 +293,7 @@ font-size: 2em;
   }
 
   #entrar{
-    margin-left: 33vw;
+    margin-left: 28vw;
     position: absolute;
   }
 
@@ -319,7 +323,7 @@ font-size: 2em;
   }
 
   #entrar{
-    margin-left: 35vw;
+    margin-left: 30vw;
     position: absolute;
     transform: scale(1.7);
     transform-origin: 0 0;
@@ -394,7 +398,7 @@ font-size: 2em;
   }
 
   #entrar{
-    margin-left: 38%;
+    margin-left: 34%;
     position: relative;
   }
 
@@ -551,6 +555,31 @@ input:focus, textarea:focus, select:focus{
   border-radius: 5px;
   background-color: #00B86B;
   text-align: center;
+}
+
+.section img{
+  height: 40vw;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 60px;
+  border-bottom-left-radius: 80px;
+  border-bottom-right-radius: 40px;
+  margin-left: 15vw;
+}
+
+.section {
+  background-color: white;
+  color: #039257;
+  display: flex;
+  justify-content: space-between;
+  flex-flow: row wrap;
+  padding: 40px;
+  text-align: center;
+}
+
+.section p{
+  color: black;
+  text-align: left;
+  font-size: 1.3em;
 }
 
 .link-style {

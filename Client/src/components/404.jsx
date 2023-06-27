@@ -21,7 +21,7 @@ function NotFound() {
           <h2 className='title'>Lo sentimos :&#40;</h2>
           <h3 className='title'>Has chocado con una página que no existe.</h3>
           <Link className="nav-link" to='/'>
-            <button type='buttom' className='btn btn-success mt-5' id='entrar'>Volver</button>
+            <button type='buttom' className='btn btn-success mt-5' id='entrar'>Volver a Litio</button>
           </Link>
         </div>
     </div></>

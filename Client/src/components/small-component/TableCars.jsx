@@ -3,11 +3,14 @@ import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Butt
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
 import {carEdit, carDelete, carCreate} from '../../api/article.api'
-import TablePagination from "@material-ui/core/TablePagination";
-import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import TablePagination from "@material-ui/core/TablePagination";
 import Select from 'react-select'
+import Cookies from 'universal-cookie';
+import 'react-toastify/dist/ReactToastify.css';
+import '../style.css'
+
+const cookies = new Cookies();
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -66,21 +69,52 @@ const tipos = [
 ]
 
 const TableCars = ({cars}) => {
+  const [manager, setManager] = useState(false);
+  const logged = () => {
+    if(cookies.get('user') != undefined){
+      if(cookies.get('user').role == "Man"){
+        setManager(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    logged();
+  }, [cookies]);
+
+  const [selectedcar,setSelectedcar]=useState({
+    brand:'',
+    id:'',
+    image:'',
+    model:'',
+    price:'',
+    type:'',
+    wheel:'',
+    stock:'',
+    color:''
+  });
 
   const styles = useStyles();
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
 
-  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); }
-  const openCloseEditModal=()=>{setEditModal(!EditModal); }
+  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata();}
+  const openCloseEditModal=()=>{setEditModal(!EditModal);}
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
+
+  const cleandata = () =>{
+    for (var key in selectedcar){
+      selectedcar[key] = '';
+    }
+  }
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
   const notInt = () => toast("El precio y la cantidad deben ser enteros");
+  const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -106,18 +140,6 @@ const TableCars = ({cars}) => {
         console.log("Esto no debería pasar");
     }
   }
-
-  const [selectedcar,setSelectedcar]=useState({
-    brand:'',
-    id:'',
-    image:'',
-    model:'',
-    price:'',
-    type:'',
-    wheel:'',
-    stock:'',
-    color:''
-  });
 
   const handleChange=e=>{
     const {name,value}= e.target;
@@ -150,6 +172,8 @@ const TableCars = ({cars}) => {
   const beforeEdit = () => {verificarDatos("Editar");}
 
   const verificarDatos = (act) => {
+    const lengths = [30, 20, 300, 50, 15, 20, 20, 4, 30];
+
     if(selectedcar.image == '' && act == "Editar"){
       delete selectedcar.image;
     }
@@ -166,10 +190,16 @@ const TableCars = ({cars}) => {
       selectedcar.wheel = 'Magnesio';
     }
     
+    var n = 0;
     for ( var key in selectedcar ) {
       if(selectedcar[key] == ''){
         faltanDatos(key);
         return false;
+      } else if((selectedcar[key]).length > lengths[n]){
+        cantidadExcedida(key, lengths[n]);
+        return false;
+      } else {
+        n++;
       }
     }
 
@@ -183,29 +213,17 @@ const TableCars = ({cars}) => {
   }
 
   const createFormData = () => {
-    delete selectedcar.image;
     try {
       selectedcar.price = parseInt(selectedcar.price);
       selectedcar.stock = parseInt(selectedcar.stock);
-      const formData = new FormData();
-      for ( var key in selectedcar ) {
-        formData.append(key, selectedcar[key]);
-      }
+      selectedcar.id_article = JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color});
   
       if(selectedImage != null){
-        formData.append('image', selectedImage);
+        selectedcar.image = selectedImage;
       } 
-      
-      formData.append('id_article', JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color}));
-  
-      for (const key of formData.keys()) {
-        console.log(key);
-      }
-      for (const value of formData.values()) {
-        console.log(value);
-      }
-
-      return formData;
+            
+      console.log(selectedcar);
+      return selectedcar;
 
     } catch (error) {
       notInt();
@@ -301,7 +319,7 @@ const TableCars = ({cars}) => {
 
   const DeleteBody=(
     <div className={styles.modal}>
-      <p>¿Estas seguro que deseas eliminar el vehiculo {selectedcar && selectedcar.brand}?</p>
+      <p>Estas seguro que deseas eliminar el vehiculo {selectedcar && selectedcar.brand}?</p>
       <div align="right">
       <Button color="secondary" onClick={deletecar}>Si</Button>
       <Button onClick={()=>openCloseDeleteModal()}>No</Button>
@@ -312,11 +330,13 @@ const TableCars = ({cars}) => {
   return (
     <div>
       <ToastContainer />
-      <div className="btnInsert">
-      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
-        Insertar
-      </Button>
-      </div>
+      {manager &&
+        <div className="btnInsert">
+          <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
+            Insertar
+          </Button>
+        </div>
+      }
       <TableContainer>
         <Table>
           <TableHead>
@@ -347,11 +367,13 @@ const TableCars = ({cars}) => {
                   <TableCell>{car.wheel}</TableCell>
                   <TableCell>{car.stock}</TableCell>
                   <TableCell>{car.color}</TableCell>
-                  <TableCell>
-                    <Edit className={styles.iconos} onClick={()=>selectcar(car,'Editar')}  />
-                    &nbsp;&nbsp;&nbsp;
-                    <Delete  className={styles.iconos} onClick={()=>selectcar(car,'Elminar')}/>
-                  </TableCell>
+                  {manager &&
+                    <TableCell>
+                      <Edit className={styles.iconos} onClick={()=>selectcar(car,'Editar')}  />
+                      &nbsp;&nbsp;&nbsp;
+                      <Delete  className={styles.iconos} onClick={()=>selectcar(car,'Elminar')}/>
+                    </TableCell>
+                  }
                 </TableRow>
               )
               )}

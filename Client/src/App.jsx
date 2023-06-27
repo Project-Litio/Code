@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import Home from './pages/home'
 import Collection from './pages/collection'
 import login from './pages/login'
+import About from './pages/about'
 import DashboardPage from './pages/dashboard'
 import DashboardClient from './pages/dashboardCliente'
 import DashboardMec from './pages/dashboardMecanico'
@@ -12,9 +13,11 @@ import ManejoUsuarios from './pages/manejousuarios'
 import ManejoVehiculos from './pages/manejovehiculos'
 import ManejoInventario from './pages/manejoinventario'
 import ManejoSucursales from './pages/manejosucursales'
+import ManejoCotizacion from './pages/manejocotizaciones'
+import ManejoOrden from './pages/manejoordenes'
 import carDetail from './pages/carDetail'
-import Buy from './pages/buy'
 import Error from './pages/404'
+import Buy from './pages/buy'
 
 import Cookies from 'universal-cookie';
 
@@ -24,7 +27,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route} from "react-router-dom";
-
 
 function App() {
   const [client, setClient] = useState(false);
@@ -54,12 +56,12 @@ function App() {
       <Router className='white'>
         <Routes>
           <Route path='/'>
-              <Route path='/collection/:id' Component={carDetail}></Route>
-              <Route path='/collection/buy' Component={Buy}></Route>
-              <Route path='/collection' Component={Collection}></Route>
+              <Route path='collection/:id' Component={carDetail}></Route>
+              <Route path='collection' Component={Collection}></Route>
               <Route path='repair' Component={Navbar}></Route>
-              <Route path='about' Component={Navbar}></Route>
+              <Route path='about' Component={About}></Route>
               <Route path='login' Component={login}></Route>
+              <Route path='collection/buy' Component={Buy}></Route>
               <Route index Component={Home}></Route>
           </Route>
           {manager &&
@@ -79,11 +81,17 @@ function App() {
           {seller &&
             <Route path='/'>
               <Route path='DashboardVendedor' Component={DashboardVend}></Route>
+              <Route path='UserManagement' Component={ManejoUsuarios}></Route>
+              <Route path='VehicleManagement' Component={ManejoVehiculos}></Route>
+              <Route path='CotizacionManagement' Component={ManejoCotizacion}></Route>
             </Route >
           }
           {mechanic &&
             <Route path='/'>
               <Route path='DashboardMecanico' Component={DashboardMec}></Route>
+              <Route path='UserManagement' Component={ManejoUsuarios}></Route>
+              <Route path='StockManagement' Component={ManejoInventario}></Route>
+              <Route path='OrderManagement' Component={ManejoOrden}></Route>
             </Route >
           }
           <Route path='*' Component={Error}></Route>

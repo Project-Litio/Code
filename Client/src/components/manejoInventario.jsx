@@ -16,6 +16,7 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './dashboardComponents/listItems';
+import { mainListItemsMec } from './dashboardComponents/listItemsMecanico';
 import Tablestock from './small-component/TableStock';
 import {getStock} from '../api/article.api'
 import img from '../assets/logo.png'
@@ -132,9 +133,16 @@ export default function DashboardInventario() {
   };
 
   const [stockReg, setStock] = useState([]);
+  const [manager, setManager] = useState(false);
   const loaded = async () => {
-    const result = await getStock();
-    setStock(result.data);
+    if(cookies.get('user') != undefined){
+      if(cookies.get('user').role == "Man"){
+        setManager(true);
+      }
+    }
+
+    const result = await getStock(cookies.get('user').branch);
+    setStock(result.data.data);
   };
 
   useEffect(() => {
@@ -157,9 +165,16 @@ export default function DashboardInventario() {
             <MenuIcon />
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Manejo de Repuestos
-          </Typography>
+          {manager &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Manejo de Piezas
+            </Typography>
+          }
+          {!manager &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Consulta de Piezas
+            </Typography>
+          }
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">
               <IconButton>
@@ -182,7 +197,12 @@ export default function DashboardInventario() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        {manager &&
+          <List>{mainListItems}</List>
+        }
+        {!manager &&
+          <List>{mainListItemsMec}</List>
+        } 
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

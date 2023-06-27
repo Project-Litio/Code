@@ -1,15 +1,12 @@
-import {React,useState,useEffect} from 'react'
+import {React,useState} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
-import {stockEdit, stockDelete, stockCreate} from '../../api/article.api'
+import {cotizEdit, cotizDelete, cotizCreate} from '../../api/article.api'
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Cookies from 'universal-cookie';
-
-const cookies = new Cookies();
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -19,12 +16,12 @@ const useStyles = makeStyles((theme) => ({
       md:500
     },
     backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)',
-    borderRadius: '10px',
+    transform: 'translate(-50%, -50%)'
   },
   iconos:{
     cursor: 'pointer'
@@ -34,40 +31,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Tablestock = ({stock}) => {
-  const [manager, setManager] = useState(false);
-  const logged = () => {
-    if(cookies.get('user') != undefined){
-      if(cookies.get('user').role == "Man"){
-        setManager(true);
-      }
-    }
-  };
-
-  useEffect(() => {
-    logged();
-  }, [cookies]);
+const TableCotizaciones = ({cotiz}) => {
 
   const styles = useStyles();
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
 
-  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata()}
+  const openCloseIsertModal=()=>{setInsertModal(!InsertModal); }
   const openCloseEditModal=()=>{setEditModal(!EditModal); }
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
-
-  const cleandata = () =>{
-    for (var key in selectedPiece){
-      selectedPiece[key] = '';
-    }
-  }
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
-  const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -77,23 +55,24 @@ const Tablestock = ({stock}) => {
         return 'Nombre';
       case 'type':
         return 'Tipo';
-      case 'stock':
+      case 'cotiz':
         return 'Cantidad';
       default:
         console.log("Esto no debería pasar");
     }
   }
 
-  const [selectedPiece,setSelectedPiece]=useState({
+  const [selectedCotization,setSelectedCotization]=useState({
     id:'',
     name:'',
     type:'',
-    stock:''
+    cotiz:'',
+    color:''
   });
 
   const handleChange=e=>{
     const {name,value}= e.target;
-    setSelectedPiece(
+    setSelectedCotization(
       prevState=>({
         ...prevState,
         [name]:value
@@ -111,10 +90,10 @@ const Tablestock = ({stock}) => {
   };
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, stock.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, cotiz.length - page * rowsPerPage);
 
-  const selectPiece=(Piece, caso)=>{
-    setSelectedPiece(Piece);
+  const selectCotization=(Cotization, caso)=>{
+    setSelectedCotization(Cotization);
 
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
@@ -123,62 +102,58 @@ const Tablestock = ({stock}) => {
   const beforeEdit = () => {verificarDatos("Editar");}
 
   const verificarDatos = (act) => {
-    var lengths = [20,100,50,4];
-    if(act == "Crear"){
-      delete selectedPiece.id;
-      delete selectedPiece.stock;
-      lengths = [100,50];
-    }
-
-    var n = 0;
-    for (var key in selectedPiece) {
-      if(selectedPiece[key] == ''){
+    selectedCotization.color = 'None';
+    for ( var key in selectedCotization ) {
+      if(selectedCotization[key] == ''){
         faltanDatos(key);
         return false;
-      } else if((selectedPiece[key]).length > lengths[n]){
-        cantidadExcedida(key, lengths[n]);
-        return false;
-      } else {
-        n++;
       }
     }
 
     if(act == "Crear"){
-      createPiece();
+      selectedCotization.id = 'None';
+      createCotization();
     } else if(act == "Editar"){
-      editPiece();
+      editCotization();
     } else {
-      deletePiece();
+      deleteCotization();
     }
   }
 
   const createFormData = () => {
-    selectedPiece.deleted = false;
-    selectedPiece.id_article = JSON.stringify({"stock": selectedPiece.stock, "color": selectedPiece.color});
+    const formData = new FormData();
+    for ( var key in selectedCotization ) {
+      formData.append(key, selectedCotization[key]);
+    }
 
-    return selectedPiece;
+    formData.append('id_article', JSON.stringify({"cotiz": selectedCotization.cotiz, "color": selectedCotization.color}));
+
+    return formData;
   }
 
-  const deletePiece = async () => {
-    await stockDelete({}, selectedPiece.id);
+  const deleteCotization = async () => {
+    await cotizDelete({}, selectedCotization.id);
     window.location.reload(false);
   }
 
-  const editPiece = async () => {
-    await stockEdit(createFormData(), selectedPiece.id);
+  const editCotization = async () => {
+    await cotizEdit(createFormData(), selectedCotization.id);
     window.location.reload(false);
   }
 
-  const createPiece = async () => {
-    await stockCreate(createFormData());
+  const createCotization = async () => {
+    await cotizCreate(createFormData());
     window.location.reload(false);
   }
 
   const insertBody=(
     <div className={styles.modal}>
       <h3>Agregar Nueva Pieza</h3>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} InputProps={{readOnly: true}} defaultValue="Generado Automaticamente"></TextField>
       <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange}></TextField>
+      <TextField name='cotiz' className={styles.inputMaterial} label="Cantidad" onChange={handleChange}></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} InputProps={{readOnly: true}} defaultValue="None"></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeCreate}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
@@ -189,10 +164,11 @@ const Tablestock = ({stock}) => {
     const EditBody=(
     <div className={styles.modal}>
       <h3>Editar Pieza</h3>
-      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.id} InputProps={{readOnly: true}}></TextField>
-      <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.name}></TextField>
-      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.type}></TextField>
-      <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.stock}></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="Identicador" onChange={handleChange} defaultValue={selectedCotization && selectedCotization.id} InputProps={{readOnly: true}}></TextField>
+      <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange} defaultValue={selectedCotization && selectedCotization.name}></TextField>
+      <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedCotization && selectedCotization.type}></TextField>
+      <TextField name='cotiz' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedCotization && selectedCotization.cotiz}></TextField>
+      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue="None" InputProps={{readOnly: true}}></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -202,9 +178,9 @@ const Tablestock = ({stock}) => {
 
   const DeleteBody=(
     <div className={styles.modal}>
-      <p>Estas seguro que deseas eliminar la pieza {selectedPiece && selectedPiece.name}?</p>
+      <p>Estas seguro que deseas eliminar la pieza {selectedCotization && selectedCotization.name}?</p>
       <div align="right">
-      <Button color="secondary" onClick={deletePiece}>Si</Button>
+      <Button color="secondary" onClick={deleteCotization}>Si</Button>
       <Button onClick={()=>openCloseDeleteModal()}>No</Button>
       </div>
 
@@ -215,13 +191,11 @@ const Tablestock = ({stock}) => {
   return (
     <div>
       <ToastContainer />
-      {manager &&
-        <div className="btnInsert">
-          <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
-            Insertar
-          </Button>
-        </div>
-      }
+      <div className="btnInsert">
+      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
+        Insertar
+      </Button>
+      </div>
       <TableContainer>
         <Table>
           <TableHead>
@@ -231,24 +205,24 @@ const Tablestock = ({stock}) => {
             <TableCell><b>Nombre</b></TableCell>
             <TableCell><b>Tipo</b></TableCell>
             <TableCell><b>Cantidad</b></TableCell>
+            <TableCell><b>Color</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {stock.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(Piece=>
+            {cotiz.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(Cotization=>
               (
-                <TableRow key={Piece.id}>
-                  <TableCell>{Piece.id}</TableCell>
-                  <TableCell>{Piece.id_article}</TableCell>
-                  <TableCell>{Piece.name}</TableCell>
-                  <TableCell>{Piece.type}</TableCell>
-                  <TableCell>{Piece.stock}</TableCell>
-                  {manager &&
-                    <TableCell>
-                      <Edit className={styles.iconos} onClick={()=>selectPiece(Piece,'Editar')}  />
-                      &nbsp;&nbsp;&nbsp;
-                      <Delete  className={styles.iconos} onClick={()=>selectPiece(Piece,'Elminar')}/>
-                    </TableCell>
-                  }
+                <TableRow key={Cotization.id}>
+                  <TableCell>{Cotization.id}</TableCell>
+                  <TableCell>{Cotization.id_article}</TableCell>
+                  <TableCell>{Cotization.name}</TableCell>
+                  <TableCell>{Cotization.type}</TableCell>
+                  <TableCell>{Cotization.cotiz}</TableCell>
+                  <TableCell>{Cotization.color}</TableCell>
+                  <TableCell>
+                    <Edit className={styles.iconos} onClick={()=>selectCotization(Cotization,'Editar')}  />
+                    &nbsp;&nbsp;&nbsp;
+                    <Delete  className={styles.iconos} onClick={()=>selectCotization(Cotization,'Elminar')}/>
+                  </TableCell>
                 </TableRow>
               )
               )}
@@ -263,7 +237,7 @@ const Tablestock = ({stock}) => {
         <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={stock.length}
+        count={cotiz.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -287,4 +261,4 @@ const Tablestock = ({stock}) => {
   )
 }
 
-export default Tablestock
+export default TableCotizaciones

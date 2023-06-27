@@ -10,6 +10,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './style.css'
 import { useTranslation } from 'react-i18next';
+import ClearIcon from '@material-ui/icons/Clear';
+import CheckIcon from '@material-ui/icons/Check';
 
 import Cookies from 'universal-cookie';
 
@@ -114,6 +116,24 @@ function LoginForm() {
     }
   }
 
+  const [validEmail, setValidEmail] = useState(false);
+  const [validPass, setValidPass] = useState(false);
+  const emailChange = e => {
+    if(/^[a-zA-Z0-9+_.\-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/u.test(e.target.value)){
+      setValidEmail(true);
+    } else {
+      setValidEmail(false);
+    }
+  }
+
+  const passChange = e => {
+    if((e.target.value).length >= 1){
+      setValidPass(true);
+    } else {
+      setValidPass(false);
+    }
+  }
+
   return (
     <><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
     <ToastContainer />
@@ -130,17 +150,35 @@ function LoginForm() {
           <form onSubmit={onSubmit} id="formulario">
             <h2 className='title'>{t("LoginForm.title")}</h2>
             <div className='form-group mb-2'>
-              <label htmlFor='ID' className='form-label'>{t("LoginForm.email")}</label>
-              <input type="text" className='form-control' id='inputEmail' {...register("email", {required: true})}></input>
+              <label htmlFor='ID' className='form-label'>
+                {t("LoginForm.email")}
+                              
+              </label>
+              {!validEmail &&
+                <ClearIcon style={{ color: '#f02f2f', float:'right' }}></ClearIcon>
+              }
+              {validEmail &&
+                <CheckIcon style={{ color: '#00B86B', float:'right' }}></CheckIcon>
+              }  
+              <input type="text" className='form-control' id='inputEmail' {...register("email", {required: true})} onChange={emailChange}></input>
             </div>
             <div className='form-group mb-2'>
-              <label htmlFor='password' className='form-label'>{t("LoginForm.password")}</label>
+              <label htmlFor='password' className='form-label'>
+                {t("LoginForm.password")} 
+              </label>
+              {!validPass &&
+                  <ClearIcon style={{ color: '#f02f2f', float:'right'}}></ClearIcon>
+              }
+              {validPass &&
+                <CheckIcon style={{ color: '#00B86B', float:'right'}}></CheckIcon>
+              }   
               <div className='passcode'> 
-                <input type={passwordShown ? "text" : "password"} className='form-control' id='customform' {...register("password", {required: true})}></input>
+                <input type={passwordShown ? "text" : "password"} className='form-control' id='customform' {...register("password", {required: true})} onChange={passChange}></input>
                 <button type="button" onClick={togglePassword}>
                   {!passwordShown && <i className="fa fa-eye"></i>}
                   {passwordShown && <i className="fa fa-eye-slash"></i>}
                 </button>
+                
               </div>
             </div>
           <div className="captcha">
@@ -151,7 +189,7 @@ function LoginForm() {
                 onExpired={caducated}
               />
           </div>
-          {captchaValido &&
+          {captchaValido && validEmail && validPass &&
             <button type='buttom' className='btn btn-success mt-5' id='entrar'>{t("LoginForm.login_button")}</button>
           }
           </form>

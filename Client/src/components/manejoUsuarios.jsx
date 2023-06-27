@@ -16,6 +16,8 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './dashboardComponents/listItems';
+import { mainListItemsVend } from './dashboardComponents/listItemsVendedor';
+import { mainListItemsMec } from './dashboardComponents/listItemsMecanico';
 import TableUSers from './small-component/Table';
 import {getCustomers, getEmployees} from '../api/login.api'
 import img from '../assets/logo.png'
@@ -25,6 +27,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router-dom';
 
 import Cookies from 'universal-cookie';
+const cookies = new Cookies();
 
 const drawerWidth = 200;
 const useStyles = makeStyles((theme) => ({
@@ -131,6 +134,8 @@ export default function DashboardUsuarios() {
   };
 
   const [usersReg, setUsers] = useState([]);
+  const [manager, setManager] = useState(false);
+  const [vendedor, setVendedor] = useState(false);
   const loaded = async () => {
       const usuarios = ((await getCustomers()).data.data).map(user=>({
         ...user,
@@ -138,7 +143,17 @@ export default function DashboardUsuarios() {
         id_branch: 'No aplica'
       }));
       const employees = (await getEmployees()).data.data;
-      setUsers(usuarios.concat(employees));
+      if(cookies.get('user') != undefined){
+        if(cookies.get('user').role == "Man"){
+          setManager(true);
+          setUsers(usuarios.concat(employees));
+        } else if(cookies.get('user').role == "Sel"){
+          setVendedor(true);
+          setUsers(usuarios);
+        } else {
+          setUsers(usuarios);
+        }
+      }      
   };
 
   useEffect(() => {
@@ -160,9 +175,16 @@ export default function DashboardUsuarios() {
             <MenuIcon />
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Usuarios
-          </Typography>
+          {manager &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Manejo de Usuarios
+            </Typography>
+          }
+          {!manager &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Consulta de Clientes
+            </Typography>
+          }
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">
               <IconButton>
@@ -185,7 +207,15 @@ export default function DashboardUsuarios() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        {manager &&
+          <List>{mainListItems}</List>
+        }
+        {!manager && !vendedor &&
+          <List>{mainListItemsMec}</List>
+        } 
+        {!manager && vendedor &&
+          <List>{mainListItemsVend}</List>
+        } 
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

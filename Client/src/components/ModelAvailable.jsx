@@ -1,33 +1,35 @@
 import React, {useState, useEffect} from 'react'
 import {Link} from "react-router-dom";
 import CardI from './small-component/CardI'
-import {getCars} from '../api/article.api'
+import {getCars, getAllCars} from '../api/article.api'
 import Cookies from 'universal-cookie';
 import {motion} from 'framer-motion'
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { useTranslation } from 'react-i18next';
-const cookies = new Cookies()
+const cookies = new Cookies();
 
 const ModelAvailable = () => {
   const [cars, setCars] = useState([]);
   const loaded = async () => {
-    const result = await getCars();
-    setCars(result.data);
-    
+    if(cookies.get('user') != undefined){
+      const result = await getCars(cookies.get('user').branch);
+      setCars(result.data.data);
+      console.log(result.data.data);
+    } else {
+      const result = await getAllCars();
+      setCars(result.data);
+      console.log(result.data);
+    }    
   };
 
   useEffect(() => {
     loaded();
   }, []);
 
-  console.log(cars);
-
   const [search, setSearch] = useState('');
   const [t]=useTranslation("global");
   return (
-
-    
     <div className='container'>
       
       <div className='px-3'>
