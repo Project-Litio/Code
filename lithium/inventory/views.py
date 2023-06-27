@@ -242,20 +242,21 @@ class Car_Stock(APIView):
             result = []
 
             for car in cars:        
-                info = Branch_article.objects.get(id_branch=pk,id_article=car.id_article.id)
-                car_info = {
-                    "id":car.id,
-                    "id_article":car.id_article.id,
-                    "brand":car.brand,
-                    "type":car.type,
-                    "model":car.model,
-                    "wheel":car.wheel,
-                    "price":car.price,
-                    "image":str(car.image),
-                    "stock":info.stock,
-                    "color":info.color
-                }
-                result.append(car_info)
+                if(car.id_article.deleted == False):
+                    info = Branch_article.objects.get(id_branch=pk,id_article=car.id_article.id)
+                    car_info = {
+                        "id":car.id,
+                        "id_article":car.id_article.id,
+                        "brand":car.brand,
+                        "type":car.type,
+                        "model":car.model,
+                        "wheel":car.wheel,
+                        "price":car.price,
+                        "image":str(car.image),
+                        "stock":info.stock,
+                        "color":info.color
+                    }
+                    result.append(car_info)
 
             return Response({"status": "success", "data":result})
         
@@ -387,16 +388,17 @@ class Replacement_Stock(APIView):
             result = []
 
             for rep in replacement:        
-                info = Branch_article.objects.get(id_branch=pk,id_article=rep.id_article.id)
-                rep_info = {
-                    "id":rep.id,
-                    "id_article":rep.id_article.id,
-                    "name":rep.name,    
-                    "type":rep.type,
-                    "stock":info.stock,
-                    "color":info.color
-                }
-                result.append(rep_info)
+                if(rep.id_article.deleted == False):
+                    info = Branch_article.objects.get(id_branch=pk,id_article=rep.id_article.id)
+                    rep_info = {
+                        "id":rep.id,
+                        "id_article":rep.id_article.id,
+                        "name":rep.name,    
+                        "type":rep.type,
+                        "stock":info.stock,
+                        "color":info.color
+                    }
+                    result.append(rep_info)
 
             return Response({"status": "success", "data":result})
         
