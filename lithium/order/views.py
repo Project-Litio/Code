@@ -329,8 +329,8 @@ class QuotationAPI(APIView):
                 last = Quotation.objects.last()
                 data = {
                     "id":last.id,
-                    "id_customer":last.id_customer,
-                    "id_employee":last.id_employee,
+                    "id_customer":last.id_customer.id,
+                    "id_employee":last.id_employee.id,
                     "observation":last.observation,
                     "total":last.total
                 }
@@ -353,8 +353,29 @@ class QuotationDetailAPI(APIView):
         if quotation == None:
             return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         
+        items = Quotation_detail.objects.filter(id_quotation=pk)
+        info = []
+        for i in items:
+            infoAux = {
+                "id": i.id,
+                "amount": i.amount,
+                "subtotal": i.subtotal,
+                "id_car": i.id_car.id
+            }
+            info.append(infoAux)
+
+        data = {
+            "id": quotation.id,
+            "date": quotation.date,
+            "observation": quotation.observation,
+            "total": quotation.total,
+            "id_customer": quotation.id_customer.id,
+            "id_employee": quotation.id_employee.id,
+            "quotation_details": info
+        }
+
         serializer = self.all_quotation_serializer(quotation)
-        return Response(serializer.data)
+        return Response(data)
 
     def patch(self, request, pk):
         with transaction.atomic():
