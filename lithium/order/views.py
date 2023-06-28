@@ -26,7 +26,6 @@ class Order_detailAPI(APIView):
             id_replacement = serializer.validated_data['id_replacement']
             replacement = Replacement.objects.get(id= request.data['id_replacement'])
             article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=replacement.id_article)
-            print(article.stock)
             if ((article.stock-amount) < 0):
                 return Response({"status": "fail", "message": f"Replacement: {id_replacement} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
 
@@ -62,7 +61,7 @@ class Order_detailDetailAPI(APIView):
 
         # Retrieve the amount and id_replacement
         amount = order_detail.amount
-        replacement = Replacement.objects.get(id=order_detail.id_replacement.id) #
+        replacement = Replacement.objects.get(id=order_detail.id_replacement.id)
         article = article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=replacement.id_article.id)
 
         order_detail.delete()
@@ -345,15 +344,23 @@ class Bill_detailAPI(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        #Calcular el subtotal aquí
-        #request.data['subtotal'] = request.data['id_car'].price * request.data['amount']
+        price = Car.objects.filter(id=request.data['id_car']).first().price
+        request.data['subtotal'] = price * request.data['amount']
 
-        #Also take the amount and substract it to the stock of the cars
-        request.data['subtotal'] = 0
         serializer = self.bill_detail_serializer(data=request.data)
         is_valid_bill_detail = serializer.is_valid()
 
         if is_valid_bill_detail:
+            amount = serializer.validated_data['amount']
+            id_car = serializer.validated_data['id_car']
+            car = Car.objects.get(id=request.data['id_car'])
+            article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=car.id_article)
+            if ((article.stock-amount) < 0):
+                return Response({"status": "fail", "message": f"Replacement: {id_replacement} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
+
+            article.stock -= amount
+            article.save()
+
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -383,7 +390,16 @@ class Bill_detailDetailAPI(APIView):
         if bill_detail == None:
             return Response({"status": "fail", "message": f"Bill_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND) 
 
-        #Take the amount and add it to the stock of the cars
+        # Retrieve the amount and id_replacement
+        amount = order_detail.amount
+        car = Replacement.objects.get(id=order_detail.id_car.id)
+        article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=car.id_article.id)
+
+        order_detail.delete()
+
+        # Update the id_replacement stock
+        article.stock += amount
+        article.save()
 
         bill_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -459,7 +475,7 @@ class BillDetailAPI(APIView):
             return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
         #Collects the total
-        queryset = Quotation_detail.objects.filter(id_bill=bill.id)
+        queryset = Bill_detail.objects.filter(id_bill=bill.id)
         request.data["total"] = 0
         for b in queryset:
             request.data["total"] += b.subtotal
@@ -477,6 +493,21 @@ class BillDetailAPI(APIView):
         bill = self.get_bill(pk=pk)
         if bill == None:
             return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        with transaction.atomic():
+            bill_details = Bill_detail.objects.filter(id_bill=bill.id)
+
+            for bill_detail in bill_details:
+                # Retrieve the amount and id_replacement
+                amount = order_detail.amount
+                car = Replacement.objects.get(id=order_detail.id_car.id)
+                article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=car.id_article.id)
+
+                order_detail.delete()
+
+                # Update the id_replacement stock
+                article.stock += amount
+                article.save()
         
         bill.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
