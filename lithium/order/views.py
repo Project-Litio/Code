@@ -251,19 +251,20 @@ class Quotation_detailDetailAPI(APIView):
             quotation = quotation_detail.id_quotation
 
             #Selecting the car
-            if (request.data['id_car'] == None):
-                id_car = quotation_detail.id_car
-            else:
+            try:
+                id_car = quotation_detail.id_car.id
+            except:
                 id_car = request.data['id_car']
 
             #Selecting the amount
-            if (request.data['amount'] == None):
+            try:
                 amount = quotation_detail.amount
-            else:
+            except:
                 amount = request.data['amount']
 
             price = Car.objects.filter(id=id_car).first().price
             request.data['subtotal'] = price * amount
+            print(request.data['subtotal'])
             
             serializer = self.quotation_detail_serializer(quotation_detail, data=request.data, partial=True)
             if serializer.is_valid():
