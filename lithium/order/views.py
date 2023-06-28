@@ -55,60 +55,6 @@ class Order_detailDetailAPI(APIView):
         serializer = self.all_order_detail_serializer(order_detail)
         return Response(serializer.data)
         
-    '''
-    def patch(self, request, pk):
-        order_detail = self.get_order_detail(pk=pk)
-        if order_detail == None:
-            return Response({"status": "fail", "message": f"Order_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = self.order_detail_serializer(order_detail, data=request.data, partial=True)
-        
-        if serializer.is_valid():
-
-            if (serializer.validated_data['id_replacement'] != None):
-                #For the old id_replacement------------------------------
-                # Retrieve the amount and id_replacement
-                amount = order_detail.amount
-                article = order_detail.id_replacement.id_article
-
-                # Update the id_replacement stock
-                article.stock += amount
-                article.save()
-
-                #For the new id_replacement------------------------------
-                if (serializer.validated_data['amount'] != None):
-                    amount = serializer.validated_data['amount']
-                
-                article = serializer.validated_data['id_replacement']
-
-                # Update the id_replacement stock
-                article.id_article.stock -= amount
-                article.save()
-
-                amount_changed = True
-            
-            if (serializer.validated_data['amount'] != None and not amount_changed):
-                #For the old id_replacement------------------------------
-                # Retrieve the amount and id_replacement
-                amount = order_detail.amount
-                article = order_detail.id_replacement.id_article
-
-                # Update the id_replacement stock
-                article.stock += amount
-                article.save()
-
-                #For the new id_replacement------------------------------
-                amount = serializer.validated_data['amount']
-
-                # Update the id_replacement stock
-                article.stock -= amount
-                article.save()
-
-            serializer.save()
-            return Response({"status": "success", "data": {"order_detail": serializer.data}})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    '''
-
     def delete(self, request, pk):
         order_detail = self.get_order_detail(pk=pk)
         if order_detail == None:
@@ -243,7 +189,8 @@ class Quotation_detailAPI(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        request.data['subtotal'] = request.data['id_car'].price * request.data['amount']
+        price = Car.objects.filter(id=request.data['id_car']).first().price
+        request.data['subtotal'] = price * request.data['amount']
         serializer = self.quotation_detail_serializer(data=request.data)
         is_valid_quotation_detail = serializer.is_valid()
 
@@ -289,7 +236,8 @@ class Quotation_detailDetailAPI(APIView):
         else:
             amount = request.data['amount']
 
-        request.data['subtotal'] = id_car.price * amount            
+        price = Car.objects.filter(id=id_car).first().price
+        request.data['subtotal'] = price * amount
         
         serializer = self.quotation_detail_serializer(quotation_detail, data=request.data, partial=True)
         if serializer.is_valid():
