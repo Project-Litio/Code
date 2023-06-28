@@ -18,23 +18,24 @@ class Order_detailAPI(APIView):
         return Response(serializer.data)
 
     def post(self, request):        
-        serializer = self.order_detail_serializer(data=request.data)
-        is_valid_order_detail = serializer.is_valid()
+        with transaction.atomic():
+            serializer = self.order_detail_serializer(data=request.data)
+            is_valid_order_detail = serializer.is_valid()
 
-        if is_valid_order_detail:
-            amount = serializer.validated_data['amount']
-            id_replacement = serializer.validated_data['id_replacement']
-            replacement = Replacement.objects.get(id= request.data['id_replacement'])
-            article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=replacement.id_article)
-            if ((article.stock-amount) < 0):
-                return Response({"status": "fail", "message": f"Replacement: {id_replacement} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
+            if is_valid_order_detail:
+                amount = serializer.validated_data['amount']
+                id_replacement = serializer.validated_data['id_replacement']
+                replacement = Replacement.objects.get(id= request.data['id_replacement'])
+                article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=replacement.id_article)
+                if ((article.stock-amount) < 0):
+                    return Response({"status": "fail", "message": f"Replacement: {id_replacement} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
 
-            article.stock -= amount
-            article.save()
+                article.stock -= amount
+                article.save()
 
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class Order_detailDetailAPI(APIView):
     order_detail_serializer = Order_detail_Serializer
@@ -55,22 +56,23 @@ class Order_detailDetailAPI(APIView):
         return Response(serializer.data)
         
     def delete(self, request, pk):
-        order_detail = self.get_order_detail(pk=pk)
-        if order_detail == None:
-            return Response({"status": "fail", "message": f"Order_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        with transaction.atomic():
+            order_detail = self.get_order_detail(pk=pk)
+            if order_detail == None:
+                return Response({"status": "fail", "message": f"Order_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Retrieve the amount and id_replacement
-        amount = order_detail.amount
-        replacement = Replacement.objects.get(id=order_detail.id_replacement.id)
-        article = article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=replacement.id_article.id)
+            # Retrieve the amount and id_replacement
+            amount = order_detail.amount
+            replacement = Replacement.objects.get(id=order_detail.id_replacement.id)
+            article = article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=replacement.id_article.id)
 
-        order_detail.delete()
+            order_detail.delete()
 
-        # Update the id_replacement stock
-        article.stock += amount
-        article.save()
+            # Update the id_replacement stock
+            article.stock += amount
+            article.save()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Work_orderAPI(APIView):
@@ -102,12 +104,13 @@ class Work_orderAPI(APIView):
         return Response(fullset)
 
     def post(self, request):
-        request.data["end_date"]= None
-        serializer = self.work_order_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        with transaction.atomic():
+            request.data["end_date"]= None
+            serializer = self.work_order_serializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Work_orderDetailAPI(APIView):
@@ -143,41 +146,43 @@ class Work_orderDetailAPI(APIView):
         return Response(data)
 
     def patch(self, request, pk):
-        request.data["end_date"]= datetime.now()
-        work_order = self.get_work_order(pk=pk)
-        if work_order == None:
-            return Response({"status": "fail", "message": f"Work_order with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = self.work_order_serializer(work_order, data=request.data, partial=True)
+        with transaction.atomic():
+            request.data["end_date"]= datetime.now()
+            work_order = self.get_work_order(pk=pk)
+            if work_order == None:
+                return Response({"status": "fail", "message": f"Work_order with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            serializer = self.work_order_serializer(work_order, data=request.data, partial=True)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "success", "data": {"work_order": serializer.data}})
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"status": "success", "data": {"work_order": serializer.data}})
 
-        return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        work_order = self.get_work_order(pk=pk)
-        if work_order is None:
-            return Response({"status": "fail", "message": f"Work_order with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-
         with transaction.atomic():
-            order_details = Order_detail.objects.filter(id_work_order=work_order.id)
+            work_order = self.get_work_order(pk=pk)
+            if work_order is None:
+                return Response({"status": "fail", "message": f"Work_order with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            for order_detail in order_details:
-                # Retrieve the amount and id_replacement
-                amount = order_detail.amount
-                replacement = Replacement.objects.get(id=order_detail.id_replacement.id)
-                article = article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=replacement.id_article.id)
+            with transaction.atomic():
+                order_details = Order_detail.objects.filter(id_work_order=work_order.id)
 
-                order_detail.delete()
+                for order_detail in order_details:
+                    # Retrieve the amount and id_replacement
+                    amount = order_detail.amount
+                    replacement = Replacement.objects.get(id=order_detail.id_replacement.id)
+                    article = article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=replacement.id_article.id)
 
-                # Update the id_replacement stock
-                article.stock += amount
-                article.save()
+                    order_detail.delete()
 
-        work_order.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+                    # Update the id_replacement stock
+                    article.stock += amount
+                    article.save()
+
+            work_order.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Quotation_detailAPI(APIView):
@@ -190,16 +195,17 @@ class Quotation_detailAPI(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        price = Car.objects.filter(id=request.data['id_car']).first().price
-        request.data['subtotal'] = price * request.data['amount']
-        serializer = self.quotation_detail_serializer(data=request.data)
-        is_valid_quotation_detail = serializer.is_valid()
+        with transaction.atomic():
+            price = Car.objects.filter(id=request.data['id_car']).first().price
+            request.data['subtotal'] = price * request.data['amount']
+            serializer = self.quotation_detail_serializer(data=request.data)
+            is_valid_quotation_detail = serializer.is_valid()
 
-        if is_valid_quotation_detail:
-            
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if is_valid_quotation_detail:
+                
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Quotation_detailDetailAPI(APIView):
@@ -221,38 +227,40 @@ class Quotation_detailDetailAPI(APIView):
         return Response(serializer.data)
 
     def patch(self, request, pk):
-        quotation_detail = self.get_quotation_detail(pk=pk)
-        if quotation_detail == None:
-            return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        with transaction.atomic():
+            quotation_detail = self.get_quotation_detail(pk=pk)
+            if quotation_detail == None:
+                return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        #Selecting the car
-        if (request.data['id_car'] == None):
-            id_car = quotation_detail.id_car
-        else:
-            id_car = request.data['id_car']
+            #Selecting the car
+            if (request.data['id_car'] == None):
+                id_car = quotation_detail.id_car
+            else:
+                id_car = request.data['id_car']
 
-        #Selecting the amount
-        if (request.data['amount'] == None):
-            amount = quotation_detail.amount
-        else:
-            amount = request.data['amount']
+            #Selecting the amount
+            if (request.data['amount'] == None):
+                amount = quotation_detail.amount
+            else:
+                amount = request.data['amount']
 
-        price = Car.objects.filter(id=id_car).first().price
-        request.data['subtotal'] = price * amount
-        
-        serializer = self.quotation_detail_serializer(quotation_detail, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "success", "data": {"quotation_detail": serializer.data}})
-        return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            price = Car.objects.filter(id=id_car).first().price
+            request.data['subtotal'] = price * amount
+            
+            serializer = self.quotation_detail_serializer(quotation_detail, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"status": "success", "data": {"quotation_detail": serializer.data}})
+            return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        quotation_detail = self.get_quotation_detail(pk=pk)
-        if quotation_detail == None:
-            return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        quotation_detail.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        with transaction.atomic():
+            quotation_detail = self.get_quotation_detail(pk=pk)
+            if quotation_detail == None:
+                return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            quotation_detail.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 class QuotationAPI(APIView):
     quotation_serializer = Quotation_Serializer
@@ -279,14 +287,15 @@ class QuotationAPI(APIView):
         return Response(fullset)
 
     def post(self, request):
-        request.data["total"] = 0
-        serializer = self.quotation_serializer(data=request.data)
-        is_valid_quotation = serializer.is_valid()
+        with transaction.atomic():
+            request.data["total"] = 0
+            serializer = self.quotation_serializer(data=request.data)
+            is_valid_quotation = serializer.is_valid()
 
-        if is_valid_quotation:
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if is_valid_quotation:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
 class QuotationDetailAPI(APIView):
@@ -308,32 +317,34 @@ class QuotationDetailAPI(APIView):
         return Response(serializer.data)
 
     def patch(self, request, pk):
-        quotation = self.get_quotation(pk=pk)
-        if quotation == None:
-            return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        with transaction.atomic():
+            quotation = self.get_quotation(pk=pk)
+            if quotation == None:
+                return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        #Collecting the total
-        queryset = Quotation_detail.objects.filter(id_quotation=quotation.id)
-        request.data["total"] = 0
-        for q in queryset:
-            request.data["total"] += q.subtotal
-        
-        serializer = self.quotation_serializer(quotation, data=request.data, partial=True)
+            #Collecting the total
+            queryset = Quotation_detail.objects.filter(id_quotation=quotation.id)
+            request.data["total"] = 0
+            for q in queryset:
+                request.data["total"] += q.subtotal
+            
+            serializer = self.quotation_serializer(quotation, data=request.data, partial=True)
 
-        is_valid_quotation = serializer.is_valid()
+            is_valid_quotation = serializer.is_valid()
 
-        if is_valid_quotation:
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if is_valid_quotation:
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        quotation = self.get_quotation(pk=pk)
-        if quotation == None:
-            return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        quotation.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        with transaction.atomic():
+            quotation = self.get_quotation(pk=pk)
+            if quotation == None:
+                return Response({"status": "fail", "message": f"Quotation with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            quotation.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Bill_detailAPI(APIView):
@@ -346,28 +357,28 @@ class Bill_detailAPI(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        price = Car.objects.filter(id=request.data['id_car']).first().price
-        request.data['subtotal'] = price * request.data['amount']
+        with transaction.atomic():
+            price = Car.objects.filter(id=request.data['id_car']).first().price
+            request.data['subtotal'] = price * request.data['amount']
 
-        serializer = self.bill_detail_serializer(data=request.data)
-        is_valid_bill_detail = serializer.is_valid()
+            serializer = self.bill_detail_serializer(data=request.data)
+            is_valid_bill_detail = serializer.is_valid()
 
-        if is_valid_bill_detail:
-            amount = serializer.validated_data['amount']
-            id_car = serializer.validated_data['id_car']
-            car = Car.objects.get(id=request.data['id_car'])
-            article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=car.id_article)
-            if ((article.stock-amount) < 0):
-                return Response({"status": "fail", "message": f"Car: {id_car} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
+            if is_valid_bill_detail:
+                amount = serializer.validated_data['amount']
+                id_car = serializer.validated_data['id_car']
+                car = Car.objects.get(id=request.data['id_car'])
+                article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=car.id_article)
+                if ((article.stock-amount) < 0):
+                    return Response({"status": "fail", "message": f"Car: {id_car} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
 
-            article.stock -= amount
-            article.save()
+                article.stock -= amount
+                article.save()
 
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-
 
 class Bill_detailDetailAPI(APIView):
     bill_detail_serializer = Bill_detail_Serializer
@@ -388,22 +399,23 @@ class Bill_detailDetailAPI(APIView):
         return Response(serializer.data)
 
     def delete(self, request, pk):
-        bill_detail = self.get_bill_detail(pk=pk)
-        if bill_detail == None:
-            return Response({"status": "fail", "message": f"Bill_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND) 
+        with transaction.atomic():
+            bill_detail = self.get_bill_detail(pk=pk)
+            if bill_detail == None:
+                return Response({"status": "fail", "message": f"Bill_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND) 
 
-        # Retrieve the amount and id_replacement
-        amount = bill_detail.amount
-        car = Car.objects.get(id=bill_detail.id_car.id)
-        article = Branch_article.objects.get(id_branch=bill_detail.id_branch.id ,id_article=car.id_article.id)
+            # Retrieve the amount and id_replacement
+            amount = bill_detail.amount
+            car = Car.objects.get(id=bill_detail.id_car.id)
+            article = Branch_article.objects.get(id_branch=bill_detail.id_branch.id ,id_article=car.id_article.id)
 
-        bill_detail.delete()
+            bill_detail.delete()
 
-        # Update the id_replacement stock
-        article.stock += amount
-        article.save()
+            # Update the id_replacement stock
+            article.stock += amount
+            article.save()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 class BillAPI(APIView):
     bill_serializer = Bill_Serializer
@@ -431,14 +443,15 @@ class BillAPI(APIView):
         return Response(fullset)
     
     def post(self, request):
-        request.data["total"] = 0
-        serializer = self.bill_serializer(data=request.data)
-        is_valid_quotation = serializer.is_valid()
+        with transaction.atomic():
+            request.data["total"] = 0
+            serializer = self.bill_serializer(data=request.data)
+            is_valid_quotation = serializer.is_valid()
 
-        if is_valid_quotation:
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if is_valid_quotation:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
 class BillDetailAPI(APIView):
@@ -472,47 +485,49 @@ class BillDetailAPI(APIView):
         return Response(data)
 
     def patch(self, request, pk):
-        bill = self.get_bill(pk=pk)
-        if bill == None:
-            return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+        with transaction.atomic():
+            bill = self.get_bill(pk=pk)
+            if bill == None:
+                return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        #Collects the total
-        queryset = Bill_detail.objects.filter(id_bill=bill.id)
-        request.data["total"] = 0
-        for b in queryset:
-            request.data["total"] += b.subtotal
-        
-        serializer = self.bill_serializer(bill, data=request.data, partial=True)
+            #Collects the total
+            queryset = Bill_detail.objects.filter(id_bill=bill.id)
+            request.data["total"] = 0
+            for b in queryset:
+                request.data["total"] += b.subtotal
+            
+            serializer = self.bill_serializer(bill, data=request.data, partial=True)
 
-        is_valid_bill = serializer.is_valid()
+            is_valid_bill = serializer.is_valid()
 
-        if is_valid_bill:
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if is_valid_bill:
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        bill = self.get_bill(pk=pk)
-        if bill == None:
-            return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-
         with transaction.atomic():
-            bill_details = Bill_detail.objects.filter(id_bill=bill.id)
+            bill = self.get_bill(pk=pk)
+            if bill == None:
+                return Response({"status": "fail", "message": f"Bill with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            for bill_detail in bill_details:
-                # Retrieve the amount and id_replacement
-                amount = bill_detail.amount
-                car = Car.objects.get(id=bill_detail.id_car.id)
-                article = Branch_article.objects.get(id_branch=bill_detail.id_branch.id ,id_article=car.id_article.id)
+            with transaction.atomic():
+                bill_details = Bill_detail.objects.filter(id_bill=bill.id)
 
-                bill_detail.delete()
+                for bill_detail in bill_details:
+                    # Retrieve the amount and id_replacement
+                    amount = bill_detail.amount
+                    car = Car.objects.get(id=bill_detail.id_car.id)
+                    article = Branch_article.objects.get(id_branch=bill_detail.id_branch.id ,id_article=car.id_article.id)
 
-                # Update the id_replacement stock
-                article.stock += amount
-                article.save()
-        
-        bill.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+                    bill_detail.delete()
+
+                    # Update the id_replacement stock
+                    article.stock += amount
+                    article.save()
+            
+            bill.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
