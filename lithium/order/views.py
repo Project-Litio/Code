@@ -17,7 +17,7 @@ class Order_detailAPI(APIView):
         serializer = self.all_order_detail_serializer(queryset,many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request):        
         serializer = self.order_detail_serializer(data=request.data)
         is_valid_order_detail = serializer.is_valid()
 
@@ -102,6 +102,7 @@ class Work_orderAPI(APIView):
         return Response(fullset)
 
     def post(self, request):
+        request.data["end_date"]= None
         serializer = self.work_order_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -142,6 +143,7 @@ class Work_orderDetailAPI(APIView):
         return Response(data)
 
     def patch(self, request, pk):
+        request.data["end_date"]= datetime.now()
         work_order = self.get_work_order(pk=pk)
         if work_order == None:
             return Response({"status": "fail", "message": f"Work_order with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
