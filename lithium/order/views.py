@@ -326,7 +326,15 @@ class QuotationAPI(APIView):
 
             if is_valid_quotation:
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                last = Quotation.objects.last()
+                data = {
+                    "id":last.id,
+                    "id_customer":last.id_customer,
+                    "id_employee":last.id_employee,
+                    "observation":last.observation,
+                    "total":last.total
+                }
+                return Response(data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
