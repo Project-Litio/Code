@@ -197,9 +197,18 @@ class Quotation_detailAPI(APIView):
     def post(self, request):
         with transaction.atomic():
             price = Car.objects.filter(id=request.data['id_car']).first().price
-            request.data['subtotal'] = price * request.data['amount']
-            serializer = self.quotation_detail_serializer(data=request.data)
-            is_valid_quotation_detail = serializer.is_valid()
+
+            if len(Quotation_detail.objects.filter(id_quotation=request.data['id_quotation'],id_car=request.data['id_car'])) == 0:
+                request.data['subtotal'] = price * request.data['amount']
+                serializer = self.quotation_detail_serializer(data=request.data)
+                is_valid_quotation_detail = serializer.is_valid()
+            else:
+                item = Quotation_detail.objects.get(id_quotation=request.data['id_quotation'],id_car=request.data['id_car'])
+                item.subtotal = price * (request.data['amount'] + item.amount)
+                request.data['amount'] = item.amount + request.data['amount']
+                item.save()
+                serializer = self.quotation_detail_serializer(item,data=request.data, partial=True)
+                is_valid_quotation_detail = serializer.is_valid()
 
             if is_valid_quotation_detail:
                 serializer.save()
