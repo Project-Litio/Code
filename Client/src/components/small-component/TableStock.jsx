@@ -68,6 +68,7 @@ const Tablestock = ({stock}) => {
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
   const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
+  const notInt = () => toast("La cantidad debe ser un entero");
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -88,7 +89,8 @@ const Tablestock = ({stock}) => {
     id:'',
     name:'',
     type:'',
-    stock:''
+    stock:'',
+    id_article:''
   });
 
   const handleChange=e=>{
@@ -123,24 +125,29 @@ const Tablestock = ({stock}) => {
   const beforeEdit = () => {verificarDatos("Editar");}
 
   const verificarDatos = (act) => {
-    var lengths = [20,100,50,4];
+    const lengths = {id:10, name:100, type:50, stock:4, id_article:5};
+    delete selectedPiece.color;
     if(act == "Crear"){
       delete selectedPiece.id;
       delete selectedPiece.stock;
-      lengths = [100,50];
+      delete selectedPiece.id_article;
+      delete lengths.id;
+      delete lengths.stock;
+      delete lengths.id_article;
     }
 
-    var n = 0;
+    if(selectedPiece.stock == 0){
+      selectedPiece.stock = '0';
+    }
+
     for (var key in selectedPiece) {
       if(selectedPiece[key] == ''){
         faltanDatos(key);
         return false;
-      } else if((selectedPiece[key]).length > lengths[n]){
-        cantidadExcedida(key, lengths[n]);
+      } else if((selectedPiece[key]).length > lengths[key]){
+        cantidadExcedida(key, lengths[key]);
         return false;
-      } else {
-        n++;
-      }
+      } 
     }
 
     if(act == "Crear"){
@@ -153,19 +160,21 @@ const Tablestock = ({stock}) => {
   }
 
   const createFormData = () => {
-    selectedPiece.deleted = false;
-    selectedPiece.id_article = JSON.stringify({"stock": selectedPiece.stock, "color": selectedPiece.color});
-
-    return selectedPiece;
+    try {
+      selectedPiece.stock = parseInt(selectedPiece.stock);
+      return selectedPiece;
+    } catch (error) {
+      notInt();
+    }    
   }
 
   const deletePiece = async () => {
-    await stockDelete({}, selectedPiece.id);
+    await stockDelete({'id_article': selectedPiece.id_article}, selectedPiece.id, cookies.get('user').branch);
     window.location.reload(false);
   }
 
   const editPiece = async () => {
-    await stockEdit(createFormData(), selectedPiece.id);
+    await stockEdit(createFormData(), selectedPiece.id, cookies.get('user').branch);
     window.location.reload(false);
   }
 
@@ -193,6 +202,7 @@ const Tablestock = ({stock}) => {
       <TextField name='name' className={styles.inputMaterial} label="Nombre" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.name}></TextField>
       <TextField name='type' className={styles.inputMaterial} label="Tipo" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.type}></TextField>
       <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.stock}></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="Article ID" onChange={handleChange} defaultValue={selectedPiece && selectedPiece.id_article} InputProps={{readOnly: true}}></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -202,7 +212,7 @@ const Tablestock = ({stock}) => {
 
   const DeleteBody=(
     <div className={styles.modal}>
-      <p>Estas seguro que deseas eliminar la pieza {selectedPiece && selectedPiece.name}?</p>
+      <p>¿Estas seguro que deseas eliminar la pieza {selectedPiece && selectedPiece.name} con ID {selectedPiece && selectedPiece.id}?</p>
       <div align="right">
       <Button color="secondary" onClick={deletePiece}>Si</Button>
       <Button onClick={()=>openCloseDeleteModal()}>No</Button>

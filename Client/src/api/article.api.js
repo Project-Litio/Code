@@ -12,12 +12,12 @@ export const getCars = (branch) => {
     return articleApi.get('/car_stock/'+branch)
 };
 
-export const carEdit = (data, pk) => {
-    return articleApi.patch('/carDetail/'+pk, data)
+export const carEdit = (data, pk, branch) => {
+    return articleApi.patch('/carDetail/'+pk+'/'+branch, data)
 };
 
-export const carDelete = (data, pk) => {
-    return articleApi.delete('/carDetail/'+pk, data)
+export const carDelete = (data, pk, branch) => {
+    return articleApi.delete('/carDetail/'+pk+'/'+branch, data)
 };
 
 export const carCreate = (data) => {
@@ -28,12 +28,12 @@ export const getStock = (branch) => {
     return articleApi.get('/replacement_stock/'+branch)
 };
 
-export const stockEdit = (data, pk) => {
-    return articleApi.patch('/replacementDetail/'+pk, data)
+export const stockEdit = (data, pk, branch) => {
+    return articleApi.patch('/replacementDetail/'+pk+'/'+branch, data)
 };
 
-export const stockDelete = (data, pk) => {
-    return articleApi.delete('/replacementDetail/'+pk, data)
+export const stockDelete = (data, pk, branch) => {
+    return articleApi.delete('/replacementDetail/'+pk+'/'+branch, data)
 };
 
 export const stockCreate = (data) => {

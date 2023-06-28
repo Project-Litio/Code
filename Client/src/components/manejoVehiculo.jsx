@@ -210,7 +210,7 @@ export default function DashboardVehiculo() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <TableCars cars={carsReg} />
+                <TableCars cars={carsReg.map(object => ({ ...object }))} copy={carsReg} />
               </Paper>
             </Grid>
           </Grid>

@@ -49,7 +49,7 @@ const types = [
   { value: 'J', label: 'Jurídica' }
 ]
 
-const TableUSers = ({users}) => {
+const TableUSers = ({users, copy}) => {
   const [manager, setManager] = useState(false);
   const logged = () => {
     if(cookies.get('user') != undefined){
@@ -72,6 +72,8 @@ const TableUSers = ({users}) => {
     type:''
   });
 
+  const [originalUser, setOriginalUser] = useState([]);
+
   useEffect(() => {
     logged();
   }, [cookies]);
@@ -83,7 +85,7 @@ const TableUSers = ({users}) => {
   const [DeleteModal,setDeleteModal] =useState(false);
 
   const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata();}
-  const openCloseEditModal=()=>{setEditModal(!EditModal);}
+  const openCloseEditModal=()=>{setEditModal(!EditModal); restartSelection();}
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
 
   const [page, setPage] = useState(0);
@@ -96,6 +98,12 @@ const TableUSers = ({users}) => {
   const cleandata = () =>{
     for (var key in selectedUser){
       selectedUser[key] = '';
+    }
+  }
+
+  const restartSelection = () =>{
+    for(var key in selectedUser){
+      selectedUser[key] = originalUser[key];
     }
   }
 
@@ -149,11 +157,10 @@ const TableUSers = ({users}) => {
     rowsPerPage - Math.min(rowsPerPage, users.length - page * rowsPerPage);
 
 
-  const selectUser=(user, caso)=>{
-    console.log(user);
+  const selectUser=(user, caso, org)=>{
     setSelectedUser(user);
+    setOriginalUser(org);
 
-    console.log(selectedUser);
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
 
@@ -180,7 +187,7 @@ const TableUSers = ({users}) => {
       delete selectedUser.id_branch;
     }
 
-    if(/^[a-zA-Z0-9+_.\-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/u.test(selectedUser.email)){
+    if(/^[a-zA-Z0-9+_.\-]+@[a-zA-Z0-9]+[.+a-zA-Z0-9\-]+$/u.test(selectedUser.email)){
       var n = 0;
       for ( var key in selectedUser ) {
         if(selectedUser[key] == ''){
@@ -306,9 +313,9 @@ const TableUSers = ({users}) => {
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange} defaultValue={selectedUser && selectedUser.address}></TextField>
       <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange} defaultValue={selectedUser && selectedUser.phone}></TextField>
       <label className={styles.inputMaterial}>Rol</label>
-      <Select options={roles} onChange={handleRoleChange} defaultValue={roles[searchIndex(selectedUser.role, roles)]} />
+      <Select options={roles} onChange={handleRoleChange} defaultValue={roles[searchIndex(originalUser.role, roles)]} />
       <label className={styles.inputMaterial}>Tipo</label>
-      <Select options={types} onChange={handleTypeChange} defaultValue={types[searchIndex(selectedUser.type, types)]}/>
+      <Select options={types} onChange={handleTypeChange} defaultValue={types[searchIndex(originalUser.type, types)]}/>
       <TextField name='branch' className={styles.inputMaterial} label="Sucursal" onChange={handleChange} defaultValue={cookies.get('user').branch} InputProps={{readOnly: true}}></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeEdit}>Editar</Button>
@@ -355,7 +362,7 @@ const TableUSers = ({users}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user=>
+            {copy.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user=>
               (
                 <TableRow key={user.id}>
                   <TableCell>{user.first_name}</TableCell>
@@ -369,9 +376,9 @@ const TableUSers = ({users}) => {
                   <TableCell>{user.id_branch}</TableCell>
                   {manager &&
                     <TableCell>
-                      <Edit className={styles.iconos} onClick={()=>selectUser(user,'Editar')}  />
+                      <Edit className={styles.iconos} onClick={()=>selectUser((users.filter((usr) => usr.id == user.id))[0],'Editar', user)}  />
                       &nbsp;&nbsp;&nbsp;
-                      <Delete  className={styles.iconos} onClick={()=>selectUser(user,'Elminar')}/>
+                      <Delete  className={styles.iconos} onClick={()=>selectUser((users.filter((usr) => usr.id == user.id))[0],'Elminar', user)}/>
                     </TableCell>
                   }
                 </TableRow>
