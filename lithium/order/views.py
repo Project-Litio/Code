@@ -399,6 +399,15 @@ class Bill_detailAPI(APIView):
                 article.save()
 
                 serializer.save()
+
+                details = Bill_detail.objects.filter(id_bill=request.data['id_bill'])
+                total = 0
+                for d in details:
+                    total += d.subtotal
+                b = Bill.objects.get(id = request.data['id_bill'])
+                b.total = total
+                b.save()
+
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
@@ -432,11 +441,19 @@ class Bill_detailDetailAPI(APIView):
             car = Car.objects.get(id=bill_detail.id_car.id)
             article = Branch_article.objects.get(id_branch=bill_detail.id_branch.id ,id_article=car.id_article.id)
 
+            bill = bill_detail.id_bill
             bill_detail.delete()
 
             # Update the id_replacement stock
             article.stock += amount
             article.save()
+
+            details = Bill_detail.objects.filter(id_bill=bill)
+            total = 0
+            for d in details:
+                total += d.subtotal
+            bill.total = total
+            bill.save()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -551,6 +568,3 @@ class BillDetailAPI(APIView):
             
             bill.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
