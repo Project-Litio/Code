@@ -356,7 +356,7 @@ class Bill_detailAPI(APIView):
             car = Car.objects.get(id=request.data['id_car'])
             article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=car.id_article)
             if ((article.stock-amount) < 0):
-                return Response({"status": "fail", "message": f"Replacement: {id_replacement} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"status": "fail", "message": f"Bill_detail: {id.bill_detail} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
 
             article.stock -= amount
             article.save()
@@ -417,7 +417,7 @@ class BillAPI(APIView):
             query = {
                 "id":b.id,
                 "date":b.date,
-                "payment_method":b.date,
+                "payment_method":b.payment_method,
                 "observation":b.observation,
                 "total":b.total,
                 "id_customer":b.id_customer.id,
