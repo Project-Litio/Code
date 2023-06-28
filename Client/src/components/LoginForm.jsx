@@ -119,7 +119,7 @@ function LoginForm() {
   const [validEmail, setValidEmail] = useState(false);
   const [validPass, setValidPass] = useState(false);
   const emailChange = e => {
-    if(/^[a-zA-Z0-9+_.\-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/u.test(e.target.value)){
+    if(/^[a-zA-Z0-9+_.\-]+@[a-zA-Z0-9]+[.+a-zA-Z0-9\-]+$/u.test(e.target.value)){
       setValidEmail(true);
     } else {
       setValidEmail(false);

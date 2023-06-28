@@ -68,7 +68,7 @@ const tipos = [
   { value: 'Pick up', label: 'Pick up' }
 ]
 
-const TableCars = ({cars}) => {
+const TableCars = ({cars, copy}) => {
   const [manager, setManager] = useState(false);
   const logged = () => {
     if(cookies.get('user') != undefined){
@@ -91,8 +91,11 @@ const TableCars = ({cars}) => {
     type:'',
     wheel:'',
     stock:'',
-    color:''
+    color:'',
+    id_article: ''
   });
+
+  const [originalCar, setOriginalCar] = useState([]);
 
   const styles = useStyles();
   const [InsertModal,setInsertModal] =useState(false);
@@ -100,12 +103,21 @@ const TableCars = ({cars}) => {
   const [DeleteModal,setDeleteModal] =useState(false);
 
   const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata();}
-  const openCloseEditModal=()=>{setEditModal(!EditModal);}
+  const openCloseEditModal=()=>{setEditModal(!EditModal); restartSelection();}
   const openCloseDeleteModal=()=>{setDeleteModal(!DeleteModal); }
 
   const cleandata = () =>{
     for (var key in selectedcar){
       selectedcar[key] = '';
+    }
+
+    setAlreadySelected(false);
+    setAlreadySelected(false);
+  }
+
+  const restartSelection = () =>{
+    for(var key in selectedcar){
+      selectedcar[key] = originalCar[key];
     }
   }
 
@@ -115,6 +127,7 @@ const TableCars = ({cars}) => {
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
   const notInt = () => toast("El precio y la cantidad deben ser enteros");
   const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
+  const idExistente = (id) => toast("Ya existe un vehículo con el VIN "+id);
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -163,8 +176,9 @@ const TableCars = ({cars}) => {
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, cars.length - page * rowsPerPage);
 
-  const selectcar=(car, caso)=>{
+  const selectcar=(car, caso, org)=>{
     setSelectedcar(car);
+    setOriginalCar(org);
     (caso=='Editar') ? setEditModal (true): setDeleteModal(true)
   }
 
@@ -172,9 +186,16 @@ const TableCars = ({cars}) => {
   const beforeEdit = () => {verificarDatos("Editar");}
 
   const verificarDatos = (act) => {
-    const lengths = [30, 20, 300, 50, 15, 20, 20, 4, 30];
+    const lengths = {id:20, id_article:5, brand:30, type:20, model:50, wheel:20, price:15, stock:5, color:30};
 
-    if(selectedcar.image == '' && act == "Editar"){
+    if(alreadySelected == false && act == "Editar"){
+      delete selectedcar.image;
+    }
+
+    if(alreadySelected == false && act == "Crear"){
+      faltanDatos('image');
+      return false;
+    } else if(alreadySelected == true && act == "Crear"){
       delete selectedcar.image;
     }
 
@@ -186,21 +207,35 @@ const TableCars = ({cars}) => {
       selectedcar.type = 'Sedan';
     }
 
+    if(selectedcar.stock == 0 && act == "Editar"){
+      selectedcar.stock = '0';
+    }
+
+    if(selectedcar.color == null && act == "Editar"){
+      selectedcar.color = '-';
+    }
+
+    if(act == "Crear"){
+      delete selectedcar.stock;
+      delete selectedcar.color;
+      delete selectedcar.id_article;
+      delete lengths.stock;
+      delete lengths.color;
+      delete lengths.id_article;
+    }
+
     if(selectedcar.wheel == '' && act == "Crear"){
       selectedcar.wheel = 'Magnesio';
     }
     
-    var n = 0;
     for ( var key in selectedcar ) {
       if(selectedcar[key] == ''){
         faltanDatos(key);
         return false;
-      } else if((selectedcar[key]).length > lengths[n]){
-        cantidadExcedida(key, lengths[n]);
+      } else if((selectedcar[key]).length > lengths[key]){
+        cantidadExcedida(key, lengths[key]);
         return false;
-      } else {
-        n++;
-      }
+      } 
     }
 
     if(act == "Crear"){
@@ -212,18 +247,33 @@ const TableCars = ({cars}) => {
     }
   }
 
-  const createFormData = () => {
+  const createFormData = (act) => {
+    delete selectedcar.image;
     try {
       selectedcar.price = parseInt(selectedcar.price);
-      selectedcar.stock = parseInt(selectedcar.stock);
-      selectedcar.id_article = JSON.stringify({"stock": selectedcar.stock, "color": selectedcar.color});
+      
+      if(act == 'Editar'){
+        selectedcar.stock = parseInt(selectedcar.stock);
+      }      
+      
+      const formData = new FormData();
+      for ( var key in selectedcar ) {
+        formData.append(key, selectedcar[key]);
+      }
   
       if(selectedImage != null){
-        selectedcar.image = selectedImage;
+        formData.append('image', selectedImage);
       } 
-            
-      console.log(selectedcar);
-      return selectedcar;
+      
+      if(act == 'Crear'){
+        formData.append('id_article', JSON.stringify({'stock': null, 'color': null}));
+      }
+
+      for (const value of formData.values()) {
+        console.log(value);
+      }
+
+      return formData;
 
     } catch (error) {
       notInt();
@@ -231,24 +281,30 @@ const TableCars = ({cars}) => {
   }
 
   const deletecar = async () => {
-    await carDelete({}, selectedcar.id);
-    window.location.reload(false);
+      await carDelete({'id_article': selectedcar.id_article}, selectedcar.id, cookies.get('user').branch);
+      window.location.reload(false);
   }
 
   const editcar = async () => {
-    await carEdit(createFormData(), selectedcar.id); 
+    await carEdit(createFormData('Editar'), selectedcar.id, cookies.get('user').branch); 
     window.location.reload(false);
   }
 
   const createcar = async () => {
-    await carCreate(createFormData()); 
-    window.location.reload(false);
+    try {
+      await carCreate(createFormData('Crear')); 
+      window.location.reload(false);
+    } catch (error) {
+      idExistente(selectedcar.id);
+    }   
   }
 
+  const [alreadySelected, setAlreadySelected] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const handleImageChange = (e) => {
     setSelectedImage(e.target.files[0]);
-    selectedcar.image = 'some';
+    setAlreadySelected(true);
+    setAlreadySelected(true);
   };
 
   const handleBrandChange = (selectedOption) => {
@@ -285,8 +341,6 @@ const TableCars = ({cars}) => {
       <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[0]}/>
       <label className={styles.inputMaterial}>Llanta</label>
       <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[0]}/>
-      <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} ></TextField>
-      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange}></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeCreate}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
@@ -298,18 +352,19 @@ const TableCars = ({cars}) => {
     <div className={styles.modal}>
       <h3>Editar vehiculo</h3>
       <label className={styles.inputMaterial}>Marca</label>
-      <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[searchIndex(selectedcar.brand, marcas)]}/>
+      <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[searchIndex(originalCar.brand, marcas)]}/>
       <TextField name='id' className={styles.inputMaterial} label="ID" onChange={handleChange} defaultValue={selectedcar && selectedcar.id} InputProps={{readOnly: true}}></TextField>
       <label className={styles.inputMaterial}>Imagen</label>
       <input type="file" id="img" name="image" accept="image/*" onChange={handleImageChange} label="Image"></input>
       <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange} defaultValue={selectedcar && selectedcar.model} ></TextField>
       <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange} defaultValue={selectedcar && selectedcar.price}></TextField>
       <label className={styles.inputMaterial}>Tipo</label>
-      <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[searchIndex(selectedcar.type, tipos)]}/>
+      <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[searchIndex(originalCar.type, tipos)]}/>
       <label className={styles.inputMaterial}>Llanta</label>
-      <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[searchIndex(selectedcar.wheel, llantas)]}/>
+      <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[searchIndex(originalCar.wheel, llantas)]}/>
       <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedcar && selectedcar.stock}></TextField>
       <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue={selectedcar && selectedcar.color}></TextField>
+      <TextField name='id' className={styles.inputMaterial} label="ID Article" onChange={handleChange} defaultValue={selectedcar && selectedcar.id_article} InputProps={{readOnly: true}}></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -319,7 +374,7 @@ const TableCars = ({cars}) => {
 
   const DeleteBody=(
     <div className={styles.modal}>
-      <p>Estas seguro que deseas eliminar el vehiculo {selectedcar && selectedcar.brand}?</p>
+      <p>¿Estas seguro que deseas eliminar el vehiculo {selectedcar && originalCar.brand} con VIN {selectedcar && selectedcar.id}?</p>
       <div align="right">
       <Button color="secondary" onClick={deletecar}>Si</Button>
       <Button onClick={()=>openCloseDeleteModal()}>No</Button>
@@ -354,7 +409,7 @@ const TableCars = ({cars}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {cars.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(car=>
+            {copy.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(car=>
               (
                 <TableRow key={car.id}>
                   <TableCell>{car.brand}</TableCell>
@@ -369,9 +424,9 @@ const TableCars = ({cars}) => {
                   <TableCell>{car.color}</TableCell>
                   {manager &&
                     <TableCell>
-                      <Edit className={styles.iconos} onClick={()=>selectcar(car,'Editar')}  />
+                      <Edit className={styles.iconos} onClick={()=>selectcar((cars.filter((cr) => cr.id == car.id))[0], 'Editar', car)}  />
                       &nbsp;&nbsp;&nbsp;
-                      <Delete  className={styles.iconos} onClick={()=>selectcar(car,'Elminar')}/>
+                      <Delete className={styles.iconos} onClick={()=>selectcar((cars.filter((cr) => cr.id == car.id))[0], 'Elminar', car)}/>
                     </TableCell>
                   }
                 </TableRow>

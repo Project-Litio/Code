@@ -223,7 +223,7 @@ export default function DashboardUsuarios() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <TableUSers users={usersReg} />
+                <TableUSers users={usersReg.map(object => ({ ...object }))} copy={usersReg} />
               </Paper>
             </Grid>
           </Grid>
