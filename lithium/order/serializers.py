@@ -21,7 +21,7 @@ class All_Order_detail_Serializer(serializers.ModelSerializer):
 class Order_detail_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Order_detail
-        fields = ['id_replacement','id_work_order','amount']
+        fields = ['id_replacement','id_work_order','amount', 'id_branch']
         
 class All_quotation_Serializer(serializers.ModelSerializer):
     class Meta:
@@ -61,5 +61,5 @@ class All_bill_detail_Serializer(serializers.ModelSerializer):
 class Bill_detail_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Bill_detail
-        fields = ['id_bill','id_car','amount','subtotal']
+        fields = ['id_bill','id_car','amount','subtotal', 'id_branch']
 

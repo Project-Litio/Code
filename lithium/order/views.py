@@ -24,7 +24,9 @@ class Order_detailAPI(APIView):
         if is_valid_order_detail:
             amount = serializer.validated_data['amount']
             id_replacement = serializer.validated_data['id_replacement']
-            article = id_replacement.id_article
+            replacement = Replacement.objects.get(id= request.data['id_replacement'])
+            article = Branch_article.objects.get(id_branch=request.data['id_branch'],id_article=replacement.id_article)
+            print(article.stock)
             if ((article.stock-amount) < 0):
                 return Response({"status": "fail", "message": f"Replacement: {id_replacement} has not enough stock for the required amount "}, status=status.HTTP_404_NOT_FOUND)
 
@@ -114,7 +116,8 @@ class Order_detailDetailAPI(APIView):
 
         # Retrieve the amount and id_replacement
         amount = order_detail.amount
-        article = order_detail.id_replacement.id_article
+        replacement = Replacement.objects.get(id=order_detail.id_replacement.id) #
+        article = article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=replacement.id_article.id)
 
         order_detail.delete()
 
@@ -217,7 +220,8 @@ class Work_orderDetailAPI(APIView):
             for order_detail in order_details:
                 # Retrieve the amount and id_replacement
                 amount = order_detail.amount
-                article = order_detail.id_replacement.id_article
+                replacement = Replacement.objects.get(id=order_detail.id_replacement.id)
+                article = article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=replacement.id_article.id)
 
                 order_detail.delete()
 

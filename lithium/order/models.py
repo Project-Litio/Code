@@ -1,5 +1,5 @@
 from django.db import models
-from inventory.models import Article, Car, Replacement
+from inventory.models import Article, Car, Replacement, Branch_article
 from login.models import Employee, Customer
 
 
@@ -19,6 +19,7 @@ class Order_detail(models.Model):
     id=models.AutoField(primary_key=True)
     id_work_order=models.ForeignKey(Work_order,on_delete=models.SET_NULL, null=True)
     id_replacement=models.ForeignKey(Replacement,on_delete=models.SET_NULL, null=True)
+    id_branch=models.ForeignKey(Branch_article,on_delete=models.SET_NULL, null=True)
     amount=models.IntegerField()
 
 class Quotation(models.Model):
@@ -55,5 +56,6 @@ class Bill_detail(models.Model):
     id=models.AutoField(primary_key=True)
     id_bill=models.ForeignKey(Bill,on_delete=models.SET_NULL, null=True)
     id_car=models.ForeignKey(Car,on_delete=models.SET_NULL, null=True)
+    id_branch=models.ForeignKey(Branch_article,on_delete=models.SET_NULL, null=True)
     amount=models.IntegerField()
     subtotal=models.IntegerField()
