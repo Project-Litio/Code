@@ -202,8 +202,15 @@ class Quotation_detailAPI(APIView):
             is_valid_quotation_detail = serializer.is_valid()
 
             if is_valid_quotation_detail:
-                
                 serializer.save()
+
+                details = Quotation_detail.objects.filter(id_quotation=request.data['id_quotation'])
+                total = 0
+                for d in details:
+                    total += d.subtotal
+                q = Quotation.objects.get(id=request.data['id_quotation'])
+                q.total = total
+                q.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -232,6 +239,8 @@ class Quotation_detailDetailAPI(APIView):
             if quotation_detail == None:
                 return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
+            quotation = quotation_detail.id_quotation
+
             #Selecting the car
             if (request.data['id_car'] == None):
                 id_car = quotation_detail.id_car
@@ -250,6 +259,12 @@ class Quotation_detailDetailAPI(APIView):
             serializer = self.quotation_detail_serializer(quotation_detail, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+                details = Quotation_detail.objects.filter(id_quotation=quotation)
+                total = 0
+                for d in details:
+                    total += d.subtotal
+                quotation.total = total
+                quotation.save()
                 return Response({"status": "success", "data": {"quotation_detail": serializer.data}})
             return Response({"status": "fail", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -259,7 +274,15 @@ class Quotation_detailDetailAPI(APIView):
             if quotation_detail == None:
                 return Response({"status": "fail", "message": f"Quotation_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
             
+            quotation = quotation_detail.id_quotation
             quotation_detail.delete()
+            
+            details = Quotation_detail.objects.filter(id_quotation=quotation)
+            total = 0
+            for d in details:
+                total += d.subtotal
+            quotation.total = total
+            quotation.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 class QuotationAPI(APIView):
