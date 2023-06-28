@@ -391,17 +391,16 @@ class Bill_detailDetailAPI(APIView):
             return Response({"status": "fail", "message": f"Bill_detail with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND) 
 
         # Retrieve the amount and id_replacement
-        amount = order_detail.amount
-        car = Replacement.objects.get(id=order_detail.id_car.id)
-        article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=car.id_article.id)
+        amount = bill_detail.amount
+        car = Car.objects.get(id=bill_detail.id_car.id)
+        article = Branch_article.objects.get(id_branch=bill_detail.id_branch.id ,id_article=car.id_article.id)
 
-        order_detail.delete()
+        bill_detail.delete()
 
         # Update the id_replacement stock
         article.stock += amount
         article.save()
 
-        bill_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class BillAPI(APIView):
@@ -443,7 +442,7 @@ class BillAPI(APIView):
 class BillDetailAPI(APIView):
     bill_serializer = Bill_Serializer
     all_bill_serializer = All_bill_Serializer
-    all_bill_detail_serializeer = All_bill_detail_Serializer
+    all_bill_detail_serializer = All_bill_detail_Serializer
 
     def get_bill(self, pk):
         try:
@@ -464,8 +463,9 @@ class BillDetailAPI(APIView):
             "payment_method":b.payment_method,
             "observation":b.observation,
             "total":b.total,
-            "id_customer":b.id_customer,
-            "id_employee":b.id_employee,
+            "id_customer":b.id_customer.id,
+            "id_employee":b.id_employee.id,
+            "bill_details":bill_details_serializer.data
         }
         return Response(data)
 
@@ -499,11 +499,11 @@ class BillDetailAPI(APIView):
 
             for bill_detail in bill_details:
                 # Retrieve the amount and id_replacement
-                amount = order_detail.amount
-                car = Replacement.objects.get(id=order_detail.id_car.id)
-                article = Branch_article.objects.get(id_branch=order_detail.id_branch.id ,id_article=car.id_article.id)
+                amount = bill_detail.amount
+                car = Car.objects.get(id=bill_detail.id_car.id)
+                article = Branch_article.objects.get(id_branch=bill_detail.id_branch.id ,id_article=car.id_article.id)
 
-                order_detail.delete()
+                bill_detail.delete()
 
                 # Update the id_replacement stock
                 article.stock += amount
@@ -513,16 +513,4 @@ class BillDetailAPI(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-        
 
-    
-
-    
-        
-    
-
-
-
-        
-
-        

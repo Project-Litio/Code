@@ -51,7 +51,7 @@ class All_bill_Serializer(serializers.ModelSerializer):
 class Bill_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Bill
-        fields = '__all__'
+        fields = ['payment_method','observation','id_customer','id_employee', 'total']
 
 class All_bill_detail_Serializer(serializers.ModelSerializer):
     class Meta:
