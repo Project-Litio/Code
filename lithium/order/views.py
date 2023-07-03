@@ -250,17 +250,17 @@ class Quotation_detailDetailAPI(APIView):
 
             quotation = quotation_detail.id_quotation
 
-            #Selecting the car
+           #Selecting the car
             try:
-                id_car = quotation_detail.id_car.id
-            except:
                 id_car = request.data['id_car']
-
+            except:
+                id_car = quotation_detail.id_car.id
+                
             #Selecting the amount
             try:
-                amount = quotation_detail.amount
-            except:
                 amount = request.data['amount']
+            except:
+                amount = quotation_detail.amount
 
             price = Car.objects.filter(id=id_car).first().price
             request.data['subtotal'] = price * amount

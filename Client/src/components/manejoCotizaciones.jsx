@@ -16,8 +16,8 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItemsVend } from './dashboardComponents/listItemsVendedor';
-import Tablestock from './small-component/TableCotizaciones';
-import {getCotiz} from '../api/article.api'
+import TableCotizaciones from './small-component/TableCotizaciones';
+import {getCotiz} from '../api/order.api'
 import img from '../assets/logo.png'
 import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -134,6 +134,7 @@ export default function DashboardCotizacion() {
   const [cotizReg, setCotiz] = useState([]);
   const loaded = async () => {
     const result = await getCotiz();
+    console.log(result);
     setCotiz(result.data);
   };
 
@@ -190,7 +191,7 @@ export default function DashboardCotizacion() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Tablestock cotiz={cotizReg} />
+                <TableCotizaciones cotiz={cotizReg.map(object => ({ ...object }))} copy={cotizReg} />
               </Paper>
             </Grid>
           </Grid>

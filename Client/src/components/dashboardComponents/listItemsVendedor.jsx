@@ -39,12 +39,6 @@ export const mainListItemsVend = (
       </ListItemIcon>
       <ListItemText primary="Vehículos" />
     </ListItem>
-    <ListItem button component={Link} to="/StockManagement">
-      <ListItemIcon>
-        <BuildIcon />
-      </ListItemIcon>
-      <ListItemText primary="Repuestos" />
-    </ListItem>
     <ListItem button >
       <ListItemIcon>
         <BarChartIcon />

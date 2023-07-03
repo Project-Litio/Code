@@ -594,3 +594,63 @@ input:focus, textarea:focus, select:focus{
 .custom-text{
   cursor: pointer;
 }
+
+.btnPlus {
+  float: right;
+  font-size: 8px;
+  color: rgba(103, 192, 103, 0.75);
+  letter-spacing: 1px;
+  line-height: 15px;
+  border-left: 2px solid rgba(103, 192, 103, 0.75);
+  border-right: 2px solid rgba(103, 192, 103, 0.75);
+  border-bottom: 2px solid rgba(103, 192, 103, 0.75);
+  border-top: none;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  background: transparent;
+  transition: all 0.3s ease 0s;
+}
+
+.btnPlus:hover {
+  color: #FFF;
+  background: rgb(103, 192, 103, 0.75);
+  border: 2px solid rgb(103, 192, 103, 0.75);
+}
+
+.btnMinus {
+  float: right;
+  font-size: 8px;
+  color: rgba(217, 83, 78, 0.75);
+  letter-spacing: 1px;
+  line-height: 15px;
+  border-left: 2px solid rgba(217, 83, 78, 0.75);
+  border-right: 2px solid rgba(217, 83, 78, 0.75);
+  border-bottom: 2px solid rgba(217, 83, 78, 0.75);
+  border-top: none;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  background: transparent;
+  transition: all 0.3s ease 0s;
+}
+
+.btnMinus:hover {
+  color: #FFF;
+  background: rgba(217, 83, 78, 0.75);
+  border: 2px solid rgba(217, 83, 78, 0.75);
+}
+
+.counter{
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  background-color: white;
+  border-left: 2px solid #dfdada;
+  border-right: 2px solid #dfdada;
+  border-bottom: 2px solid #dfdada;
+  border-top: none;
+  text-align: center;
+  color: black;
+}
+
+.lst label:hover{
+  color: red;
+}
