@@ -14,6 +14,7 @@ import ManejoVehiculos from './pages/manejovehiculos'
 import ManejoInventario from './pages/manejoinventario'
 import ManejoSucursales from './pages/manejosucursales'
 import ManejoCotizacion from './pages/manejocotizaciones'
+import ManejoFactura from './pages/manejofacturas'
 import ManejoOrden from './pages/manejoordenes'
 import carDetail from './pages/carDetail'
 import Error from './pages/404'
@@ -84,6 +85,7 @@ function App() {
               <Route path='UserManagement' Component={ManejoUsuarios}></Route>
               <Route path='VehicleManagement' Component={ManejoVehiculos}></Route>
               <Route path='CotizacionManagement' Component={ManejoCotizacion}></Route>
+              <Route path='BillManagement' Component={ManejoFactura}></Route>
             </Route >
           }
           {mechanic &&

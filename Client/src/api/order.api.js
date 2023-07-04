@@ -32,34 +32,30 @@ export const deleteCotizDetail = (data, pk) => {
     return articleApi.delete('/quotation_detailDetail/'+pk, data)
 };
 
-export const getCars = (branch) => {
-    return articleApi.get('/car_stock/'+branch)
+export const getBills = () => {
+    return articleApi.get('/bill')
 };
 
-export const carEdit = (data, pk, branch) => {
-    return articleApi.patch('/carDetail/'+pk+'/'+branch, data)
+export const billCreate = (data) => {
+    return articleApi.post('/bill', data)
 };
 
-export const carDelete = (data, pk, branch) => {
-    return articleApi.delete('/carDetail/'+pk+'/'+branch, data)
+export const billTotal = (data) => {
+    return articleApi.post('/bill_detail', data)
 };
 
-export const carCreate = (data) => {
-    return articleApi.post('/car', data);
+export const billEdit = (data, pk) => {
+    return articleApi.patch('/billDetail/'+pk, data)
 };
 
-export const getStock = (branch) => {
-    return articleApi.get('/replacement_stock/'+branch)
+export const billDelete = (data, pk) => {
+    return articleApi.delete('/billDetail/'+pk, data)
 };
 
-export const stockEdit = (data, pk, branch) => {
-    return articleApi.patch('/replacementDetail/'+pk+'/'+branch, data)
+export const editBillDetail = (data, pk) => {
+    return articleApi.patch('/bill_detailDetail/'+pk, data)
 };
 
-export const stockDelete = (data, pk, branch) => {
-    return articleApi.delete('/replacementDetail/'+pk+'/'+branch, data)
-};
-
-export const stockCreate = (data) => {
-    return articleApi.post('/replacement', data);
+export const deleteBillDetail = (data, pk) => {
+    return articleApi.delete('/bill_detailDetail/'+pk, data)
 };
