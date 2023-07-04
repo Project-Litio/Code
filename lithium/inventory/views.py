@@ -226,9 +226,6 @@ class CarDetailAPI(APIView):
             
             branch_article = Branch_article.objects.filter(id_article=car.id_article)
 
-            for item in branch_article:
-                item.delete()
-
             article = car.id_article
             article.deleted = True
             article.save()
@@ -371,9 +368,6 @@ class ReplacementDetailAPI(APIView):
                 return Response({"status": "fail", "message": f"Replacement with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
             branch_article = Branch_article.objects.filter(id_article=replacement.id_article)
-
-            for item in branch_article:
-                item.delete()
 
             article = replacement.id_article
             article.deleted = True

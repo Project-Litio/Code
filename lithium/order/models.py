@@ -26,7 +26,7 @@ class Quotation(models.Model):
     id=models.AutoField(primary_key=True)
     date=models.DateTimeField(auto_now_add=True)
     observation=models.TextField(null=True)
-    total=models.IntegerField()
+    total=models.BigIntegerField()
     id_customer=models.ForeignKey(Customer,on_delete=models.SET_NULL, null=True)
     id_employee=models.ForeignKey(Employee,on_delete=models.SET_NULL, null=True)
 
@@ -35,7 +35,7 @@ class Quotation_detail(models.Model):
     id_quotation=models.ForeignKey(Quotation,on_delete=models.CASCADE, null=True)
     id_car=models.ForeignKey(Car,on_delete=models.SET_NULL, null=True)
     amount=models.IntegerField()
-    subtotal=models.FloatField()
+    subtotal=models.BigIntegerField()
     
 class Bill(models.Model):
     PAYMENT_METHODS = [
@@ -48,7 +48,7 @@ class Bill(models.Model):
     date=models.DateTimeField(auto_now_add=True)
     payment_method=models.CharField(max_length=2,choices=PAYMENT_METHODS)
     observation=models.TextField(null=True)
-    total=models.IntegerField()
+    total=models.BigIntegerField()
     id_customer=models.ForeignKey(Customer,on_delete=models.SET_NULL, null=True)
     id_employee=models.ForeignKey(Employee,on_delete=models.SET_NULL, null=True)
 
@@ -58,4 +58,4 @@ class Bill_detail(models.Model):
     id_car=models.ForeignKey(Car,on_delete=models.SET_NULL, null=True)
     id_branch=models.ForeignKey(Branch_article,on_delete=models.SET_NULL, null=True)
     amount=models.IntegerField()
-    subtotal=models.IntegerField()
+    subtotal=models.BigIntegerField()
