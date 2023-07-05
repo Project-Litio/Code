@@ -44,7 +44,9 @@ const TableFacturas = ({bills, copy}) => {
   const [cars, setCars] = useState([]);
   const [stock, setStock] = useState([]);
   const loaded = async () => {
+    await timer(1000);
     const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
+    await timer(1000);
     const car = (await getCars(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model, stock: elem.stock}));
     setStock(car);
     setCars((car.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));

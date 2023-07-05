@@ -16,8 +16,8 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItemsMec } from './dashboardComponents/listItemsMecanico';
-import TableCotizaciones from './small-component/TableCotizaciones';
-import {getStock} from '../api/article.api'
+import TableOrdenes from './small-component/TableOrdenes';
+import {getOrders} from '../api/order.api'
 import img from '../assets/logo.png'
 import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -131,10 +131,11 @@ export default function DashboardOrdenes() {
     setOpen(false);
   };
 
-  const [cotizReg, setCotiz] = useState([]);
+  const [orderReg, setOrder] = useState([]);
   const loaded = async () => {
-    const result = await getStock();
-    setCotiz(result.data);
+    const result = await getOrders();
+    console.log(result);
+    setOrder(result.data);
   };
 
   useEffect(() => {
@@ -190,7 +191,7 @@ export default function DashboardOrdenes() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <TableCotizaciones cotiz={cotizReg} />
+                <TableOrdenes orders={orderReg.map(object => ({ ...object }))} copy={orderReg} />
               </Paper>
             </Grid>
           </Grid>
