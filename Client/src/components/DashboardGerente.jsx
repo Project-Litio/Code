@@ -24,11 +24,14 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Chart } from "react-google-charts";
 import {getCars, getAllCars} from '../api/article.api'
 import {getBills} from '../api/order.api'
+import {getSeller} from '../api/login.api'
 
 
-
+import './style.css'
 import Cookies from 'universal-cookie';
 import { LocalGasStation } from '@material-ui/icons';
+import ClipLoader from "react-spinners/ClipLoader";
+
 
 const drawerWidth = 200;
 var cookies = new Cookies();
@@ -112,12 +115,21 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 240,
+    height: 0,
+  },
+  helper:{
+    
+    display: 'flex',
+    overflow: 'auto',
+    
+    flexDirection: 'column',
   },
 }));
 
 export default function DashboardGerente() {
   const navigateTo = useNavigate();
+  const [loading,setLoading]=useState(false)
+
 
   const deleteCookies = () => {
     cookies.set('user', undefined, {
@@ -131,14 +143,35 @@ export default function DashboardGerente() {
   /****DATA****/
   const [cars, setCars] = useState([]);
   const [bills, setBills] = useState([]);
+  const [char2,setChar2] =useState([]);
   const loaded = async () => {
-      const result2 = await getBills();
-      const result = await getCars(cookies.get('user').branch);
       
+      setLoading(true)
+      const result = await getCars(cookies.get('user').branch); //ventas
+      
+      const result3 = await getSeller(cookies.get('user').branch) //vendedores
+      const result2 = await getBills();
+      
+
+      
+      
+
       setCars(result.data.data);
       setBills(result2.data)
+      
+
+      const numberBills = result3.data.data.map(vendedor =>( result2.data.filter(item =>item.employee_name === vendedor.first_name).map(item=>(item.bill_details.length)) ).reduce((accumulator, currentValue) => accumulator + currentValue, 0)) 
+
+      const sellerNumberBills = result3.data.data.map((seller,i) =>([seller.first_name, numberBills[i]]))
+
+      setChar2(sellerNumberBills)
+
+      //console.log(sellerNumberBills);
 
       console.log(result2.data);
+      //console.log(numberBills);
+      //console.log(result3.data.data); //vendedeor
+      setLoading(false)
     };    
 
 
@@ -146,6 +179,7 @@ export default function DashboardGerente() {
 
   useEffect(() => {
     loaded();
+
   }, []);
 
 
@@ -170,7 +204,11 @@ export default function DashboardGerente() {
       chart: {
         title: "Autos más Vendidos",
       },
+    charaux:{
+      chartArea: { width: "1", height: "1" }
     }
+    }
+
     
 
     
@@ -189,7 +227,7 @@ export default function DashboardGerente() {
   }
 
   
-  const campos = [['model','stock'],['','ventas']]
+  const campos = [['model','stock'],['vendedor','ventas']]
   const test= [['model','stock']]
   const test2= [['employee_name','ventas']]
 
@@ -202,78 +240,124 @@ export default function DashboardGerente() {
     ["Sleep", 7],
   ];
 
+    
   return (
     <div className={classes.root} id='raiz'>
-      <CssBaseline />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Gerente
-          </Typography>
-          <div onClick={deleteCookies}>
-            <Tooltip title="Salir">
-              <IconButton>
-                  <ExitToAppIcon style={{ fill: '#ee2641' }}/>
+      
+        
+          <CssBaseline />
+          <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
+            <Toolbar className={classes.toolbar}>
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+              >
+                <MenuIcon />
               </IconButton>
-            </Tooltip>
-          </div>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>{mainListItems}</List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={classes.paper}>
+              <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
+              <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+                &emsp; Gerente
+              </Typography>
+              <div onClick={deleteCookies}>
+                <Tooltip title="Salir">
+                  <IconButton>
+                      <ExitToAppIcon style={{ fill: '#ee2641' }}/>
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </Toolbar>
+          </AppBar>
+
+          
+          <Drawer
+            variant="permanent"
+            classes={{
+              paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+            }}
+            open={open}
+          >
+            <div className={classes.toolbarIcon}>
+              <IconButton onClick={handleDrawerClose}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </div>
+            <Divider />
+            <List>{mainListItems}</List>
+          </Drawer>
+          
+          
+          <main className={classes.content}>
+            <div className={classes.appBarSpacer} />
+            <Container maxWidth="lg" className={classes.container}>
+            {
+            loading ? (
+              
+            
+            <div className='center'>
+              <ClipLoader
+              color={'#36d7b7'}
+              loading={loading}
+              size={150}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+            </div>
+            
+            ) : (
+            
+            <Grid container spacing={3} >
+              
+              <Grid item xs={12} md={6} lg={6}>
+                <Paper className={classes.paper}>
+                  <h1>Ventas Totales</h1>
+                  <h2>${ new Intl.NumberFormat('en-DE').format(bills.map(bill=>(bill.total)).reduce((accumulator, currentValue) => accumulator + currentValue, 0)) } COP</h2> 
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={6} lg={6}>
+                <Paper className={classes.paper}>
                 
-              </Paper>
+                <Chart
+                    chartType="PieChart"
+                    data={test2.concat(char2)}
+                    options={options['char2']}
+                    width={"100%"}
+                    height={"400px"}
+                  />
+                  
+                  
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper className={classes.paper}>
+                <Chart
+                    chartType="Bar"
+                    width="100%"
+                    height="400px"
+                    data={test.concat(cars.map(car=>(filtrarJSON(car,campos[0]))))}
+                    options={options['char1']}
+                  />
+                </Paper>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={classes.paper}>
-                
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
+            )
+            }
+              <Paper className={classes.helper}>
               <Chart
-                  chartType="Bar"
-                  width="100%"
-                  height="400px"
-                  data={test.concat(cars.map(car=>(filtrarJSON(car,campos[0]))))}
-                  options={options['char1']}
-                />
+                chartType="AreaChart" 
+                width="10%"
+                height="  0px"
+                data={data}
+                options={options[2]}
+              />
               </Paper>
-            </Grid>
-          </Grid>
-          <Box pt={4}>
-          </Box>
-        </Container>
-      </main>
+            </Container>
+          </main>    
     </div>
   );
 }
+
+
+
