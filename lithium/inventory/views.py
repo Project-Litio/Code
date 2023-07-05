@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from django.db import transaction
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from inventory.models import *
 from inventory.serializers import *
 import json
@@ -452,4 +453,6 @@ class ReplacementData(APIView):
         #Inventario de los repuestos - Mecanico
         #Ordenes activas - Mecanico
         
-        
+class Replacement_get_all(ListAPIView):
+    queryset = Replacement.objects.all()
+    serializer_class = All_Replacement_Serializer
