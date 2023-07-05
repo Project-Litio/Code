@@ -539,8 +539,7 @@ class BillAPI(APIView):
                     "subtotal": bd.subtotal,
                     "id_bill": bd.id_bill.id,
                     "id_car": bd.id_car.id,
-                    "car_model": car_model,
-                    "id_branch": bd.id_branch.id
+                    "car_model": car_model
                 }
                 query["bill_details"].append(bill_detail_query)
             fullset.append(query)
@@ -646,12 +645,11 @@ class BillDetailAPI(APIView):
 class Quotation_to_Bill(APIView):
     def get(self,request,id):
         with transaction.atomic():
-            try:
                 quotation = Quotation.objects.get(id=id)
 
                 bill = Bill.objects.create(
-                    id_employee=quotation.id_employee.id,
-                    id_customer=quotation.id_customer.id,
+                    id_employee=quotation.id_employee,
+                    id_customer=quotation.id_customer,
                     observation = quotation.observation,
                     total = quotation.total,
                     payment_method="TC"
@@ -661,9 +659,8 @@ class Quotation_to_Bill(APIView):
 
                 for item in quotation_items:
                     bill_item = Bill_detail.objects.create(
-                        id_bill=bill.id,
+                        id_bill=bill,
                         id_car=item.id_car,
-                        id_branch=quotation.id_employee.id_branch.id,
                         amount=item.amount,
                         subtotal=item.subtotal
                     )
@@ -671,5 +668,3 @@ class Quotation_to_Bill(APIView):
                 quotation.delete()
 
                 return Response(bill.id)
-            except:
-                return Response("Something went wrong (Quotation_to_Bill)")

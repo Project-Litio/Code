@@ -2,15 +2,16 @@ import {React,useState,useEffect} from 'react'
 import {Table,TableContainer,TableHead,TableCell,TableBody,TableRow, Modal, Button, TextField, ExpansionPanel} from '@material-ui/core';
 import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
-import {cotizEdit, cotizDelete, cotizCreate, cotizTotal, editCotizDetail, deleteCotizDetail} from '../../api/order.api'
+import {cotizEdit, cotizDelete, cotizCreate, cotizTotal, editCotizDetail, deleteCotizDetail, quotationToBill} from '../../api/order.api'
 import {getCustomers} from '../../api/login.api'
-import { getCars } from '../../api/article.api';
+import { getAllCars, getCars } from '../../api/article.api';
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select'
 import CheckIcon from '@material-ui/icons/Check';
+import BuyCard from '../vehicle/BuyCard';
 
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
@@ -41,16 +42,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TableCotizaciones = ({cotiz, copy}) => {
+  const [employee, setEmployee] = useState(true);
+  const [pago, setPago] = useState(false);
   const repeated = {};
   const [customers, setCustomers] = useState([]);
   const [cars, setCars] = useState([]);
+  const [stock, setStock] = useState([]);
   const loaded = async () => {
-    await timer(1000);
-    const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
-    await timer(1000);
-    const car = (await getCars(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model}));
-    setCars(car);
-    setCustomers(cus); 
+    if(cookies.get('user').role == 'Cliente'){
+      setEmployee(false);
+      await timer(1000);
+      const car = (await getAllCars()).data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model, stock: elem.stock}));
+      setCars((car.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
+    } else {
+      await timer(1000);
+      const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
+      await timer(1000);
+      const car = (await getCars(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model, stock: elem.stock}));
+      setStock(car);
+      setCars((car.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
+      setCustomers(cus); 
+    }
   };
 
   useEffect(() => {
@@ -71,6 +83,7 @@ const TableCotizaciones = ({cotiz, copy}) => {
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
   const faltanArticulos = (data) => toast("La cotización debe tener al menos un artículo");
+  const facturaCancelada = () => toast("La factura fue cancelada");
 
   const resetquot = () =>{
     selectedCotization.quotation_details = [];
@@ -141,9 +154,11 @@ const TableCotizaciones = ({cotiz, copy}) => {
     if(caso == 'Editar'){
       setEditModal (true);
       setTimeout(insertText,500,quot);
+    } else if(caso == 'Esperar') {
+      setP();
     } else {
       setDeleteModal(true);
-    } 
+    }
   }
 
   const beforeCreate = () => {verificarDatos("Crear");}
@@ -155,6 +170,31 @@ const TableCotizaciones = ({cotiz, copy}) => {
     } else {
       repeated[''+elem.id_car+''] = parseInt(elem.amount);
     }
+  }
+
+  const crearFactura = async () => {
+    if(checkStock(selectedCotization.quotation_details)){
+      console.log(await quotationToBill(selectedCotization.id));
+      window.location.reload();     
+    } else {
+      facturaCancelada();
+    }
+  }
+
+  const checkStock = (arr) => {
+    for (let index = 0; index < arr.length; index++) {
+      var elements = stock.filter(elem => elem.value == arr[index].id_car);
+      if(elements.length != 0){
+        if(elements[0].stock - arr[index].amount < 0){
+          noHayVehiculos(elements[0].label, elements[0].stock);
+          return false;
+        }
+      } else {
+        continue;
+      }
+    }
+
+    return true;
   }
 
   const quotationSum = () =>{
@@ -174,7 +214,7 @@ const TableCotizaciones = ({cotiz, copy}) => {
       for(var key in repeated){
         quotation.quotation_details.push({amount: repeated[key],
         id_car: key,
-        id_quotation: selectedCotization.quotation_details[0].id_quotation})
+        id_quotation: selectedCotization.quotation_details[0].id_quotation});
       }
     }
   }
@@ -432,76 +472,100 @@ const TableCotizaciones = ({cotiz, copy}) => {
     </div>
   )
 
+  const setP = () =>{
+    setPago(true);
+  }
+
   return (
     <div>
-      <ToastContainer />
-      <div className="btnInsert">
-      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
-        Insertar
-      </Button>
-      </div>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-            <TableCell><b>ID</b></TableCell>
-            <TableCell><b>ID Cliente</b></TableCell>
-            <TableCell><b>ID Empleado</b></TableCell>
-            <TableCell><b>Articulos</b></TableCell>
-            <TableCell><b>Observacion</b></TableCell>
-            <TableCell><b>Total</b></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {copy.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(Cotization=>
-              (
-                <TableRow key={Cotization.id}>
-                  <TableCell>{Cotization.id}</TableCell>
-                  <TableCell>{Cotization.id_customer}</TableCell>
-                  <TableCell>{Cotization.id_employee}</TableCell>
-                  <TableCell>{Cotization.quotation_details.map(elem => filterCar(elem.id_car)+' x '+elem.amount+',   ')}</TableCell>
-                  <TableCell>{Cotization.observation}</TableCell>
-                  <TableCell>{Cotization.total}</TableCell>
-                  <TableCell>
-                    <Edit className={styles.iconos} onClick={()=>selectCotization((cotiz.filter((cot) => cot.id == Cotization.id))[0],'Editar',Cotization)}  />
-                    &nbsp;&nbsp;&nbsp;
-                    <Delete  className={styles.iconos} onClick={()=>selectCotization((cotiz.filter((cot) => cot.id == Cotization.id))[0],'Elminar',Cotization)}/>
-                  </TableCell>
+      {!pago &&
+        <div>
+          <ToastContainer />
+          {employee &&
+            <div className="btnInsert">
+            <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
+              Insertar
+            </Button>
+            </div>
+          }
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                <TableCell><b>ID</b></TableCell>
+                <TableCell><b>ID Cliente</b></TableCell>
+                <TableCell><b>ID Empleado</b></TableCell>
+                <TableCell><b>Articulos</b></TableCell>
+                <TableCell><b>Observacion</b></TableCell>
+                <TableCell><b>Total</b></TableCell>
                 </TableRow>
-              )
+              </TableHead>
+              <TableBody>
+                {copy.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(Cotization=>
+                  (
+                    <TableRow key={Cotization.id}>
+                      <TableCell>{Cotization.id}</TableCell>
+                      <TableCell>{Cotization.id_customer}</TableCell>
+                      <TableCell>{Cotization.id_employee}</TableCell>
+                      <TableCell>{Cotization.quotation_details.map(elem => filterCar(elem.id_car)+' x '+elem.amount+',   ')}</TableCell>
+                      <TableCell>{Cotization.observation}</TableCell>
+                      <TableCell>{Cotization.total}</TableCell>
+                      {employee &&
+                        <TableCell>
+                          <Edit className={styles.iconos} onClick={()=>selectCotization((cotiz.filter((cot) => cot.id == Cotization.id))[0],'Editar',Cotization)}  />
+                          &nbsp;&nbsp;&nbsp;
+                          <Delete  className={styles.iconos} onClick={()=>selectCotization((cotiz.filter((cot) => cot.id == Cotization.id))[0],'Elminar',Cotization)}/>
+                        </TableCell>
+                      }
+                      {!employee && 
+                        <TableCell>
+                          <button className='buttonC' onClick={()=>selectCotization((cotiz.filter((cot) => cot.id == Cotization.id))[0],'Esperar',Cotization)}>Pagar</button>
+                        </TableCell>
+                      }
+                    </TableRow>
+                  )
+                  )}
+
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
               )}
+              </TableBody>
+            </Table>
+            <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={cotiz.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+          </TableContainer>
 
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-          </TableBody>
-        </Table>
-        <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={cotiz.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-      </TableContainer>
+          <Modal open={InsertModal} onClose={()=>openCloseIsertModal()} >
+            {insertBody}
+          </Modal>
 
-      <Modal open={InsertModal} onClose={()=>openCloseIsertModal()} >
-        {insertBody}
-      </Modal>
+          <Modal open={EditModal} onClose={()=>openCloseEditModal()} >
+            {EditBody}
+          </Modal>
 
-      <Modal open={EditModal} onClose={()=>openCloseEditModal()} >
-        {EditBody}
-      </Modal>
-
-      <Modal open={DeleteModal} onClose={()=>openCloseDeleteModal()} >
-        {DeleteBody}
-      </Modal>
+          <Modal open={DeleteModal} onClose={()=>openCloseDeleteModal()} >
+            {DeleteBody}
+          </Modal>
+        </div>
+      }
+      {pago &&
+        <div>
+          <BuyCard></BuyCard>
+          <div className="d-grid">
+            <button className="btn btn-dark" onClick={crearFactura}>Confirmar</button>
+          </div>
+        </div>
+      }
     </div>
-
   )
 }
 

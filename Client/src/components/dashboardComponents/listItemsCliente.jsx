@@ -13,43 +13,25 @@ import {
   Link
 } from "react-router-dom";
 
-export const mainListItems = (
+export const mainListItemsCli = (
   <div>
-    <ListItem button component={Link} to="/DashboardGerente">
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary="Dashboard" />
-    </ListItem>
-    <ListItem button component={Link} to="/UserManagement">
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Usuarios" />
-    </ListItem>
-    <ListItem button component={Link} to="/SucursalesManagement">
+    <ListItem button component={Link} to="/CotizacionManagement">
       <ListItemIcon>
         <StoreIcon />
       </ListItemIcon>
-      <ListItemText primary="Sucursales" />
+      <ListItemText primary="Cotizaciones" />
     </ListItem>
-    <ListItem button component={Link} to="/VehicleManagement">
+    <ListItem button component={Link} to="/BillManagement">
       <ListItemIcon>
         <DirectionsCarIcon />
       </ListItemIcon>
-      <ListItemText primary="Vehículos" />
+      <ListItemText primary="Facturas" />
     </ListItem>
-    <ListItem button component={Link} to="/StockManagement">
+    <ListItem button component={Link} to="/OrderManagement">
       <ListItemIcon>
         <BuildIcon />
       </ListItemIcon>
-      <ListItemText primary="Repuestos" />
-    </ListItem>
-    <ListItem button >
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Reportes" />
+      <ListItemText primary="Reparaciones" />
     </ListItem>
   </div>
 );

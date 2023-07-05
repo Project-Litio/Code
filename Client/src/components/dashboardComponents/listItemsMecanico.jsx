@@ -38,11 +38,5 @@ export const mainListItemsMec = (
       </ListItemIcon>
       <ListItemText primary="Repuestos" />
     </ListItem>
-    <ListItem button >
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Reportes" />
-    </ListItem>
   </div>
 );

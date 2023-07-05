@@ -77,6 +77,9 @@ function App() {
           {client &&
             <Route path='/'>
               <Route path='DashboardCliente' Component={DashboardClient}></Route>
+              <Route path='CotizacionManagement' Component={ManejoCotizacion}></Route>
+              <Route path='BillManagement' Component={ManejoFactura}></Route>
+              <Route path='OrderManagement' Component={ManejoOrden}></Route>
             </Route>
           }
           {seller &&

@@ -16,6 +16,7 @@ import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItemsVend } from './dashboardComponents/listItemsVendedor';
+import { mainListItemsCli } from './dashboardComponents/listItemsCliente';
 import TableCotizaciones from './small-component/TableCotizaciones';
 import {getCotiz} from '../api/order.api'
 import img from '../assets/logo.png'
@@ -123,6 +124,7 @@ export default function DashboardCotizacion() {
   };
 
   const classes = useStyles();
+  const [employee, setEmployee] = useState(true);
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -133,9 +135,14 @@ export default function DashboardCotizacion() {
 
   const [cotizReg, setCotiz] = useState([]);
   const loaded = async () => {
-    const result = await getCotiz();
+    const result = (await getCotiz()).data;
     console.log(result);
-    setCotiz(result.data);
+    if(cookies.get('user').role == 'Cliente'){
+      setEmployee(false); 
+      setCotiz(result.filter(elem => elem.id_customer == cookies.get('user').id));
+    } else {
+      setCotiz(result);
+    } 
   };
 
   useEffect(() => {
@@ -158,9 +165,16 @@ export default function DashboardCotizacion() {
             <MenuIcon />
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Manejo de Cotizaciones
-          </Typography>
+          {employee &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Manejo de Cotizaciones
+            </Typography>
+          }
+          {!employee &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Consulta de Cotizaciones
+            </Typography>
+          }
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">
               <IconButton>
@@ -183,7 +197,12 @@ export default function DashboardCotizacion() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItemsVend}</List>
+        {employee &&
+            <List>{mainListItemsVend}</List>
+          }
+        {!employee &&
+          <List>{mainListItemsCli}</List>
+        }
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
