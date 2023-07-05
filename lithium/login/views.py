@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from django.core.mail import send_mail
 from django.db import transaction
 from rest_framework import status
@@ -371,6 +372,11 @@ class BranchAPI(APIView):
             return Response({"status": "success", "data": data})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class Branch_get_all(ListAPIView):
+    queryset = Branch.objects.all()
+    serializer_class = Branch_Serializer    
+    
 
 class otpLogin(APIView):
     def post(self, request):
