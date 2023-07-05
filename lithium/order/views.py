@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from inventory.models import *
 from order.models import *
 from order.serializers import *
+from login.models import *
+from django.contrib.auth.models import User
 from datetime import datetime
 
 class Order_detailAPI(APIView):
@@ -505,21 +507,48 @@ class BillAPI(APIView):
         queryset = Bill.objects.all()
         fullset = []
         for b in queryset:
-            bill_details = Bill_detail.objects.filter(id_bill=b.id)
-            bill_details_serializer = self.all_bill_detail_serializer(bill_details, many=True)
+            bill_detail = Bill_detail.objects.filter(id_bill=b.id)
+            bill_details_serializer = self.all_bill_detail_serializer(bill_detail, many=True)
+            
+            # Retrieve the customer's name
+            customer = Employee.objects.get(id=b.id_employee.id)
+            user = User.objects.get(id=customer.id_user.id)
+            employee_name = user.first_name
+            
             query = {
-                "id":b.id,
-                "date":b.date,
-                "payment_method":b.payment_method,
-                "observation":b.observation,
-                "total":b.total,
-                "id_customer":b.id_customer.id,
-                "id_employee":b.id_employee.id,
-                "bill_details":bill_details_serializer.data
+                "id": b.id,
+                "date": b.date,
+                "payment_method": b.payment_method,
+                "observation": b.observation,
+                "total": b.total,
+                "id_customer": b.id_customer.id,
+                "employee_name": employee_name,
+                "id_employee": b.id_employee.id,
+                "bill_details": []
             }
+            
+            for bd in bill_detail:
+                try:
+                    car = Car.objects.get(id=bd.id_car.id)
+                    car_model = car.model
+                except Car.DoesNotExist:
+                    car_model = "Unknown"  # Set a default value or handle the case as needed
+
+                bill_detail_query = {
+                    "id": bd.id,
+                    "amount": bd.amount,
+                    "subtotal": bd.subtotal,
+                    "id_bill": bd.id_bill.id,
+                    "id_car": bd.id_car.id,
+                    "car_model": car_model,
+                    "id_branch": bd.id_branch.id
+                }
+                print(query)
+                query["bill_details"].append(bill_detail_query)
             fullset.append(query)
-        
+
         return Response(fullset)
+
     
     def post(self, request):
         with transaction.atomic():

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect,useState} from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -21,8 +21,14 @@ import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
+import { Chart } from "react-google-charts";
+import {getCars, getAllCars} from '../api/article.api'
+import {getBills} from '../api/order.api'
+
+
 
 import Cookies from 'universal-cookie';
+import { LocalGasStation } from '@material-ui/icons';
 
 const drawerWidth = 200;
 var cookies = new Cookies();
@@ -100,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2),
+    
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column',
@@ -121,6 +128,27 @@ export default function DashboardGerente() {
     navigateTo('/');
   };
 
+  /****DATA****/
+  const [cars, setCars] = useState([]);
+  const [bills, setBills] = useState([]);
+  const loaded = async () => {
+      const result2 = await getBills();
+      const result = await getCars(cookies.get('user').branch);
+      
+      setCars(result.data.data);
+      setBills(result2.data)
+
+      console.log(result2.data);
+    };    
+
+
+
+
+  useEffect(() => {
+    loaded();
+  }, []);
+
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
@@ -130,6 +158,49 @@ export default function DashboardGerente() {
     setOpen(false);
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+  const options = {
+    char1:{
+      chartArea: { backgroundColor: 'black' },
+      chart: {
+        title: "Stock de Autos",
+      },
+    },
+    char2:{
+      chart: {
+        title: "Autos más Vendidos",
+      },
+    }
+    
+
+    
+    
+  };
+
+
+  function filtrarJSON(json, camposDeseados) {
+    const jsonFiltrado = [];
+    camposDeseados.forEach((campo) => {
+      if (json.hasOwnProperty(campo)) {
+        jsonFiltrado.push(json[campo]);
+      }
+    });
+    return jsonFiltrado;
+  }
+
+  
+  const campos = [['model','stock'],['','ventas']]
+  const test= [['model','stock']]
+  const test2= [['employee_name','ventas']]
+
+  const data = [
+    ["Task", "Hours per Day"],
+    ["Work", 11],
+    ["Eat", 2],
+    ["Commute", 2],
+    ["Watch TV", 2],
+    ["Sleep", 7],
+  ];
 
   return (
     <div className={classes.root} id='raiz'>
@@ -178,18 +249,30 @@ export default function DashboardGerente() {
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                
+              <Paper className={classes.paper}>
+                <Chart
+                  chartType="PieChart"
+                  data={bills.map(bill=>(filtrarJSON(bill,campos[1])))}
+                  options={options['char2']}
+                  width={"100%"}
+                  height={"400px"}
+                />
               </Paper>
             </Grid>
             <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
+              <Paper className={classes.paper}>
                 
               </Paper>
             </Grid>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                
+              <Chart
+                  chartType="Bar"
+                  width="100%"
+                  height="400px"
+                  data={test.concat(cars.map(car=>(filtrarJSON(car,campos[0]))))}
+                  options={options['char1']}
+                />
               </Paper>
             </Grid>
           </Grid>
