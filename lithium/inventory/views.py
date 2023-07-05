@@ -96,22 +96,23 @@ class CarAPI(APIView):
         queryset = Car.objects.all()
         fullset = []
         for c in queryset:
-            query = {"id":c.id,
-            "brand":c.brand,
-            "type":c.type,
-            "model":c.model,
-            "wheel":c.wheel,
-            "motor":c.motor,
-            "power":c.power,
-            "doors":c.doors,
-            "battery":c.battery,
-            "autonomy":c.autonomy,
-            "rpm":c.rpm,
-            "price":c.price,
-            "image":str(c.image),
-            "id_article": c.id_article.id,
-            }
-            fullset.append(query)
+            if(c.id_article.deleted == False):
+                query = {"id":c.id,
+                "brand":c.brand,
+                "type":c.type,
+                "model":c.model,
+                "wheel":c.wheel,
+                "motor":c.motor,
+                "power":c.power,
+                "doors":c.doors,
+                "battery":c.battery,
+                "autonomy":c.autonomy,
+                "rpm":c.rpm,
+                "price":c.price,
+                "image":str(c.image),
+                "id_article": c.id_article.id,
+                }
+                fullset.append(query)
 
         return Response(fullset)
 
