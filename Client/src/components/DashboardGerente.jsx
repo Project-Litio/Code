@@ -27,7 +27,7 @@ import {getBills} from '../api/order.api'
 import {getSeller} from '../api/login.api'
 
 
-
+import './style.css'
 import Cookies from 'universal-cookie';
 import { LocalGasStation } from '@material-ui/icons';
 import ClipLoader from "react-spinners/ClipLoader";
@@ -115,7 +115,14 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 240,
+    height: 0,
+  },
+  helper:{
+    
+    display: 'flex',
+    overflow: 'auto',
+    
+    flexDirection: 'column',
   },
 }));
 
@@ -138,15 +145,20 @@ export default function DashboardGerente() {
   const [bills, setBills] = useState([]);
   const [char2,setChar2] =useState([]);
   const loaded = async () => {
-      const result2 = await getBills();
+      
+      setLoading(true)
       const result = await getCars(cookies.get('user').branch); //ventas
+      
       const result3 = await getSeller(cookies.get('user').branch) //vendedores
+      const result2 = await getBills();
+      
 
       
       
 
       setCars(result.data.data);
       setBills(result2.data)
+      
 
       const numberBills = result3.data.data.map(vendedor =>( result2.data.filter(item =>item.employee_name === vendedor.first_name).map(item=>(item.bill_details.length)) ).reduce((accumulator, currentValue) => accumulator + currentValue, 0)) 
 
@@ -159,6 +171,7 @@ export default function DashboardGerente() {
       console.log(result2.data);
       //console.log(numberBills);
       //console.log(result3.data.data); //vendedeor
+      setLoading(false)
     };    
 
 
@@ -166,8 +179,7 @@ export default function DashboardGerente() {
 
   useEffect(() => {
     loaded();
-   
-    
+
   }, []);
 
 
@@ -192,7 +204,11 @@ export default function DashboardGerente() {
       chart: {
         title: "Autos más Vendidos",
       },
+    charaux:{
+      chartArea: { width: "1", height: "1" }
     }
+    }
+
     
 
     
@@ -224,7 +240,6 @@ export default function DashboardGerente() {
     ["Sleep", 7],
   ];
 
-    const aux =  <Chart chartType="Bar" width="0px" height="0px" data={data}/>
     
   return (
     <div className={classes.root} id='raiz'>
@@ -281,18 +296,20 @@ export default function DashboardGerente() {
             loading ? (
               
             
-
-            <ClipLoader
+            <div className='center'>
+              <ClipLoader
               color={'#36d7b7'}
               loading={loading}
-
               size={150}
               aria-label="Loading Spinner"
               data-testid="loader"
             />
+            </div>
+            
             ) : (
-
-              <Grid container spacing={3}>
+            
+            <Grid container spacing={3} >
+              
               <Grid item xs={12} md={6} lg={6}>
                 <Paper className={classes.paper}>
                   <h1>Ventas Totales</h1>
@@ -327,7 +344,15 @@ export default function DashboardGerente() {
             </Grid>
             )
             }
-              
+              <Paper className={classes.helper}>
+              <Chart
+                chartType="AreaChart" 
+                width="10%"
+                height="  0px"
+                data={data}
+                options={options[2]}
+              />
+              </Paper>
             </Container>
           </main>    
     </div>
