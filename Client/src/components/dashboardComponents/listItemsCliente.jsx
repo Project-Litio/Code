@@ -8,6 +8,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
 import BuildIcon from '@material-ui/icons/Build';
+import ReceiptIcon from '@material-ui/icons/Receipt';
 
 import {
   Link
@@ -23,7 +24,7 @@ export const mainListItemsCli = (
     </ListItem>
     <ListItem button component={Link} to="/BillManagement">
       <ListItemIcon>
-        <DirectionsCarIcon />
+        <ReceiptIcon />
       </ListItemIcon>
       <ListItemText primary="Facturas" />
     </ListItem>

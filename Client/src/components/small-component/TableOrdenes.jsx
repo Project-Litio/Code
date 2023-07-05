@@ -4,7 +4,7 @@ import {Edit,Delete, VerticalAlignBottomRounded} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
 import {orderEdit, orderDelete, orderCreate, orderTotal, deleteOrderDetail} from '../../api/order.api'
 import {getCustomers} from '../../api/login.api'
-import { getStock } from '../../api/article.api';
+import { getStock, getAllPieces } from '../../api/article.api';
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TableOrdenes = ({orders, copy}) => {
+  const [employee, setEmployee] = useState(true);
   var repeated = {};
   var end = false;
   var editable = true;
@@ -46,13 +47,24 @@ const TableOrdenes = ({orders, copy}) => {
   const [pieces, setpieces] = useState([]);
   const [stock, setStock] = useState([]);
   const loaded = async () => {
-    await timer(1000);
-    const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
-    await timer(1000);
-    const pic = (await getStock(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.name, stock: elem.stock}));
-    setStock(pic);
-    setpieces((pic.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
-    setCustomers(cus); 
+    if(cookies.get('user').role == 'Cliente'){
+      setEmployee(false);
+      await timer(1000);
+      const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
+      await timer(1000);
+      const pic = (await getAllPieces()).data.map(elem => ({value: elem.id, label: elem.name, stock: elem.stock}));
+      setStock(pic);
+      setpieces((pic.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
+      setCustomers(cus); 
+    } else {
+      await timer(1000);
+      const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
+      await timer(1000);
+      const pic = (await getStock(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.name, stock: elem.stock}));
+      setStock(pic);
+      setpieces((pic.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
+      setCustomers(cus); 
+    }
   };
 
   useEffect(() => {
@@ -321,7 +333,9 @@ const TableOrdenes = ({orders, copy}) => {
   }
 
   const createOrder = async () => {
-    selectedOrder.id = (await orderCreate(selectedOrder)).data.id;
+    const temp = (await orderCreate(selectedOrder));
+    console.log(temp);
+    selectedOrder.id = (await orderCreate(selectedOrder)).data;
     orderSum();
     if(checkStock(selectedOrder.order_details)){
       selectedOrder.order_details.map(elem => countTotal(elem));
@@ -541,11 +555,13 @@ const TableOrdenes = ({orders, copy}) => {
   return (
     <div>
       <ToastContainer />
-      <div className="btnInsert">
-      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
-        Insertar
-      </Button>
-      </div>
+      {employee &&
+        <div className="btnInsert">
+        <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
+          Insertar
+        </Button>
+        </div>
+      }
       <TableContainer>
         <Table>
           <TableHead>
@@ -574,17 +590,19 @@ const TableOrdenes = ({orders, copy}) => {
                   <TableCell>{Order.observation}</TableCell>
                   <TableCell>{Order.plate}</TableCell>
                   <TableCell>{ended(Order.end_date)}</TableCell>
-                  <TableCell>
-                    {editable &&
-                      <Edit className={styles.iconos} onClick={()=>selectOrder((orders.filter((ord) => ord.id == Order.id))[0],'Editar',Order)}  />
-                    }
-                    &nbsp;&nbsp;&nbsp;
-                    <Delete  className={styles.iconos} onClick={()=>selectOrder((orders.filter((ord) => ord.id == Order.id))[0],'Eliminar',Order)}/>
-                    &nbsp;&nbsp;&nbsp;
-                    {!end && 
-                      <CheckIcon className={styles.iconos} onClick={()=>selectOrder((orders.filter((ord) => ord.id == Order.id))[0],'Finalizar',Order)}  />
-                    }
-                  </TableCell>
+                  {employee &&
+                    <TableCell>
+                      {editable &&
+                        <Edit className={styles.iconos} onClick={()=>selectOrder((orders.filter((ord) => ord.id == Order.id))[0],'Editar',Order)}  />
+                      }
+                      &nbsp;&nbsp;&nbsp;
+                      <Delete  className={styles.iconos} onClick={()=>selectOrder((orders.filter((ord) => ord.id == Order.id))[0],'Eliminar',Order)}/>
+                      &nbsp;&nbsp;&nbsp;
+                      {!end && 
+                        <CheckIcon className={styles.iconos} onClick={()=>selectOrder((orders.filter((ord) => ord.id == Order.id))[0],'Finalizar',Order)}  />
+                      }
+                    </TableCell>
+                  }
                 </TableRow>
               )
               )}

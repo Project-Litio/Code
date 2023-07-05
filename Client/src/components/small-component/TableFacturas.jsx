@@ -4,7 +4,7 @@ import {Edit,Delete} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
 import {billEdit, billDelete, billCreate, billTotal, editBillDetail, deleteBillDetail} from '../../api/order.api'
 import {getCustomers} from '../../api/login.api'
-import { getCars } from '../../api/article.api';
+import { getCars, getAllCars } from '../../api/article.api';
 import TablePagination from "@material-ui/core/TablePagination";
 import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
@@ -39,18 +39,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TableFacturas = ({bills, copy}) => {
+  const [employee, setEmployee] = useState(true);
   var repeated = {};
   const [customers, setCustomers] = useState([]);
   const [cars, setCars] = useState([]);
   const [stock, setStock] = useState([]);
   const loaded = async () => {
-    await timer(1000);
-    const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
-    await timer(1000);
-    const car = (await getCars(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model, stock: elem.stock}));
-    setStock(car);
-    setCars((car.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
-    setCustomers(cus); 
+    if(cookies.get('user').role == 'Cliente'){
+      setEmployee(false);
+      await timer(1000);
+      const car = (await getAllCars()).data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model, stock: elem.stock}));
+      setCars((car.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
+    } else {
+      await timer(1000);
+      const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
+      await timer(1000);
+      const car = (await getCars(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model, stock: elem.stock}));
+      setStock(car);
+      setCars((car.filter(elem => elem.stock != 0)).map(el => ({value: el.value, label: el.label})));
+      setCustomers(cus); 
+    }
   };
 
   useEffect(() => {
@@ -300,6 +308,7 @@ const TableFacturas = ({bills, copy}) => {
     billSum();
     if(checkStock(selectedBill.bill_details)){
       selectedBill.bill_details.map(elem => countTotal(elem));
+      await timer(1500);
       window.location.reload();
     } else {
       openCloseIsertModal();
@@ -490,11 +499,13 @@ const TableFacturas = ({bills, copy}) => {
   return (
     <div>
       <ToastContainer />
-      <div className="btnInsert">
-      <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
-        Insertar
-      </Button>
-      </div>
+      {employee &&
+        <div className="btnInsert">
+        <Button className='btnInsertar' onClick={()=>openCloseIsertModal()}>
+          Insertar
+        </Button>
+        </div>
+      }
       <TableContainer>
         <Table>
           <TableHead>
@@ -519,11 +530,13 @@ const TableFacturas = ({bills, copy}) => {
                   <TableCell>{Bill.bill_details.map(elem => filterCar(elem.id_car)+' x '+elem.amount+',   ')}</TableCell>
                   <TableCell>{Bill.observation}</TableCell>
                   <TableCell>{Bill.total}</TableCell>
-                  <TableCell>
-                    <Edit className={styles.iconos} onClick={()=>selectBill((bills.filter((bll) => bll.id == Bill.id))[0],'Editar',Bill)}  />
-                    &nbsp;&nbsp;&nbsp;
-                    <Delete  className={styles.iconos} onClick={()=>selectBill((bills.filter((bll) => bll.id == Bill.id))[0],'Elminar',Bill)}/>
-                  </TableCell>
+                  {employee &&
+                    <TableCell>
+                      <Edit className={styles.iconos} onClick={()=>selectBill((bills.filter((bll) => bll.id == Bill.id))[0],'Editar',Bill)}  />
+                      &nbsp;&nbsp;&nbsp;
+                      <Delete  className={styles.iconos} onClick={()=>selectBill((bills.filter((bll) => bll.id == Bill.id))[0],'Elminar',Bill)}/>
+                    </TableCell>
+                  }
                 </TableRow>
               )
               )}

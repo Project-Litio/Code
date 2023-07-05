@@ -8,6 +8,10 @@ export const getAllCars = () => {
     return articleApi.get('/car')
 };
 
+export const getAllPieces = () => {
+    return articleApi.get('/list/replacement')
+};
+
 export const getCars = (branch) => {
     return articleApi.get('/car_stock/'+branch)
 };

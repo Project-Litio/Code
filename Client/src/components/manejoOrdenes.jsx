@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
+import { mainListItemsCli } from './dashboardComponents/listItemsCliente';
 
 import Cookies from 'universal-cookie';
 
@@ -124,6 +125,7 @@ export default function DashboardOrdenes() {
 
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [employee, setEmployee] = useState(true);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -133,9 +135,14 @@ export default function DashboardOrdenes() {
 
   const [orderReg, setOrder] = useState([]);
   const loaded = async () => {
-    const result = await getOrders();
+    const result = (await getOrders()).data;
     console.log(result);
-    setOrder(result.data);
+    if(cookies.get('user').role == 'Cliente'){
+      setEmployee(false); 
+      setOrder(result.filter(elem => elem.id_customer == cookies.get('user').id));
+    } else {
+      setOrder(result);
+    }
   };
 
   useEffect(() => {
@@ -158,9 +165,16 @@ export default function DashboardOrdenes() {
             <MenuIcon />
           </IconButton>
           <Link className="navbar-brand " to='/'><img src={img} alt="Litio" width={130} /></Link>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            &emsp; Manejo de Ordenes
-          </Typography>
+          {employee &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Manejo de Ordenes
+            </Typography>
+          }
+          {!employee &&
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              &emsp; Consulta de Ordenes
+            </Typography>
+          }
           <div onClick={deleteCookies}>
             <Tooltip title="Salir">
               <IconButton>
@@ -183,7 +197,12 @@ export default function DashboardOrdenes() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItemsMec}</List>
+        {employee &&
+            <List>{mainListItemsMec}</List>
+          }
+        {!employee &&
+          <List>{mainListItemsCli}</List>
+        }
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
