@@ -266,7 +266,6 @@ class Quotation_detailDetailAPI(APIView):
 
             price = Car.objects.filter(id=id_car).first().price
             request.data['subtotal'] = price * amount
-            print(request.data['subtotal'])
             
             serializer = self.quotation_detail_serializer(quotation_detail, data=request.data, partial=True)
             if serializer.is_valid():
@@ -543,7 +542,6 @@ class BillAPI(APIView):
                     "car_model": car_model,
                     "id_branch": bd.id_branch.id
                 }
-                print(query)
                 query["bill_details"].append(bill_detail_query)
             fullset.append(query)
 
