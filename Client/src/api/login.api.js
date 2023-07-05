@@ -12,6 +12,10 @@ export const getEmployees = () => {
     return loginApi.get('/employee')
 };
 
+export const getSeller = (pk) => {
+    return loginApi.get('sellerDetail/'+pk)
+};
+
 export const login = (data) => {
     return loginApi.post('/customer/login',data)
 };
