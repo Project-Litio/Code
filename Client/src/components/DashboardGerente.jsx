@@ -250,13 +250,7 @@ export default function DashboardGerente() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={classes.paper}>
-                <Chart
-                  chartType="PieChart"
-                  data={bills.map(bill=>(filtrarJSON(bill,campos[1])))}
-                  options={options['char2']}
-                  width={"100%"}
-                  height={"400px"}
-                />
+                
               </Paper>
             </Grid>
             <Grid item xs={12} md={4} lg={3}>
