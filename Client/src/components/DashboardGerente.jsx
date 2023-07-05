@@ -318,7 +318,7 @@ export default function DashboardGerente() {
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <Paper className={classes.paper}>
-                
+                <h3>Ventas por vendedor</h3>
                 <Chart
                     chartType="PieChart"
                     data={test2.concat(char2)}
