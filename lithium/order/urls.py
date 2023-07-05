@@ -18,4 +18,6 @@ urlpatterns = [
     path('billDetail/<int:pk>',BillDetailAPI.as_view(),name="billDetail"),
 
     path('quotation_to_bill/<int:id>',Quotation_to_Bill.as_view(),name='quotation_to_bill'),
+    
+    path('list/work_order/<int:bid>', OrderData.as_view(),name="list_work_order")
 ]
