@@ -59,3 +59,31 @@ export const editBillDetail = (data, pk) => {
 export const deleteBillDetail = (data, pk) => {
     return articleApi.delete('/bill_detailDetail/'+pk, data)
 };
+
+export const getOrders = () => {
+    return articleApi.get('/work_order')
+};
+
+export const orderCreate = (data) => {
+    return articleApi.post('/work_order', data)
+};
+
+export const orderTotal = (data) => {
+    return articleApi.post('/order_detail', data)
+};
+
+export const orderEdit = (data, pk) => {
+    return articleApi.patch('/work_orderDetail/'+pk, data)
+};
+
+export const orderDelete = (data, pk) => {
+    return articleApi.delete('/work_orderDetail/'+pk, data)
+};
+
+export const editOrderDetail = (data, pk) => {
+    return articleApi.patch('/order_detailDetail/'+pk, data)
+};
+
+export const deleteOrderDetail = (data, pk) => {
+    return articleApi.delete('/order_detailDetail/'+pk, data)
+};

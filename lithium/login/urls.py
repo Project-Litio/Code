@@ -8,5 +8,6 @@ urlpatterns = [
     path('employee',EmployeeAPI.as_view(),name="employee"),
     path('employeeDetail/<str:pk>',EmployeeDetailAPI.as_view(),name="employee_detail"),
     path('branch/<str:pk>',BranchAPI.as_view(),name="branch"),
+    path('list/branch/', Branch_get_all.as_view(),name="all_branch"),
     path('customer/otp',otpLogin.as_view(),name='customer_otp'),
 ]

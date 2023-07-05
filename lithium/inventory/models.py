@@ -17,10 +17,16 @@ class Branch_article(models.Model):
 
 class Car(models.Model):
     id=models.CharField(max_length=20, primary_key=True) #VIN: Vehicle Identification Number
-    brand=models.CharField(max_length=30)
-    type=models.CharField(max_length=20)
-    model=models.CharField(max_length=50)
-    wheel=models.CharField(max_length=20)
+    brand=models.CharField(max_length=30, null=True)
+    type=models.CharField(max_length=20, null=True)
+    model=models.CharField(max_length=50, null=True)
+    wheel=models.CharField(max_length=20, null=True)
+    motor=models.CharField(max_length=20, null=True)
+    power=models.CharField(max_length=20, null=True)
+    doors=models.CharField(max_length=20, null=True)
+    battery=models.CharField(max_length=20, null=True)
+    autonomy=models.CharField(max_length=20, null=True)
+    rpm=models.CharField(max_length=20, null=True)
     price=models.IntegerField()
     image = cloudinary.models.CloudinaryField(
         folder='media/car_images/', overwrite=True, resource_type='', blank=True)
