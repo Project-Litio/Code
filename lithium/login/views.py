@@ -349,7 +349,9 @@ class BranchAPI(APIView):
 
         data = {
             "city": branch.city,
-            "address": branch.address    
+            "address": branch.address,
+            "phone": branch.phone,
+            "email": branch.email    
         }
         return Response({"status": "success", "data": data})
 
@@ -359,12 +361,14 @@ class BranchAPI(APIView):
         if branch == None:
             return Response({"status": "fail", "message": f"Branch with Id: {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        #Modifying the user
+        #Modifying the branch
         with transaction.atomic():
             serializer = self.serializer_class(branch, data=request.data, partial=True)
             data = {
                 "city" : branch.city,
-                "address" : branch.address
+                "address" : branch.address,
+                "phone": branch.phone,
+                "email": branch.email
             }
 
         if serializer.is_valid():
