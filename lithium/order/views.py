@@ -36,7 +36,11 @@ class Order_detailAPI(APIView):
                 article.save()
 
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+                work_order = Work_order.objects.last()
+                id = work_order.id
+
+                return Response(id, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class Order_detailDetailAPI(APIView):
