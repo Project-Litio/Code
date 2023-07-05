@@ -41,6 +41,7 @@ const TableSucursal = ({branch}) => {
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
   const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
+  const notEmail = () => toast("El correo no cumple el formato nombre@organizacion.dominio");
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -48,6 +49,10 @@ const TableSucursal = ({branch}) => {
         return 'Ciudad';
       case 'address':
         return 'Direccion';
+      case 'phone':
+        return 'Telefono';
+      case 'email':
+        return 'Correo';
       default:
         console.log("Esto no debería pasar");
     }
@@ -55,7 +60,9 @@ const TableSucursal = ({branch}) => {
 
   const [selectedBranch,setSelectedBranch]=useState({
     city:'',
-    address:''
+    address:'',
+    phone:'',
+    email:''
   });
 
   const handleChange=e=>{
@@ -77,7 +84,7 @@ const TableSucursal = ({branch}) => {
 
   var n = 0;
   const verificarDatos = () => {
-    const lengths = [20,20];
+    const lengths = [20,20,10,100];
     for ( var key in selectedBranch ) {
       if(selectedBranch[key] == ''){
         faltanDatos(key);
@@ -87,6 +94,11 @@ const TableSucursal = ({branch}) => {
         return false;
       } else {
         n++;
+      }
+
+      if(/^[a-zA-Z0-9+_.\-]+@[a-zA-Z0-9]+[.+a-zA-Z0-9\-]+$/u.test(selectedBranch.email) == false){
+        notEmail();
+        return false;
       }
     }
     editBranch();
@@ -102,6 +114,8 @@ const TableSucursal = ({branch}) => {
       <h3>Editar Sucursal</h3>      
       <TextField name='city' className={styles.inputMaterial} label="Ciudad" onChange={handleChange} defaultValue={selectedBranch && selectedBranch.city} ></TextField>
       <TextField name='address' className={styles.inputMaterial} label="Direccion" onChange={handleChange} defaultValue={selectedBranch && selectedBranch.address}></TextField>
+      <TextField name='phone' className={styles.inputMaterial} label="Telefono" onChange={handleChange} defaultValue={selectedBranch && selectedBranch.phone}></TextField>
+      <TextField name='email' className={styles.inputMaterial} label="Correo" onChange={handleChange} defaultValue={selectedBranch && selectedBranch.email}></TextField>
       <div align="right">
       <Button color="primary" onClick={beforeEdit}>Editar</Button>
       <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
@@ -119,6 +133,8 @@ const TableSucursal = ({branch}) => {
             <TableCell><b>ID</b></TableCell>
             <TableCell><b>Ciudad</b></TableCell>
             <TableCell><b>Dirección</b></TableCell>
+            <TableCell><b>Telefono</b></TableCell>
+            <TableCell><b>Correo</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -126,6 +142,8 @@ const TableSucursal = ({branch}) => {
               <TableCell>{cookies.get('user').branch}</TableCell>
               <TableCell>{branch.city}</TableCell>
               <TableCell>{branch.address}</TableCell>
+              <TableCell>{branch.phone}</TableCell>
+              <TableCell>{branch.email}</TableCell>
               <TableCell>
                 <Edit className={styles.iconos} onClick={()=>selectBranch(branch,'Editar')}  />
               </TableCell>

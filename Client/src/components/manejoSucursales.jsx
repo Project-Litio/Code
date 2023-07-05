@@ -133,6 +133,7 @@ export default function DashboardSucursales() {
   const [branchReg, setBranch] = useState([]);
   const loaded = async () => {
       setBranch((await branchDetail(cookies.get('user').branch)).data.data);
+      console.log(branchReg);
   };
 
   useEffect(() => {

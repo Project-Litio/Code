@@ -23,9 +23,22 @@ const useStyles = makeStyles((theme) => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-    top: '50%',
+    top: '75%',
     left: '50%',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
+    zIndex: "1000",
+  },
+  modalcont: {
+    position: "fixed",
+    display: "flex",
+    justifyContent: "center",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0, .8)",
+    zIndex: "1000",
+    overflowY: "auto"
   },
   iconos:{
     cursor: 'pointer'
@@ -92,7 +105,13 @@ const TableCars = ({cars, copy}) => {
     wheel:'',
     stock:'',
     color:'',
-    id_article: ''
+    id_article: '',
+    autonomy: '',
+    battery: '',
+    doors: '',
+    motor: '',
+    power: '',
+    rpm: ''
   });
 
   const [originalCar, setOriginalCar] = useState([]);
@@ -128,6 +147,7 @@ const TableCars = ({cars, copy}) => {
   const notInt = () => toast("El precio y la cantidad deben ser enteros");
   const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
   const idExistente = (id) => toast("Ya existe un vehículo con el VIN "+id);
+  const mustBeInt = (data) => toast("El dato "+dataTranslator(data)+" debe ser entero");
 
   const dataTranslator = (data) => {
     switch (data) {
@@ -149,6 +169,18 @@ const TableCars = ({cars, copy}) => {
         return 'Cantidad';
       case 'color':
         return 'Color';
+      case 'autonomy':
+        return 'Autonomia';
+      case 'battery':
+        return 'Bateria';
+      case 'doors':
+        return 'Puertas';
+      case 'motor':
+        return 'Motor';
+      case 'power':
+        return 'Potencia';
+      case 'rpm':
+        return 'RPM';
       default:
         console.log("Esto no debería pasar");
     }
@@ -227,6 +259,12 @@ const TableCars = ({cars, copy}) => {
     if(selectedcar.wheel == '' && act == "Crear"){
       selectedcar.wheel = 'Magnesio';
     }
+
+    const ints = {};
+    ints.autonomy = selectedcar.autonomy;
+    ints.doors = selectedcar.doors;
+    ints.power = selectedcar.power;
+    ints.rpm = selectedcar.rpm;
     
     for ( var key in selectedcar ) {
       if(selectedcar[key] == ''){
@@ -236,6 +274,13 @@ const TableCars = ({cars, copy}) => {
         cantidadExcedida(key, lengths[key]);
         return false;
       } 
+    }
+
+    for(var key in ints){
+      if(Number.isInteger(parseInt(ints[key])) == false){
+        mustBeInt(key);
+        return false;
+      }
     }
 
     if(act == "Crear"){
@@ -328,46 +373,62 @@ const TableCars = ({cars, copy}) => {
   }
 
   const insertBody=(
-    <div className={styles.modal}>
-      <h3>Agregar Nuevo vehiculo</h3>
-      <label className={styles.inputMaterial}>Marca</label>
-      <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[0]}/>
-      <TextField name='id' className={styles.inputMaterial} label="VIN" onChange={handleChange}></TextField>
-      <label className={styles.inputMaterial}>Imagen</label>
-      <input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} className={styles.inputMaterial}/>
-      <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange}></TextField>
-      <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange}></TextField>
-      <label className={styles.inputMaterial}>Tipo</label>
-      <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[0]}/>
-      <label className={styles.inputMaterial}>Llanta</label>
-      <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[0]}/>
-      <div align="right">
-      <Button color="primary" onClick={beforeCreate}>Insertar</Button>
-      <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
+    <div className={styles.modalcont}>
+      <div className={styles.modal}>
+        <h3>Agregar Nuevo vehiculo</h3>
+        <label className={styles.inputMaterial}>Marca</label>
+        <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[0]}/>
+        <TextField name='id' className={styles.inputMaterial} label="VIN" onChange={handleChange}></TextField>
+        <label className={styles.inputMaterial}>Imagen</label>
+        <input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} className={styles.inputMaterial}/>
+        <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange}></TextField>
+        <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange}></TextField>
+        <label className={styles.inputMaterial}>Tipo</label>
+        <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[0]}/>
+        <label className={styles.inputMaterial}>Llanta</label>
+        <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[0]}/>
+        <TextField name='autonomy' className={styles.inputMaterial} label="Autonomia" onChange={handleChange}></TextField>
+        <TextField name='battery' className={styles.inputMaterial} label="Bateria" onChange={handleChange}></TextField>
+        <TextField name='doors' className={styles.inputMaterial} label="Puertas" onChange={handleChange}></TextField>
+        <TextField name='motor' className={styles.inputMaterial} label="Motor" onChange={handleChange}></TextField>
+        <TextField name='power' className={styles.inputMaterial} label="Potencia" onChange={handleChange}></TextField>
+        <TextField name='rpm' className={styles.inputMaterial} label="RPM" onChange={handleChange}></TextField>
+        <div align="right">
+        <Button color="primary" onClick={beforeCreate}>Insertar</Button>
+        <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
+        </div>
       </div>
     </div>
   )
 
     const EditBody=(
-    <div className={styles.modal}>
-      <h3>Editar vehiculo</h3>
-      <label className={styles.inputMaterial}>Marca</label>
-      <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[searchIndex(originalCar.brand, marcas)]}/>
-      <TextField name='id' className={styles.inputMaterial} label="ID" onChange={handleChange} defaultValue={selectedcar && selectedcar.id} InputProps={{readOnly: true}}></TextField>
-      <label className={styles.inputMaterial}>Imagen</label>
-      <input type="file" id="img" name="image" accept="image/*" onChange={handleImageChange} label="Image"></input>
-      <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange} defaultValue={selectedcar && selectedcar.model} ></TextField>
-      <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange} defaultValue={selectedcar && selectedcar.price}></TextField>
-      <label className={styles.inputMaterial}>Tipo</label>
-      <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[searchIndex(originalCar.type, tipos)]}/>
-      <label className={styles.inputMaterial}>Llanta</label>
-      <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[searchIndex(originalCar.wheel, llantas)]}/>
-      <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedcar && selectedcar.stock}></TextField>
-      <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue={selectedcar && selectedcar.color}></TextField>
-      <TextField name='id' className={styles.inputMaterial} label="ID Article" onChange={handleChange} defaultValue={selectedcar && selectedcar.id_article} InputProps={{readOnly: true}}></TextField>
-      <div align="right">
-      <Button color="primary" onClick={beforeEdit}>Editar</Button>
-      <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
+    <div className={styles.modalcont}>
+      <div className={styles.modal}>
+        <h3>Editar vehiculo</h3>
+        <label className={styles.inputMaterial}>Marca</label>
+        <Select options={marcas} onChange={handleBrandChange} defaultValue={marcas[searchIndex(originalCar.brand, marcas)]}/>
+        <TextField name='id' className={styles.inputMaterial} label="ID" onChange={handleChange} defaultValue={selectedcar && selectedcar.id} InputProps={{readOnly: true}}></TextField>
+        <label className={styles.inputMaterial}>Imagen</label>
+        <input type="file" id="img" name="image" accept="image/*" onChange={handleImageChange} label="Image"></input>
+        <TextField name='model' className={styles.inputMaterial} label="Modelo" onChange={handleChange} defaultValue={selectedcar && selectedcar.model} ></TextField>
+        <TextField name='price' className={styles.inputMaterial} label="Precio" onChange={handleChange} defaultValue={selectedcar && selectedcar.price}></TextField>
+        <label className={styles.inputMaterial}>Tipo</label>
+        <Select options={tipos} onChange={handleTypeChange} defaultValue={tipos[searchIndex(originalCar.type, tipos)]}/>
+        <label className={styles.inputMaterial}>Llanta</label>
+        <Select options={llantas} onChange={handleWheelChange} defaultValue={llantas[searchIndex(originalCar.wheel, llantas)]}/>
+        <TextField name='stock' className={styles.inputMaterial} label="Cantidad" onChange={handleChange} defaultValue={selectedcar && selectedcar.stock}></TextField>
+        <TextField name='color' className={styles.inputMaterial} label="Color" onChange={handleChange} defaultValue={selectedcar && selectedcar.color}></TextField>
+        <TextField name='id' className={styles.inputMaterial} label="ID Article" onChange={handleChange} defaultValue={selectedcar && selectedcar.id_article} InputProps={{readOnly: true}}></TextField>
+        <TextField name='autonomy' className={styles.inputMaterial} label="Autonomia" onChange={handleChange} defaultValue={selectedcar && selectedcar.autonomy}></TextField>
+        <TextField name='battery' className={styles.inputMaterial} label="Bateria" onChange={handleChange} defaultValue={selectedcar && selectedcar.battery}></TextField>
+        <TextField name='doors' className={styles.inputMaterial} label="Puertas" onChange={handleChange} defaultValue={selectedcar && selectedcar.doors}></TextField>
+        <TextField name='motor' className={styles.inputMaterial} label="Motor" onChange={handleChange} defaultValue={selectedcar && selectedcar.motor}></TextField>
+        <TextField name='power' className={styles.inputMaterial} label="Potencia" onChange={handleChange} defaultValue={selectedcar && selectedcar.power}></TextField>
+        <TextField name='rpm' className={styles.inputMaterial} label="RPM" onChange={handleChange} defaultValue={selectedcar && selectedcar.rpm}></TextField>
+        <div align="right">
+        <Button color="primary" onClick={beforeEdit}>Editar</Button>
+        <Button onClick={()=>openCloseEditModal()}>Cancelar</Button>
+        </div>
       </div>
     </div>
   )
@@ -406,6 +467,12 @@ const TableCars = ({cars, copy}) => {
             <TableCell><b>Llanta</b></TableCell>
             <TableCell><b>Cantidad</b></TableCell>
             <TableCell><b>Color</b></TableCell>
+            <TableCell><b>Autonomia</b></TableCell>
+            <TableCell><b>Bateria</b></TableCell>
+            <TableCell><b>Puertas</b></TableCell>
+            <TableCell><b>Motor</b></TableCell>
+            <TableCell><b>Potencia</b></TableCell>
+            <TableCell><b>RPM</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -422,6 +489,12 @@ const TableCars = ({cars, copy}) => {
                   <TableCell>{car.wheel}</TableCell>
                   <TableCell>{car.stock}</TableCell>
                   <TableCell>{car.color}</TableCell>
+                  <TableCell>{car.autonomy+' h'}</TableCell>
+                  <TableCell>{car.battery}</TableCell>
+                  <TableCell>{car.doors}</TableCell>
+                  <TableCell>{car.motor}</TableCell>
+                  <TableCell>{car.power}</TableCell>
+                  <TableCell>{car.rpm}</TableCell>
                   {manager &&
                     <TableCell>
                       <Edit className={styles.iconos} onClick={()=>selectcar((cars.filter((cr) => cr.id == car.id))[0], 'Editar', car)}  />

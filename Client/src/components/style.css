@@ -654,3 +654,7 @@ input:focus, textarea:focus, select:focus{
 .lst label:hover{
   color: red;
 }
+
+.det{
+  float: right;
+}
