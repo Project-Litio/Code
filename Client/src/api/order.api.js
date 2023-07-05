@@ -87,3 +87,7 @@ export const editOrderDetail = (data, pk) => {
 export const deleteOrderDetail = (data, pk) => {
     return articleApi.delete('/order_detailDetail/'+pk, data)
 };
+
+export const quotationToBill = (pk) => {
+    return articleApi.get('/quotation_to_bill/'+pk)
+};

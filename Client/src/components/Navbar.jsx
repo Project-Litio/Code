@@ -22,6 +22,8 @@ const usrTranslator = (usrType) => {
         return 'Vendedor';
       case 'Mec': 
         return 'Mecanico';
+      case 'Cliente':
+        return 'Cliente';
       default:
         break;
     }

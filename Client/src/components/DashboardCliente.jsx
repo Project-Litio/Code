@@ -15,12 +15,13 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { mainListItems } from './dashboardComponents/listItems';
+import { mainListItemsCli } from './dashboardComponents/listItemsCliente';
 import img from '../assets/logo.png'
 import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
+import MyData from './mydata'
 
 import Cookies from 'universal-cookie';
 
@@ -171,7 +172,7 @@ export default function DashboardCliente() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        <List>{mainListItemsCli}</List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -179,17 +180,7 @@ export default function DashboardCliente() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                
+                <MyData data={cookies.get('user')}></MyData>
               </Paper>
             </Grid>
           </Grid>

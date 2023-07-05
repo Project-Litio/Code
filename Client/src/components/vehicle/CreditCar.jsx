@@ -92,11 +92,6 @@ const PaymentForm = () => {
               />
             </div>
           </div>
-          <div className="d-grid">
-            <button className="btn btn-dark">Confirm</button>
-          </div>
-
-
       </form>
     </div>
   );
