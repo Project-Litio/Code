@@ -52,6 +52,10 @@ export const customerDetail = (pk) => {
     return loginApi.get('/customerDetail/'+pk)
 };
 
+export const getBranchs = () => {
+    return loginApi.get('/list/branch')
+};
+
 export const branchDetail = (pk) => {
     return loginApi.get('/branch/'+pk)
 };

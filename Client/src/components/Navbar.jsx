@@ -83,12 +83,8 @@ const Navbar = () => {
                 <Link className="nav-link " to='/collection'> <font color='White '>{t("NavBar.collection")}</font> </Link>
               </li>
               <li className="nav-item mx-3">
-                <Link className="nav-link" to='/repair'> <font color='White'>{t("NavBar.maintenance")}</font>  </Link>
-              </li>
-              <li className="nav-item mx-3">
                 <Link className="nav-link" to='/about'> <font color='White'>{t("NavBar.us")}</font></Link>
               </li>
-
               {!loggedIn &&
                 <li className="nav-item mx-3">
                   <Link className="nav-link active"  to='/login'> <font color='White'>{t("NavBar.in")}</font></Link>
