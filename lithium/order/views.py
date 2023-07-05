@@ -115,7 +115,8 @@ class Work_orderAPI(APIView):
             serializer = self.work_order_serializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                id = Work_order.objects.last().id
+                return Response(id, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
