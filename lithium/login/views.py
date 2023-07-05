@@ -281,6 +281,30 @@ class EmployeeDetailAPI(APIView):
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
+class SellerDetailAPI(APIView):
+    serializer_class = Employee_Serializer
+
+    def get(self, request, bid):
+        sellers = Employee.objects.filter(role="Sel",id_branch=bid).exclude(id="000000000000")
+        if len(sellers) == 0:
+            return Response({"status": "fail", "message": "There are no sellers"}, status=status.HTTP_404_NOT_FOUND)
+    
+        fullquery = []
+        for sel in sellers:
+            data = {"id":sel.id,
+                "first_name":sel.id_user.first_name,
+                "last_name":sel.id_user.last_name,
+                "email":sel.id_user.email,
+                "address":sel.address,
+                "phone":sel.phone,
+                "role":sel.role,
+                "id_branch":sel.id_branch_id,
+                "address_branch":sel.id_branch.address,
+                "city_branch":sel.id_branch.city
+            }
+            fullquery.append(data)
+
+        return Response({"status": "success", "data": fullquery})
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
