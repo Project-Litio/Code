@@ -642,3 +642,34 @@ class BillDetailAPI(APIView):
             
             bill.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        
+class Quotation_to_Bill(APIView):
+    def get(self,request,id):
+        with transaction.atomic():
+            try:
+                quotation = Quotation.objects.get(id=id)
+
+                bill = Bill.objects.create(
+                    id_employee=quotation.id_employee.id,
+                    id_customer=quotation.id_customer.id,
+                    observation = quotation.observation,
+                    total = quotation.total,
+                    payment_method="TC"
+                )
+
+                quotation_items = Quotation_detail.objects.filter(id_quotation=id)
+
+                for item in quotation_items:
+                    bill_item = Bill_detail.objects.create(
+                        id_bill=bill.id,
+                        id_car=item.id_car,
+                        id_branch=quotation.id_employee.id_branch.id,
+                        amount=item.amount,
+                        subtotal=item.subtotal
+                    )
+
+                quotation.delete()
+
+                return Response(bill.id)
+            except:
+                return Response("Something went wrong (Quotation_to_Bill)")
