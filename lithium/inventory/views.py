@@ -417,3 +417,38 @@ class Replacement_Stock(APIView):
         
         except:
             return Response({"status": "failed", "message":"Something went wrong"})
+        
+
+#FUNCIONES PARA EL FRONTEND PARA LAS GRÁFICAS
+class ReplacementData(APIView):
+    replacement_serializer = Replacement_Serializer
+    all_replacement_serializer = All_Replacement_Serializer
+    branch_article_serializer = Branch_Article_Serializer
+
+    def get(self, request, bid):
+        queryset = Replacement.objects.all()
+        data_dict = {}  # Dictionary to store accumulated amounts for each name
+        for r in queryset:
+            try:
+                branch_article = Branch_article.objects.get(id_article=r.id_article, id_branch=bid)
+            except Branch_article.DoesNotExist:
+                branch_article = None
+
+            if r.id_article.deleted == False and branch_article and branch_article.id_branch.id == bid:
+                stock = branch_article.stock
+                if r.type in data_dict:
+                    data_dict[r.type] += stock
+                else:
+                    data_dict[r.type] = stock
+        
+        fullset = [["Type", "Amount"]]
+        for name, amount in data_dict.items():
+            data = [name, amount]
+            fullset.append(data)
+
+        return Response({"data": fullset})
+        
+
+        #Inventario de los repuestos - Mecanico
+        #Ordenes activas - Mecanico
+        

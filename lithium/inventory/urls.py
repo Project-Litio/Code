@@ -10,4 +10,5 @@ urlpatterns = [
     path('replacement',ReplacementAPI.as_view(),name="replacement"),
     path('replacementDetail/<str:pk>/<int:bid>',ReplacementDetailAPI.as_view(),name="replacement_detail"),
     path('replacement_stock/<int:pk>',Replacement_Stock.as_view(),name="replacement_stock"),
+    path('replacementData/<int:bid>',ReplacementData.as_view(),name="replacement_data")
 ]
