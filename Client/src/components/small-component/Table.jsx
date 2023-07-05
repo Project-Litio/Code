@@ -14,6 +14,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+
+
 const useStyles = makeStyles((theme) => ({
   modal: {
     position: 'absolute',
@@ -83,6 +87,7 @@ const TableUSers = ({users, copy}) => {
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
+  const [search, setSearch] = useState('');
 
   const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata();}
   const openCloseEditModal=()=>{setEditModal(!EditModal); restartSelection();}
@@ -298,6 +303,7 @@ const TableUSers = ({users, copy}) => {
       <div align="right">
       <Button color="primary" onClick={beforeCreate}>Insertar</Button>
       <Button onClick={()=>openCloseIsertModal()}>Cancelar</Button>
+      
       </div>
     </div>
   )
@@ -346,6 +352,18 @@ const TableUSers = ({users, copy}) => {
           </Button>
         </div>
       }
+      <div className='px-3'>
+        <Form>
+          <InputGroup className='my-3'>
+            {/* onChange for search */}
+            <Form.Control
+              onChange={(e) => {setSearch(e.target.value);setPage(0)}}
+              placeholder="buscar"
+              
+            />
+          </InputGroup>
+        </Form>
+      </div>
       <TableContainer>
         <Table>
           <TableHead>
@@ -362,7 +380,11 @@ const TableUSers = ({users, copy}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {copy.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user=>
+            {copy.filter((user) => {
+          return search.toLowerCase() === ''
+            ? user
+            : user.first_name.toLowerCase().includes(search.toLowerCase()) || user.last_name.toLowerCase().includes(search.toLowerCase());
+        }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user=>
               (
                 <TableRow key={user.id}>
                   <TableCell>{user.first_name}</TableCell>

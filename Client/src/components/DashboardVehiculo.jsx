@@ -18,6 +18,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './dashboardComponents/listItems';
 import TableCars from './small-component/TableCars';
 import {getCars} from '../api/article.api'
+import {replacementData} from '../api/article.api'
 import img from '../assets/logo.png'
 import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';

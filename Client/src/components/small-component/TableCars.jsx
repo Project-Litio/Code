@@ -9,6 +9,9 @@ import Select from 'react-select'
 import Cookies from 'universal-cookie';
 import 'react-toastify/dist/ReactToastify.css';
 import '../style.css'
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+
 
 const cookies = new Cookies();
 
@@ -120,6 +123,7 @@ const TableCars = ({cars, copy}) => {
   const [InsertModal,setInsertModal] =useState(false);
   const [EditModal,setEditModal] =useState(false);
   const [DeleteModal,setDeleteModal] =useState(false);
+  const [search, setSearch] = useState('');
 
   const openCloseIsertModal=()=>{setInsertModal(!InsertModal); cleandata();}
   const openCloseEditModal=()=>{setEditModal(!EditModal); restartSelection();}
@@ -452,7 +456,20 @@ const TableCars = ({cars, copy}) => {
             Insertar
           </Button>
         </div>
+        
       }
+      <div className='px-3'>
+        <Form>
+          <InputGroup className='my-3'>
+            {/* onChange for search */}
+            <Form.Control
+              onChange={(e) => {setSearch(e.target.value);setPage(0)}}
+              placeholder="buscar"
+              
+            />
+          </InputGroup>
+        </Form>
+      </div>
       <TableContainer>
         <Table>
           <TableHead>
@@ -476,7 +493,11 @@ const TableCars = ({cars, copy}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {copy.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(car=>
+            {copy.filter((car) => {
+          return search.toLowerCase() === ''
+            ? car
+            : car.brand.toLowerCase().includes(search.toLowerCase()) || car.model.toLowerCase().includes(search.toLowerCase());
+        }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(car=>
               (
                 <TableRow key={car.id}>
                   <TableCell>{car.brand}</TableCell>

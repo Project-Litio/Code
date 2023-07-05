@@ -8,6 +8,8 @@ import '../style.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'universal-cookie';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 const cookies = new Cookies();
 
@@ -65,6 +67,7 @@ const Tablestock = ({stock}) => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [search, setSearch] = useState('');
 
   const faltanDatos = (data) => toast("Debes brindar el dato "+dataTranslator(data));
   const cantidadExcedida = (data, n) => toast(dataTranslator(data)+" debe constar de menos de "+n+" caracteres.");
@@ -232,6 +235,18 @@ const Tablestock = ({stock}) => {
           </Button>
         </div>
       }
+      <div className='px-3'>
+        <Form>
+          <InputGroup className='my-3'>
+            {/* onChange for search */}
+            <Form.Control
+              onChange={(e) => {setSearch(e.target.value);setPage(0)}}
+              placeholder="buscar"
+              
+            />
+          </InputGroup>
+        </Form>
+      </div>
       <TableContainer>
         <Table>
           <TableHead>
@@ -244,7 +259,11 @@ const Tablestock = ({stock}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stock.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(Piece=>
+            {stock.filter((part) => {
+          return search.toLowerCase() === ''
+            ? part
+            : part.name.toLowerCase().includes(search.toLowerCase()) || part.type.toLowerCase().includes(search.toLowerCase())  ;
+        }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(Piece=>
               (
                 <TableRow key={Piece.id}>
                   <TableCell>{Piece.id}</TableCell>

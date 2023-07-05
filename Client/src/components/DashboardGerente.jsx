@@ -159,7 +159,7 @@ export default function DashboardGerente() {
       setCars(result.data.data);
       setBills(result2.data)
       
-
+      console.log(result.data.data);
       const numberBills = result3.data.data.map(vendedor =>( result2.data.filter(item =>item.employee_name === vendedor.first_name).map(item=>(item.bill_details.length)) ).reduce((accumulator, currentValue) => accumulator + currentValue, 0)) 
 
       const sellerNumberBills = result3.data.data.map((seller,i) =>([seller.first_name, numberBills[i]]))
@@ -339,6 +339,7 @@ export default function DashboardGerente() {
                     data={test.concat(cars.map(car=>(filtrarJSON(car,campos[0]))))}
                     options={options['char1']}
                   />
+
                 </Paper>
               </Grid>
             </Grid>

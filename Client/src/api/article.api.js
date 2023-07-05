@@ -55,3 +55,7 @@ export const cotizEdit = (data, pk) => {
 export const cotizDelete = (data, pk) => {
     return articleApi.delete('/replacementDetail/'+pk, data)
 };
+
+export const replacementData = (branch) => {
+    return articleApi.get('/replacementData/'+branch)
+}

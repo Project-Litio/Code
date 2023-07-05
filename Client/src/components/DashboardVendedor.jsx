@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState,useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -21,11 +21,15 @@ import { Link } from "react-router-dom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
+import {replacementData} from '../api/article.api'
 
 import Cookies from 'universal-cookie';
 
+import { Chart } from "react-google-charts";
+import ClipLoader from "react-spinners/ClipLoader";
+
 var cookies = new Cookies();
-var cookies = new Cookies();
+
 
 const drawerWidth = 200;
 
@@ -107,6 +111,13 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  helper:{
+    
+    display: 'flex',
+    overflow: 'auto',
+    
+    flexDirection: 'column',
+  },
 }));
 
 export default function DashboardVendedor() {
@@ -123,6 +134,20 @@ export default function DashboardVendedor() {
   
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [replacement,setReplacement] =useState([]);
+  const [loading,setLoading]=useState(false)
+
+
+  const loaded = async () => {
+      
+    setLoading(true) 
+
+    const result = await replacementData(cookies.get('user').branch);
+    console.log(result.data.data);
+    setReplacement(result.data.data);
+    setLoading(false)
+  };    
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -130,6 +155,37 @@ export default function DashboardVendedor() {
     setOpen(false);
   };
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+
+  useEffect(() => {
+    loaded();
+
+  }, []);
+
+  const data = [
+    ["Task", "Hours per Day"],
+    ["Work", 11],
+    ["Eat", 2],
+    ["Commute", 2],
+    ["Watch TV", 2],
+    ["Sleep", 7],
+  ];
+
+  const options = {
+    char1:{
+      chart: {
+        title: "Stock de Partes",
+      },
+    },
+    char2:{
+      chart: {
+        title: "Autos más Vendidos",
+      },
+    charaux:{
+      chartArea: { width: "1", height: "1" }
+    }
+    }  
+  };
 
   return (
     <div className={classes.root} id='raiz'>
@@ -176,10 +232,32 @@ export default function DashboardVendedor() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
+        {
+            loading ? (
+              
+            
+            <div className='center'>
+              <ClipLoader
+              color={'#36d7b7'}
+              loading={loading}
+              size={150}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+            </div>
+            
+            ) : (
+            
           <Grid container spacing={3}>
             <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                
+              <Paper className={classes.paper}>
+              <Chart
+                    chartType="PieChart"
+                    width="100%"
+                    height="400px"
+                    data={replacement}
+                    options={options['char1 ']}
+                  />
               </Paper>
             </Grid>
             <Grid item xs={12} md={4} lg={3}>
@@ -193,8 +271,17 @@ export default function DashboardVendedor() {
               </Paper>
             </Grid>
           </Grid>
-          <Box pt={4}>
-          </Box>
+          )
+          }
+          <Paper className={classes.helper}>
+              <Chart
+                chartType="AreaChart" 
+                width="10%"
+                height="  0px"
+                data={data}
+                options={options[2]}
+              />
+              </Paper>
         </Container>
       </main>
     </div>
