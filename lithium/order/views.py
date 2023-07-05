@@ -668,3 +668,13 @@ class Quotation_to_Bill(APIView):
                 quotation.delete()
 
                 return Response(bill.id)
+
+class OrderData(APIView):
+    def get(self, request, bid):
+        queryset = Work_order.objects.all()
+        fullset = [["start_date", "client's name"]]
+        for w in queryset:
+            if w.end_date == None and w.id_employee.id_branch.id == bid:
+                fullset.append([w.start_date, w.id_customer.id_user.first_name])
+            
+        return Response({"data":fullset})
