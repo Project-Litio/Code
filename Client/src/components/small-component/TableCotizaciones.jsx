@@ -15,6 +15,8 @@ import CheckIcon from '@material-ui/icons/Check';
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 
+const timer = ms => new Promise(res => setTimeout(res, ms))
+
 const useStyles = makeStyles((theme) => ({
   modal: {
     position: 'absolute',
@@ -43,7 +45,9 @@ const TableCotizaciones = ({cotiz, copy}) => {
   const [customers, setCustomers] = useState([]);
   const [cars, setCars] = useState([]);
   const loaded = async () => {
+    await timer(1000);
     const cus = (await getCustomers()).data.data.map(elem => ({value: elem.id, label: elem.id}));
+    await timer(1000);
     const car = (await getCars(cookies.get('user').branch)).data.data.map(elem => ({value: elem.id, label: elem.brand+' '+elem.model}));
     setCars(car);
     setCustomers(cus); 
