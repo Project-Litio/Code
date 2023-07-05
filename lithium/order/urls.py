@@ -15,5 +15,7 @@ urlpatterns = [
     path('bill_detail',Bill_detailAPI.as_view(),name="bill_detail"),
     path('bill_detailDetail/<int:pk>',Bill_detailDetailAPI.as_view(),name="bill_detailDetail"),
     path('bill',BillAPI.as_view(),name="bill"),
-    path('billDetail/<int:pk>',BillDetailAPI.as_view(),name="billDetail")
+    path('billDetail/<int:pk>',BillDetailAPI.as_view(),name="billDetail"),
+
+    path('quotation_to_bill/<int:id>',Quotation_to_Bill.as_view(),name='quotation_to_bill'),
 ]
