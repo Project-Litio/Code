@@ -452,3 +452,4 @@ class ReplacementData(APIView):
         #Inventario de los repuestos - Mecanico
         #Ordenes activas - Mecanico
         
+        
